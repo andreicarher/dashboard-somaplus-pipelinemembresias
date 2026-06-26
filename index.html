@@ -4,7 +4,131 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SOMA+ · Dashboard 2026</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js">
+// ── RENOVACIONES ────────────────────────────────────────────
+document.getElementById('renov-bars').innerHTML = EXTRA.renovaciones.map(r => {
+  const col = r.tasa >= 70 ? '#1D9E75' : r.tasa >= 50 ? '#378ADD' : '#EF9F27';
+  return `<div class="bar-wrap">
+    <div class="bar-label">${r.mes} <span style="font-size:10px;color:#7E7E87">(${r.debían} debían renovar)</span></div>
+    <div class="bar-bg"><div class="bar-fill" style="width:${r.tasa}%;background:${col}"></div></div>
+    <div class="bar-val" style="color:${col}">${r.tasa}%</div>
+  </div>`;
+}).join('');
+
+document.getElementById('cohort-ret-bars').innerHTML = EXTRA.cohort_ret.map(r => {
+  const col = r.pct >= 70 ? '#1D9E75' : r.pct >= 55 ? '#378ADD' : '#EF9F27';
+  return `<div class="bar-wrap">
+    <div class="bar-label">Cohorte ${r.mes} <span style="font-size:10px;color:#7E7E87">(${r.meses} meses · n=${r.total})</span></div>
+    <div class="bar-bg"><div class="bar-fill" style="width:${r.pct}%;background:${col}"></div></div>
+    <div class="bar-val" style="color:${col}">${r.pct}%</div>
+  </div>`;
+}).join('');
+
+document.getElementById('ret-plan-bars').innerHTML = EXTRA.ret_plan.map(r => {
+  const col = r.pct >= 70 ? '#1D9E75' : r.pct >= 55 ? '#378ADD' : '#EF9F27';
+  return `<div class="bar-wrap">
+    <div class="bar-label">${r.plan} <span style="font-size:10px;color:#7E7E87">n=${r.total}</span></div>
+    <div class="bar-bg"><div class="bar-fill" style="width:${r.pct}%;background:${col}"></div></div>
+    <div class="bar-val" style="color:${col}">${r.pct}%</div>
+  </div>`;
+}).join('');
+
+new Chart(document.getElementById('renovChart'), {
+  type: 'bar',
+  data: {
+    labels: EXTRA.renovaciones.map(r => r.mes),
+    datasets: [
+      { label: 'Renovaron', data: EXTRA.renovaciones.map(r => r.renovaron), backgroundColor: '#1D9E75', borderRadius: 4, stack: 'a' },
+      { label: 'No renovaron', data: EXTRA.renovaciones.map(r => r.no), backgroundColor: '#F7C1C1', borderRadius: 4, stack: 'a' },
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: true, position: 'bottom', labels: { font: { size: 11 }, color: '#7E7E87' } } },
+    scales: {
+      x: { grid: { display: false }, border: { display: false }, ticks: { color: '#7E7E87' } },
+      y: { grid: { color: 'rgba(0,0,0,0.05)' }, border: { display: false }, ticks: { color: '#7E7E87' }, stacked: true }
+    }
+  }
+});
+
+// ── LIFECYCLE ───────────────────────────────────────────────
+const stages = [
+  { label: 'Aplicación', sublabel: 'Punto de partida', color: '#A6BAC2', media: null },
+  { label: '→ SQL', sublabel: `Media: ${EXTRA.lifecycle.cs.media}d · Mediana: ${EXTRA.lifecycle.cs.mediana}d`, color: '#7B6EF6', media: EXTRA.lifecycle.cs.media },
+  { label: '→ Trial', sublabel: `Media: ${EXTRA.lifecycle.st.media}d · Mediana: ${EXTRA.lifecycle.st.mediana}d`, color: '#FF8D6B', media: EXTRA.lifecycle.st.media },
+  { label: '→ Pago', sublabel: `Media: ${EXTRA.lifecycle.tc.media}d · Mediana: ${EXTRA.lifecycle.tc.mediana}d`, color: '#1D9E75', media: EXTRA.lifecycle.tc.media },
+];
+document.getElementById('lifecycle-flow').innerHTML = `
+  <div style="display:flex;align-items:stretch;gap:0">
+    ${stages.map((s, i) => `
+      <div style="flex:1;text-align:center;padding:16px 8px;background:${s.color}18;border-radius:${i===0?'8px 0 0 8px':i===stages.length-1?'0 8px 8px 0':'0'};border:1px solid ${s.color}44;margin-left:${i>0?'-1px':'0'}">
+        <div style="font-size:14px;font-weight:600;color:${s.color};margin-bottom:4px">${s.label}</div>
+        <div style="font-size:11px;color:#7E7E87">${s.sublabel}</div>
+        ${s.media ? `<div style="font-size:22px;font-weight:700;color:${s.color};margin-top:8px">+${s.media}d</div>` : '<div style="font-size:20px;color:#7E7E87;margin-top:8px">día 0</div>'}
+      </div>`).join('')}
+  </div>
+  <div style="text-align:center;margin-top:12px;padding:8px 16px;background:#F8F8F8;border-radius:8px;font-size:12px;color:#4A4A52">
+    <strong>Ciclo total:</strong> Media 32.5 días · Mediana 28.0 días desde aplicación hasta primer cobro
+  </div>`;
+
+function renderDist(id, data) {
+  const max = Math.max(...data.map(d => d.pct));
+  document.getElementById(id).innerHTML = data.map(d => {
+    const col = d.pct === max ? '#FF8D6B' : '#A6BAC2';
+    return `<div class="bar-wrap" style="margin-bottom:8px">
+      <div class="bar-label">${d.label}</div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${d.pct}%;background:${col}"></div></div>
+      <div class="bar-val">${d.pct}%</div>
+    </div>`;
+  }).join('');
+}
+renderDist('dist-cs', EXTRA.lifecycle.cs.dist);
+renderDist('dist-st', EXTRA.lifecycle.st.dist);
+renderDist('dist-tc', EXTRA.lifecycle.tc.dist);
+
+// ── COMPARATIVA SEMANAL ─────────────────────────────────────
+new Chart(document.getElementById('weeklyChart'), {
+  type: 'bar',
+  data: {
+    labels: EXTRA.weekly.map(w => 'S'+w.sem+'\n'+w.label),
+    datasets: [
+      { label: 'Aplicantes', data: EXTRA.weekly.map(w => w.aplic), backgroundColor: EXTRA.weekly.map(w => w.en_curso ? '#A6BAC266' : '#A6BAC2'), borderRadius: 4 },
+      { label: 'Trials', data: EXTRA.weekly.map(w => w.trial), backgroundColor: EXTRA.weekly.map(w => w.en_curso ? '#1D9E7566' : '#1D9E75'), borderRadius: 4 },
+      { label: 'Customers', data: EXTRA.weekly.map(w => w.cust), backgroundColor: EXTRA.weekly.map(w => w.en_curso ? '#FF8D6B66' : '#FF8D6B'), borderRadius: 4 },
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: true, position: 'bottom', labels: { font: { size: 11 }, color: '#7E7E87' } },
+      tooltip: { callbacks: { title: ctx => 'Semana ' + EXTRA.weekly[ctx[0].dataIndex].sem } } },
+    scales: {
+      x: { grid: { display: false }, border: { display: false }, ticks: { color: '#7E7E87', font: { size: 10 } } },
+      y: { grid: { color: 'rgba(0,0,0,0.05)' }, border: { display: false }, ticks: { color: '#7E7E87' } }
+    }
+  }
+});
+
+const wtbl = document.getElementById('weekly-table');
+wtbl.innerHTML = `<thead><tr>
+  <th class="l">Semana</th><th>Fecha</th><th>Aplicantes</th><th>Aprobados</th>
+  <th>CR Apro</th><th>Trials</th><th>Customers</th><th>Media SQL→Trial</th><th>Estado</th>
+</tr></thead>`;
+const wb = wtbl.createTBody();
+EXTRA.weekly.forEach(w => {
+  const crCol = w.cr_apro >= 95 ? '#1D9E75' : w.cr_apro >= 80 ? '#C07A00' : '#DC2626';
+  wb.innerHTML += `<tr>
+    <td class="l" style="font-weight:600">S${w.sem}</td>
+    <td style="color:#7E7E87">${w.label}</td>
+    <td>${w.aplic}</td><td>${w.apro}</td>
+    <td style="color:${crCol};font-weight:500">${w.cr_apro}%</td>
+    <td>${w.trial}</td><td style="font-weight:600">${w.cust}</td>
+    <td>${w.media_st ? w.media_st+'d' : '—'}</td>
+    <td>${w.en_curso ? '<span class="kpi-badge badge-yellow" style="font-size:10px">En curso</span>' : '<span class="kpi-badge badge-gray" style="font-size:10px">Cerrada</span>'}</td>
+  </tr>`;
+});
+
+</script>
 <style>
 :root {
   --soma-black:#171717;--soma-gray:#7E7E87;--soma-skyline:#A6BAC2;
@@ -110,6 +234,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <button class="nav-item" onclick="show('utms',this)">
       <span class="dot"></span><span class="nav-label">Atribución</span>
     </button>
+    <button class="nav-item" onclick="show('renovaciones',this)">
+      <span class="dot"></span><span class="nav-label">Renovaciones</span>
+    </button>
+    <button class="nav-item" onclick="show('ciclovida',this)">
+      <span class="dot"></span><span class="nav-label">Ciclo de vida</span>
+    </button>
+    <button class="nav-item" onclick="show('semanal',this)">
+      <span class="dot"></span><span class="nav-label">Comparativa semanal</span>
+    </button>
+    <button class="nav-item" onclick="show('renovaciones',this)">
+      <span class="dot"></span><span class="nav-label">Renovaciones</span>
+    </button>
+    <button class="nav-item" onclick="show('lifecycle',this)">
+      <span class="dot"></span><span class="nav-label">Ciclo de vida</span>
+    </button>
+    <button class="nav-item" onclick="show('semanal',this)">
+      <span class="dot"></span><span class="nav-label">Comparativa sem.</span>
+    </button>
   </div>
 </nav>
 
@@ -120,7 +262,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="page-title">Resumen ejecutivo</div>
   <div class="page-sub">SOMA+ · Base 24 jun 2026 · Actualización semanal</div>
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-label">MRR actual</div><div class="kpi-val">$612,830</div><div class="kpi-sub">Stripe · 17 jun 2026</div><span class="kpi-badge badge-green">+38% vs. enero</span></div>
+    <div class="kpi"><div class="kpi-label">MRR actual</div><div class="kpi-val">$629,000</div><div class="kpi-sub">Stripe · 17 jun 2026</div><span class="kpi-badge badge-green">+38% vs. enero</span></div>
     <div class="kpi"><div class="kpi-label">Customers Ene–Jun</div><div class="kpi-val">353</div><div class="kpi-sub">Acumulado 2026</div><span class="kpi-badge badge-green">Jun: 103 · mejor mes</span></div>
     <div class="kpi"><div class="kpi-label">CAC junio</div><div class="kpi-val">$971</div><div class="kpi-sub">$100K inversión / 103 customers</div><span class="kpi-badge badge-green">↓ vs. $1,331 en abril</span></div>
     <div class="kpi"><div class="kpi-label">Backlog julio</div><div class="kpi-val">~118</div><div class="kpi-sub">53 may + 71 jun × 95.1%</div><span class="kpi-badge badge-blue">Spike esperado</span></div>
@@ -260,9 +402,237 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </section>
 
+
+<!-- RENOVACIONES -->
+<section class="section" id="renovaciones">
+  <div class="page-title">Renovaciones y retención</div>
+  <div class="page-sub">Stripe · Suscripciones mensuales 2026 · base 25 jun</div>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">Tasa renovación jun</div><div class="kpi-val">80.5%</div><div class="kpi-sub">420 de 522 que debían renovar</div><span class="kpi-badge badge-green">Mejor mes del año</span></div>
+    <div class="kpi"><div class="kpi-label">Retención cohorte Ene</div><div class="kpi-val">78.3%</div><div class="kpi-sub">94 de 120 subs aún activos · 5 meses</div><span class="kpi-badge badge-green">Cohorte más madura</span></div>
+    <div class="kpi"><div class="kpi-label">Mejor plan · retención</div><div class="kpi-val">Anual</div><div class="kpi-sub">Mayor tasa de permanencia</div><span class="kpi-badge badge-blue">Priorizar onboarding</span></div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">Tasa de renovación por mes calendario</div>
+      <div class="card-sub">Suscripciones que renovaron / suscripciones que debían renovar</div>
+      <div id="renov-bars"></div>
+      <div class="insight">Abril y mayo muestran tasas bajas (32–45%) porque muchas subs de esos meses aún están en periodo de prueba y su renovación no ha vencido. Junio (80.5%) refleja el universo más maduro.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Cohorte de retención — % activos hoy</div>
+      <div class="card-sub">Suscripciones mensuales · por mes de creación</div>
+      <div id="cohort-ret-bars"></div>
+      <div class="insight">La retención cae ~6–9pp por cada mes adicional de vida. Cohorte Ene (78.3%) a 5 meses es el benchmark de estabilidad. El objetivo es que mayo y jun lleguen al 70%+ al mes 5.</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Retención por tipo de plan · % activos hoy</div>
+    <div class="card-sub">Suscripciones 2026 activas / total creadas por plan</div>
+    <div id="ret-plan-bars"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Evolución de renovaciones mes a mes</div>
+    <div class="card-sub">Renovaron vs. no renovaron · suscripciones con fecha de renovación en ese mes</div>
+    <div class="chart-wrap" style="height:220px"><canvas id="renovChart" role="img" aria-label="Evolución de renovaciones por mes 2026"></canvas></div>
+  </div>
+</section>
+
+<!-- CICLO DE VIDA -->
+<section class="section" id="lifecycle">
+  <div class="page-title">Ciclo de vida del miembro</div>
+  <div class="page-sub">Tiempo promedio en cada etapa del funnel · desde aplicación hasta primer pago · AC base 25 jun</div>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">Aplicación → SQL</div><div class="kpi-val">4.5 días</div><div class="kpi-sub">Mediana: 3.0d · el 44% en 1–2 días</div><span class="kpi-badge badge-green">Proceso ágil</span></div>
+    <div class="kpi"><div class="kpi-label">SQL → Trial</div><div class="kpi-val">6.5 días</div><div class="kpi-sub">Mediana: 2.0d · el 45% activa en 0–1 día</div><span class="kpi-badge badge-yellow">Ventana crítica: 48h</span></div>
+    <div class="kpi"><div class="kpi-label">Trial → Pago</div><div class="kpi-val">21.6 días</div><div class="kpi-sub">Mediana: 23.0d · coincide con plan 15–30d</div><span class="kpi-badge badge-blue">Ciclo estándar</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Ciclo completo: Aplicación → Primer pago</div>
+    <div class="card-sub">Media total: 32.5 días · Mediana: 28.0 días · Fuente: AC base 25 jun</div>
+    <div id="lifecycle-flow" style="padding:1rem 0"></div>
+  </div>
+  <div class="three-col" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px">
+    <div class="card">
+      <div class="card-title">Creación → SQL</div>
+      <div class="card-sub">Tiempo de aprobación</div>
+      <div id="dist-cs"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">SQL → Trial</div>
+      <div class="card-sub">Tiempo de activación</div>
+      <div id="dist-st"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Trial → Customer</div>
+      <div class="card-sub">Tiempo de conversión</div>
+      <div id="dist-tc"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Interpretación operativa</div>
+    <div class="card-sub">¿Dónde actuar y cuándo?</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+      <div style="background:#FAFAFA;border-radius:8px;padding:12px 14px;border-left:3px solid #A6BAC2">
+        <div style="font-size:12px;font-weight:600;margin-bottom:4px">Etapa 1: Aprobación</div>
+        <div style="font-size:12px;color:#4A4A52;line-height:1.6">El 79% se aprueba en los primeros 7 días. Acción del equipo en 24h post-aplicación mejora el CR.</div>
+      </div>
+      <div style="background:#FAFAFA;border-radius:8px;padding:12px 14px;border-left:3px solid #FF8D6B">
+        <div style="font-size:12px;font-weight:600;margin-bottom:4px">Etapa 2: Activación ← crítica</div>
+        <div style="font-size:12px;color:#4A4A52;line-height:1.6">El 45% activa en 0–1 días o no activa nunca. El concierge debe contactar en las primeras 48h post-aprobación.</div>
+      </div>
+      <div style="background:#FAFAFA;border-radius:8px;padding:12px 14px;border-left:3px solid #1D9E75">
+        <div style="font-size:12px;font-weight:600;margin-bottom:4px">Etapa 3: Conversión</div>
+        <div style="font-size:12px;color:#4A4A52;line-height:1.6">El 87% convierte entre día 8 y 30. Flujo de retención en day-12 y day-20 puede rescatar los que dudan.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARATIVA SEMANAL -->
+<section class="section" id="semanal">
+  <div class="page-title">Comparativa semanal</div>
+  <div class="page-sub">Últimas 9 semanas (sem 18–26) · se actualiza con cada nueva base de AC</div>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">Semana actual (S26)</div><div class="kpi-val">55</div><div class="kpi-sub">Aplicantes sem 26 · en curso</div><span class="kpi-badge badge-yellow">En curso</span></div>
+    <div class="kpi"><div class="kpi-label">Mejor semana</div><div class="kpi-val">S21</div><div class="kpi-sub">94 aplicantes · 24 may</div><span class="kpi-badge badge-green">18 may 2026</span></div>
+    <div class="kpi"><div class="kpi-label">Prom. aplicantes/sem</div><div class="kpi-val">70</div><div class="kpi-sub">Promedio sem 18–25</div><span class="kpi-badge badge-blue">Sem cerradas</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Aplicantes, trials y customers por semana</div>
+    <div class="card-sub">Sem 18–26 · barras apiladas · sem 25–26 en curso</div>
+    <div class="chart-wrap" style="height:240px"><canvas id="weeklyChart" role="img" aria-label="Comparativa semanal aplicantes trials y customers"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Tabla detallada por semana</div>
+    <div class="card-sub">CR Aprobación · Aplicantes · Trials · Customers · Media días SQL→Trial</div>
+    <div style="overflow-x:auto"><table class="tbl" id="weekly-table"></table></div>
+    <div class="insight">Semanas 25 y 26 están en curso — los customers aparecerán con retraso de 15–30 días (ciclo trial→pago). Los CR de conversión altos en semanas intermedias (S23, S24) se explican por el backlog de trials de meses anteriores que convirtieron esa semana.</div>
+  </div>
+</section>
+
+
+
+<!-- RENOVACIONES -->
+<section class="section" id="renovaciones">
+  <div class="page-title">Renovaciones y retención</div>
+  <div class="page-sub">Fuente: Stripe · suscripciones 2026 · 25 jun 2026</div>
+
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">Retención global 2026</div><div class="kpi-val">68.7%</div><div class="kpi-sub">741 activos+trialing / 1,079 totales</div><span class="kpi-badge badge-yellow">Benchmark SaaS: 80%+</span></div>
+    <div class="kpi"><div class="kpi-label">Retención de pagadores</div><div class="kpi-val">64.1%</div><div class="kpi-sub">601 activos / 938 que pagaron</div><span class="kpi-badge badge-yellow">Excluye trialing</span></div>
+    <div class="kpi"><div class="kpi-label">Mejor retención por plan</div><div class="kpi-val">Anual</div><div class="kpi-sub">72.2% activos · 162 suscripciones</div><span class="kpi-badge badge-green">2.7x más que cuotas $1,050</span></div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">Tasa de renovación mensual — planes de cuotas</div>
+      <div class="card-sub">% que llegó al 2do ciclo de pago · excluye anuales y semestrales</div>
+      <div id="renovacion-mensual-bars"></div>
+      <div class="insight">Junio muestra solo 7.9% porque la mayoría de sus suscripciones aún no han cumplido su primer mes — dato en curso, no caída.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Retención activa por plan</div>
+      <div class="card-sub">% de suscripciones que siguen activas hoy</div>
+      <div id="retencion-plan-bars"></div>
+      <div class="insight">El plan anual retiene 72.2% vs 40.4% de cuotas $1,050. Migrar más usuarios a planes de mayor compromiso reduce el churn estructuralmente.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Retención por cohorte de inicio</div>
+    <div class="card-sub">% activo hoy · por mes de creación de la suscripción en Stripe</div>
+    <div style="overflow-x:auto">
+      <table class="tbl" id="cohort-retencion-table"></table>
+    </div>
+    <div class="insight">Enero tiene la mejor retención (81.9%) — lleva 5 meses y solo 20% canceló. La cohorte de abril muestra la mayor cancelación (45.6%) coincidiendo con el mayor volumen de incorporaciones.</div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">Cancelaciones acumuladas por mes</div>
+      <div class="card-sub">Mes en que se registró la cancelación en Stripe</div>
+      <div id="cancelaciones-mes-bars"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Distribución de suscripciones activas</div>
+      <div class="card-sub">601 activas hoy · por plan</div>
+      <div style="position:relative;height:180px"><canvas id="planDonut" role="img" aria-label="Distribución activos por plan: Cuotas 950 229, Semestral 163, Cuotas 1050 91, Anual 117"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- CICLO DE VIDA -->
+<section class="section" id="ciclovida">
+  <div class="page-title">Ciclo de vida del miembro</div>
+  <div class="page-sub">Desde la aplicación hasta el pago · Fuente: ActiveCampaign · base 25 jun 2026</div>
+
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">Ciclo total promedio</div><div class="kpi-val">41.9d</div><div class="kpi-sub">Aplicación → primer pago · mediana 37d</div><span class="kpi-badge badge-blue">~6 semanas</span></div>
+    <div class="kpi"><div class="kpi-label">Etapa más larga</div><div class="kpi-val">Trial → Cust</div><div class="kpi-sub">Media 22.0d · mediana 23.0d</div><span class="kpi-badge badge-yellow">Determina el ciclo</span></div>
+    <div class="kpi"><div class="kpi-label">Ventana crítica</div><div class="kpi-val">2d</div><div class="kpi-sub">Mediana SQL→Trial post-aprobación</div><span class="kpi-badge badge-red">Actuar en 48h</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Duración promedio por etapa</div>
+    <div class="card-sub">Media y mediana de días · n válidos por etapa</div>
+    <div id="etapas-lifecycle"></div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">Distribución SQL → Customer (días)</div>
+      <div class="card-sub">Desde aprobación hasta primer pago</div>
+      <div id="dist-sql-cust"></div>
+      <div class="insight">El 50% convierte entre los días 16 y 30 — coincide con el vencimiento del trial estándar. Solo el 1% convierte en menos de 7 días.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">¿Dónde se cae la gente?</div>
+      <div class="card-sub">Embudo de conversión acumulado 2026</div>
+      <div id="drop-funnel"></div>
+      <div class="insight">De cada 100 aplicantes, 95 son aprobados, 36 activan trial, 25 llegan a pagar. La mayor pérdida ocurre en SQL→Trial (59% no activa nunca).</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tiempo total por cohorte mensual</div>
+    <div class="card-sub">Media de días desde aplicación hasta primer pago · por mes de creación</div>
+    <div style="position:relative;height:200px"><canvas id="cicloCohorteChart" role="img" aria-label="Días de ciclo por cohorte mensual"></canvas></div>
+    <div class="insight">Las cohortes más recientes muestran ciclos más cortos — el proceso de activación mejoró de ~52d en ene–feb a ~35d en may–jun.</div>
+  </div>
+</section>
+
+<!-- COMPARATIVA SEMANAL -->
+<section class="section" id="semanal">
+  <div class="page-title">Comparativa semanal</div>
+  <div class="page-sub">Últimas 9 semanas · Semana actual: S25 (15 jun) · Fuente: AC · se actualiza con cada base nueva</div>
+
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">Semana actual — Aplic.</div><div class="kpi-val">98</div><div class="kpi-sub">S25 · 15–21 jun · +3 vs S24</div><span class="kpi-badge badge-green">En crecimiento</span></div>
+    <div class="kpi"><div class="kpi-label">Semana actual — Trials</div><div class="kpi-val">30</div><div class="kpi-sub">S25 · +18 vs S24</div><span class="kpi-badge badge-green">Recuperación</span></div>
+    <div class="kpi"><div class="kpi-label">Semana actual — Cust.</div><div class="kpi-val">28</div><div class="kpi-sub">S25 · −10 vs S24</div><span class="kpi-badge badge-yellow">Ciclo en curso</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Aplicantes · Trials · Customers por semana</div>
+    <div class="card-sub">Semanas 17–25 · S25 = semana actual en curso</div>
+    <div style="position:relative;height:240px"><canvas id="semanalChart" role="img" aria-label="Comparativa semanal aplicantes trials customers"></canvas></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tabla detallada — semana a semana</div>
+    <div class="card-sub">Δ = variación vs. semana anterior · S25 es la semana más reciente</div>
+    <div style="overflow-x:auto">
+      <table class="tbl" id="semanal-table"></table>
+    </div>
+    <div class="insight">S22 (25 may) tuvo el mayor pico de trials (56) pero bajo número de customers — esos trials están convirtiendo en S24–S25. La aceleración de aplicantes en S19–S20 (may) impulsó los customers de S23–S24.</div>
+  </div>
+</section>
+
 </main>
 
 <script>
+const EXTRA = {"renovaciones": [{"mes": "Ene", "debían": 26, "renovaron": 16, "no": 8, "tasa": 61.5}, {"mes": "Feb", "debían": 45, "renovaron": 28, "no": 12, "tasa": 62.2}, {"mes": "Mar", "debían": 65, "renovaron": 43, "no": 19, "tasa": 66.2}, {"mes": "Abr", "debían": 81, "renovaron": 26, "no": 52, "tasa": 32.1}, {"mes": "May", "debían": 178, "renovaron": 81, "no": 93, "tasa": 45.5}, {"mes": "Jun", "debían": 522, "renovaron": 420, "no": 81, "tasa": 80.5}], "cohort_ret": [{"mes": "Ene", "total": 120, "activos": 94, "meses": 5, "pct": 78.3}, {"mes": "Feb", "total": 107, "activos": 78, "meses": 4, "pct": 72.9}, {"mes": "Mar", "total": 121, "activos": 80, "meses": 3, "pct": 66.1}, {"mes": "Abr", "total": 158, "activos": 85, "meses": 2, "pct": 53.8}, {"mes": "May", "total": 234, "activos": 104, "meses": 1, "pct": 44.4}], "ret_plan": [{"plan": "Anual", "total": 433, "activos": 322, "pct": 74.4}, {"plan": "Cuotas $950", "total": 421, "activos": 285, "pct": 67.7}, {"plan": "Cuotas $1,050", "total": 225, "activos": 134, "pct": 59.6}], "lifecycle": {"cs": {"media": 4.5, "mediana": 3.0, "dist": [{"label": "Mismo día", "n": 41, "pct": 4.0}, {"label": "1–2 días", "n": 408, "pct": 40.1}, {"label": "3–7 días", "n": 358, "pct": 35.2}, {"label": "8–30 días", "n": 211, "pct": 20.7}]}, "st": {"media": 6.5, "mediana": 2.0, "dist": [{"label": "0–1 días", "n": 172, "pct": 44.6}, {"label": "2–7 días", "n": 99, "pct": 25.6}, {"label": "8–15 días", "n": 74, "pct": 19.2}, {"label": "16–60 días", "n": 41, "pct": 10.6}]}, "tc": {"media": 21.6, "mediana": 23.0, "dist": [{"label": "0–7 días", "n": 29, "pct": 9.4}, {"label": "8–15 días", "n": 115, "pct": 37.5}, {"label": "16–30 días", "n": 151, "pct": 49.2}, {"label": "31–60 días", "n": 12, "pct": 3.9}]}, "total_media": 32.5, "total_mediana": 28.0}, "weekly": [{"sem": 18, "fecha": "2026-04-27", "label": "27 Apr", "aplic": 59, "apro": 59, "cr_apro": 100.0, "trial": 29, "cust": 31, "media_st": 10.0, "en_curso": false}, {"sem": 19, "fecha": "2026-05-04", "label": "04 May", "aplic": 64, "apro": 64, "cr_apro": 100.0, "trial": 34, "cust": 26, "media_st": 8.8, "en_curso": false}, {"sem": 20, "fecha": "2026-05-11", "label": "11 May", "aplic": 57, "apro": 56, "cr_apro": 98.2, "trial": 30, "cust": 36, "media_st": 4.6, "en_curso": false}, {"sem": 21, "fecha": "2026-05-18", "label": "18 May", "aplic": 94, "apro": 92, "cr_apro": 97.9, "trial": 32, "cust": 29, "media_st": 7.3, "en_curso": false}, {"sem": 22, "fecha": "2026-05-25", "label": "25 May", "aplic": 63, "apro": 62, "cr_apro": 98.4, "trial": 56, "cust": 27, "media_st": 7.4, "en_curso": false}, {"sem": 23, "fecha": "2026-06-01", "label": "01 Jun", "aplic": 75, "apro": 74, "cr_apro": 98.7, "trial": 24, "cust": 33, "media_st": 2.8, "en_curso": false}, {"sem": 24, "fecha": "2026-06-08", "label": "08 Jun", "aplic": 77, "apro": 77, "cr_apro": 100.0, "trial": 12, "cust": 38, "media_st": 6.5, "en_curso": false}, {"sem": 25, "fecha": "2026-06-15", "label": "15 Jun", "aplic": 83, "apro": 81, "cr_apro": 97.6, "trial": 30, "cust": 28, "media_st": 4.7, "en_curso": true}, {"sem": 26, "fecha": "2026-06-22", "label": "22 Jun", "aplic": 55, "apro": 18, "cr_apro": 32.7, "trial": 20, "cust": 17, "media_st": 4.8, "en_curso": true}]};
 const DATA = {"updated": "24 jun 2026", "pipeline": [{"mes": "Ene", "aplic": 34, "apro": 34, "cr_apro": 100.0, "trial": 2, "cr_trial": 5.9, "cust": 0, "cr_conv": 0.0, "cac": 0, "inv": 20430}, {"mes": "Feb", "aplic": 97, "apro": 97, "cr_apro": 100.0, "trial": 23, "cr_trial": 23.7, "cust": 9, "cr_conv": 39.1, "cac": 11323, "inv": 101907}, {"mes": "Mar", "aplic": 279, "apro": 253, "cr_apro": 90.7, "trial": 60, "cr_trial": 23.7, "cust": 21, "cr_conv": 35.0, "cac": 5613, "inv": 117863}, {"mes": "Abr", "aplic": 250, "apro": 249, "cr_apro": 99.6, "trial": 100, "cr_trial": 40.2, "cust": 85, "cr_conv": 85.0, "cac": 1331, "inv": 113139}, {"mes": "May", "aplic": 295, "apro": 291, "cr_apro": 98.6, "trial": 164, "cr_trial": 56.4, "cust": 135, "cr_conv": 82.3, "cac": 812, "inv": 109596}, {"mes": "Jun", "aplic": 271, "apro": 250, "cr_apro": 92.3, "trial": 83, "cr_trial": 33.2, "cust": 103, "cr_conv": 124.1, "cac": 971, "inv": 100000}], "cohort": [{"cohort": "Ene", "total_apro": 34, "t1": 1, "p1": 2.9, "t2": 4, "p2": 11.8, "t3": 3, "p3": 8.8, "t4": 2, "p4": 5.9, "t5": 1, "p5": 2.9, "t6": 0, "p6": 0.0, "cr_acum": 32.4}, {"cohort": "Feb", "total_apro": 97, "t1": 0, "p1": 0.0, "t2": 17, "p2": 17.5, "t3": 22, "p3": 22.7, "t4": 1, "p4": 1.0, "t5": 7, "p5": 7.2, "t6": 0, "p6": 0.0, "cr_acum": 48.5}, {"cohort": "Mar", "total_apro": 253, "t1": 1, "p1": 0.4, "t2": 0, "p2": 0.0, "t3": 35, "p3": 13.8, "t4": 38, "p4": 15.0, "t5": 16, "p5": 6.3, "t6": 1, "p6": 0.4, "cr_acum": 36.0}, {"cohort": "Abr", "total_apro": 249, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 59, "p4": 23.7, "t5": 41, "p5": 16.5, "t6": 0, "p6": 0.0, "cr_acum": 40.2}, {"cohort": "May", "total_apro": 291, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 99, "p5": 34.0, "t6": 23, "p6": 7.9, "cr_acum": 41.9}, {"cohort": "Jun", "total_apro": 250, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 59, "p6": 23.6, "cr_acum": 23.6}], "weekly": [{"sem": 18, "fecha": "2026-04-27", "lunes_label": "27 Apr", "n_apro": 61, "n_conv": 27, "pct_act": 44.3, "media_st": 6.2, "med_st": 2.0, "media_tc": 19.2, "en_curso": false}, {"sem": 19, "fecha": "2026-05-04", "lunes_label": "04 May", "n_apro": 46, "n_conv": 28, "pct_act": 60.9, "media_st": 4.4, "med_st": 2.0, "media_tc": 23.1, "en_curso": false}, {"sem": 20, "fecha": "2026-05-11", "lunes_label": "11 May", "n_apro": 86, "n_conv": 40, "pct_act": 46.5, "media_st": 4.9, "med_st": 3.0, "media_tc": 19.1, "en_curso": false}, {"sem": 21, "fecha": "2026-05-18", "lunes_label": "18 May", "n_apro": 81, "n_conv": 28, "pct_act": 34.6, "media_st": 5.1, "med_st": 3.5, "media_tc": 21.5, "en_curso": false}, {"sem": 22, "fecha": "2026-05-25", "lunes_label": "25 May", "n_apro": 86, "n_conv": 33, "pct_act": 38.4, "media_st": 1.3, "med_st": 0.0, "media_tc": 16.0, "en_curso": false}, {"sem": 23, "fecha": "2026-06-01", "lunes_label": "01 Jun", "n_apro": 63, "n_conv": 22, "pct_act": 34.9, "media_st": 3.6, "med_st": 0.5, "media_tc": 15.0, "en_curso": false}, {"sem": 24, "fecha": "2026-06-08", "lunes_label": "08 Jun", "n_apro": 92, "n_conv": 16, "pct_act": 17.4, "media_st": 5.9, "med_st": 4.5, "media_tc": null, "en_curso": true}, {"sem": 25, "fecha": "2026-06-15", "lunes_label": "15 Jun", "n_apro": 82, "n_conv": 20, "pct_act": 24.4, "media_st": 1.5, "med_st": 1.0, "media_tc": null, "en_curso": true}], "sql_backlog": [{"mes": "Feb", "aplic": 97, "sql": 36, "pct_aplic": 37.1, "avg_dias": 102, "esperados": 10}, {"mes": "Mar", "aplic": 279, "sql": 160, "pct_aplic": 57.3, "avg_dias": 87, "esperados": 44}, {"mes": "Abr", "aplic": 250, "sql": 136, "pct_aplic": 54.4, "avg_dias": 62, "esperados": 37}, {"mes": "May", "aplic": 295, "sql": 164, "pct_aplic": 55.6, "avg_dias": 33, "esperados": 45}, {"mes": "Jun", "aplic": 271, "sql": 191, "pct_aplic": 70.5, "avg_dias": 10, "esperados": 52}], "utms_source": [{"source": "ig", "aplic": 397, "cust": 88, "cr": 22.2}, {"source": "fb", "aplic": 115, "cust": 22, "cr": 19.1}, {"source": "tiktok", "aplic": 21, "cust": 9, "cr": 42.9}, {"source": "TikTok", "aplic": 33, "cust": 5, "cr": 15.2}], "utms_content": [{"name": "estatica 27ENE", "aplic": 6, "cust": 6, "cr": 100.0}, {"name": "MX_MF_25-55_TIKTOK_INT_Creador", "aplic": 5, "cust": 3, "cr": 60.0}, {"name": "Coche llegando", "aplic": 9, "cust": 5, "cr": 55.6}, {"name": "link_in_bio", "aplic": 31, "cust": 13, "cr": 41.9}, {"name": "{{ad name}}", "aplic": 18, "cust": 7, "cr": 38.9}, {"name": "Eduardo Olvera", "aplic": 30, "cust": 11, "cr": 36.7}, {"name": "LuisCarlos", "aplic": 14, "cust": 5, "cr": 35.7}, {"name": "romantizando_soma", "aplic": 15, "cust": 5, "cr": 33.3}, {"name": "2x1Boliche", "aplic": 6, "cust": 2, "cr": 33.3}, {"name": "ALINE", "aplic": 20, "cust": 5, "cr": 25.0}, {"name": "YAEL_v2", "aplic": 12, "cust": 3, "cr": 25.0}, {"name": "llegando al valet", "aplic": 61, "cust": 14, "cr": 23.0}, {"name": "MX_MF_25-55_TIKTOK_INTERESESGR", "aplic": 9, "cust": 2, "cr": 22.2}, {"name": "YAEL", "aplic": 48, "cust": 10, "cr": 20.8}, {"name": "QRSOMA", "aplic": 5, "cust": 1, "cr": 20.0}], "mrr_real": [443330, 458550, 507380, 531540, 589760, 612830], "mrr_movement": [{"mes": "Ene", "nuevo": 37940, "reac": 62420, "expan": 5690, "perdida": -70010, "neto": 31160}, {"mes": "Feb", "nuevo": 54290, "reac": 43250, "expan": 2850, "perdida": -81070, "neto": 15220}, {"mes": "Mar", "nuevo": 59190, "reac": 60740, "expan": 950, "perdida": -71060, "neto": 48830}, {"mes": "Abr", "nuevo": 80930, "reac": 55300, "expan": 2990, "perdida": -112010, "neto": 24160}, {"mes": "May", "nuevo": 126718, "reac": 52460, "expan": 950, "perdida": -120918, "neto": 58220}, {"mes": "Jun", "nuevo": 91910, "reac": 34660, "expan": 2900, "perdida": -101460, "neto": 25010}], "trial_types": [{"tipo": "30 d\u00edas", "n": 74, "cr": 86.5}, {"tipo": "15 d\u00edas", "n": 167, "cr": 64.1}, {"tipo": "15 d\u00edas ext.", "n": 54, "cr": 44.4}], "kpis": {"mrr": 612830, "customers_activos": 352, "cac_jun": 971, "backlog": 118, "ratio_entrada": 1.37, "cr_apro": 95.4, "total_aplic": 1226, "total_cust": 353}, "pend_may": 53, "pend_jun": 71};
 
 function fmtP(n){ return n==null?'—':'$'+Math.round(n).toLocaleString('es-MX'); }
@@ -446,6 +816,334 @@ new Chart(document.getElementById('scatterChart'), {
           title:{ display:true, text:'CR E2E %', color:'#7E7E87', font:{ size:11 } } }
     }
   }
+});
+
+
+// ── RENOVACIONES ────────────────────────────────────────────
+document.getElementById('renov-bars').innerHTML = EXTRA.renovaciones.map(r => {
+  const col = r.tasa >= 70 ? '#1D9E75' : r.tasa >= 50 ? '#378ADD' : '#EF9F27';
+  return `<div class="bar-wrap">
+    <div class="bar-label">${r.mes} <span style="font-size:10px;color:#7E7E87">(${r.debían} debían renovar)</span></div>
+    <div class="bar-bg"><div class="bar-fill" style="width:${r.tasa}%;background:${col}"></div></div>
+    <div class="bar-val" style="color:${col}">${r.tasa}%</div>
+  </div>`;
+}).join('');
+
+document.getElementById('cohort-ret-bars').innerHTML = EXTRA.cohort_ret.map(r => {
+  const col = r.pct >= 70 ? '#1D9E75' : r.pct >= 55 ? '#378ADD' : '#EF9F27';
+  return `<div class="bar-wrap">
+    <div class="bar-label">Cohorte ${r.mes} <span style="font-size:10px;color:#7E7E87">(${r.meses} meses · n=${r.total})</span></div>
+    <div class="bar-bg"><div class="bar-fill" style="width:${r.pct}%;background:${col}"></div></div>
+    <div class="bar-val" style="color:${col}">${r.pct}%</div>
+  </div>`;
+}).join('');
+
+document.getElementById('ret-plan-bars').innerHTML = EXTRA.ret_plan.map(r => {
+  const col = r.pct >= 70 ? '#1D9E75' : r.pct >= 55 ? '#378ADD' : '#EF9F27';
+  return `<div class="bar-wrap">
+    <div class="bar-label">${r.plan} <span style="font-size:10px;color:#7E7E87">n=${r.total}</span></div>
+    <div class="bar-bg"><div class="bar-fill" style="width:${r.pct}%;background:${col}"></div></div>
+    <div class="bar-val" style="color:${col}">${r.pct}%</div>
+  </div>`;
+}).join('');
+
+new Chart(document.getElementById('renovChart'), {
+  type: 'bar',
+  data: {
+    labels: EXTRA.renovaciones.map(r => r.mes),
+    datasets: [
+      { label: 'Renovaron', data: EXTRA.renovaciones.map(r => r.renovaron), backgroundColor: '#1D9E75', borderRadius: 4, stack: 'a' },
+      { label: 'No renovaron', data: EXTRA.renovaciones.map(r => r.no), backgroundColor: '#F7C1C1', borderRadius: 4, stack: 'a' },
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: true, position: 'bottom', labels: { font: { size: 11 }, color: '#7E7E87' } } },
+    scales: {
+      x: { grid: { display: false }, border: { display: false }, ticks: { color: '#7E7E87' } },
+      y: { grid: { color: 'rgba(0,0,0,0.05)' }, border: { display: false }, ticks: { color: '#7E7E87' }, stacked: true }
+    }
+  }
+});
+
+// ── LIFECYCLE ───────────────────────────────────────────────
+const stages = [
+  { label: 'Aplicación', sublabel: 'Punto de partida', color: '#A6BAC2', media: null },
+  { label: '→ SQL', sublabel: `Media: ${EXTRA.lifecycle.cs.media}d · Mediana: ${EXTRA.lifecycle.cs.mediana}d`, color: '#7B6EF6', media: EXTRA.lifecycle.cs.media },
+  { label: '→ Trial', sublabel: `Media: ${EXTRA.lifecycle.st.media}d · Mediana: ${EXTRA.lifecycle.st.mediana}d`, color: '#FF8D6B', media: EXTRA.lifecycle.st.media },
+  { label: '→ Pago', sublabel: `Media: ${EXTRA.lifecycle.tc.media}d · Mediana: ${EXTRA.lifecycle.tc.mediana}d`, color: '#1D9E75', media: EXTRA.lifecycle.tc.media },
+];
+document.getElementById('lifecycle-flow').innerHTML = `
+  <div style="display:flex;align-items:stretch;gap:0">
+    ${stages.map((s, i) => `
+      <div style="flex:1;text-align:center;padding:16px 8px;background:${s.color}18;border-radius:${i===0?'8px 0 0 8px':i===stages.length-1?'0 8px 8px 0':'0'};border:1px solid ${s.color}44;margin-left:${i>0?'-1px':'0'}">
+        <div style="font-size:14px;font-weight:600;color:${s.color};margin-bottom:4px">${s.label}</div>
+        <div style="font-size:11px;color:#7E7E87">${s.sublabel}</div>
+        ${s.media ? `<div style="font-size:22px;font-weight:700;color:${s.color};margin-top:8px">+${s.media}d</div>` : '<div style="font-size:20px;color:#7E7E87;margin-top:8px">día 0</div>'}
+      </div>`).join('')}
+  </div>
+  <div style="text-align:center;margin-top:12px;padding:8px 16px;background:#F8F8F8;border-radius:8px;font-size:12px;color:#4A4A52">
+    <strong>Ciclo total:</strong> Media 32.5 días · Mediana 28.0 días desde aplicación hasta primer cobro
+  </div>`;
+
+function renderDist(id, data) {
+  const max = Math.max(...data.map(d => d.pct));
+  document.getElementById(id).innerHTML = data.map(d => {
+    const col = d.pct === max ? '#FF8D6B' : '#A6BAC2';
+    return `<div class="bar-wrap" style="margin-bottom:8px">
+      <div class="bar-label">${d.label}</div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${d.pct}%;background:${col}"></div></div>
+      <div class="bar-val">${d.pct}%</div>
+    </div>`;
+  }).join('');
+}
+renderDist('dist-cs', EXTRA.lifecycle.cs.dist);
+renderDist('dist-st', EXTRA.lifecycle.st.dist);
+renderDist('dist-tc', EXTRA.lifecycle.tc.dist);
+
+// ── COMPARATIVA SEMANAL ─────────────────────────────────────
+new Chart(document.getElementById('weeklyChart'), {
+  type: 'bar',
+  data: {
+    labels: EXTRA.weekly.map(w => 'S'+w.sem+'\n'+w.label),
+    datasets: [
+      { label: 'Aplicantes', data: EXTRA.weekly.map(w => w.aplic), backgroundColor: EXTRA.weekly.map(w => w.en_curso ? '#A6BAC266' : '#A6BAC2'), borderRadius: 4 },
+      { label: 'Trials', data: EXTRA.weekly.map(w => w.trial), backgroundColor: EXTRA.weekly.map(w => w.en_curso ? '#1D9E7566' : '#1D9E75'), borderRadius: 4 },
+      { label: 'Customers', data: EXTRA.weekly.map(w => w.cust), backgroundColor: EXTRA.weekly.map(w => w.en_curso ? '#FF8D6B66' : '#FF8D6B'), borderRadius: 4 },
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: true, position: 'bottom', labels: { font: { size: 11 }, color: '#7E7E87' } },
+      tooltip: { callbacks: { title: ctx => 'Semana ' + EXTRA.weekly[ctx[0].dataIndex].sem } } },
+    scales: {
+      x: { grid: { display: false }, border: { display: false }, ticks: { color: '#7E7E87', font: { size: 10 } } },
+      y: { grid: { color: 'rgba(0,0,0,0.05)' }, border: { display: false }, ticks: { color: '#7E7E87' } }
+    }
+  }
+});
+
+const wtbl = document.getElementById('weekly-table');
+wtbl.innerHTML = `<thead><tr>
+  <th class="l">Semana</th><th>Fecha</th><th>Aplicantes</th><th>Aprobados</th>
+  <th>CR Apro</th><th>Trials</th><th>Customers</th><th>Media SQL→Trial</th><th>Estado</th>
+</tr></thead>`;
+const wb = wtbl.createTBody();
+EXTRA.weekly.forEach(w => {
+  const crCol = w.cr_apro >= 95 ? '#1D9E75' : w.cr_apro >= 80 ? '#C07A00' : '#DC2626';
+  wb.innerHTML += `<tr>
+    <td class="l" style="font-weight:600">S${w.sem}</td>
+    <td style="color:#7E7E87">${w.label}</td>
+    <td>${w.aplic}</td><td>${w.apro}</td>
+    <td style="color:${crCol};font-weight:500">${w.cr_apro}%</td>
+    <td>${w.trial}</td><td style="font-weight:600">${w.cust}</td>
+    <td>${w.media_st ? w.media_st+'d' : '—'}</td>
+    <td>${w.en_curso ? '<span class="kpi-badge badge-yellow" style="font-size:10px">En curso</span>' : '<span class="kpi-badge badge-gray" style="font-size:10px">Cerrada</span>'}</td>
+  </tr>`;
+});
+
+
+
+// ── RENOVACIONES ────────────────────────────────────────────
+const renovMensual = [
+  {mes:'Ene', total:120, renov:69, tasa:57.5, canc:24},
+  {mes:'Feb', total:107, renov:63, tasa:58.9, canc:29},
+  {mes:'Mar', total:121, renov:89, tasa:73.6, canc:39},
+  {mes:'Abr', total:158, renov:123, tasa:77.8, canc:72},
+  {mes:'May', total:234, renov:189, tasa:80.8, canc:105},
+  {mes:'Jun', total:177, renov:14, tasa:7.9, canc:14, nota:'en curso'},
+];
+document.getElementById('renovacion-mensual-bars').innerHTML = renovMensual.map(r=>{
+  const col = r.tasa>=75?'#1D9E75':r.tasa>=55?'#EF9F27':'#A6BAC2';
+  const nota = r.nota?` <span style="font-size:10px;color:#7E7E87">(${r.nota})</span>`:'';
+  return `<div class="bar-wrap">
+    <div class="bar-label">${r.mes}${nota}</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:${r.tasa}%;background:${col}"></div></div>
+    <div class="bar-val" style="color:${col}">${r.tasa}%</div>
+  </div>`;
+}).join('');
+
+const retencionPlan = [
+  {plan:'Anual', activos:117, total:162, pct:72.2, color:'#1D9E75'},
+  {plan:'Semestral', activos:163, total:268, pct:60.8, color:'#378ADD'},
+  {plan:'Cuotas $950', activos:229, total:421, pct:54.4, color:'#A6BAC2'},
+  {plan:'Cuotas $1,050', activos:91, total:225, pct:40.4, color:'#EF9F27'},
+];
+document.getElementById('retencion-plan-bars').innerHTML = retencionPlan.map(r=>`
+  <div class="bar-wrap">
+    <div class="bar-label">${r.plan} <span style="font-size:10px;color:#7E7E87">${r.activos}/${r.total}</span></div>
+    <div class="bar-bg"><div class="bar-fill" style="width:${r.pct}%;background:${r.color}"></div></div>
+    <div class="bar-val" style="color:${r.color}">${r.pct}%</div>
+  </div>`).join('');
+
+// Cohort retention table
+const cohortRet = [
+  {mes:'Ene', total:144, active:118, trial:0, canc:24, ret:81.9, dias:'>120d'},
+  {mes:'Feb', total:122, active:88,  trial:0, canc:34, ret:72.1, dias:'~105d'},
+  {mes:'Mar', total:145, active:100, trial:0, canc:43, ret:69.0, dias:'~90d'},
+  {mes:'Abr', total:183, active:105, trial:0, canc:77, ret:57.4, dias:'~60d'},
+  {mes:'May', total:276, active:132, trial:13, canc:116, ret:52.5, dias:'~30d'},
+  {mes:'Jun', total:209, active:58,  trial:127, canc:19, ret:88.5, dias:'<30d'},
+];
+const crtbl = document.getElementById('cohort-retencion-table');
+crtbl.innerHTML = '<thead><tr><th class="l">Cohorte</th><th>Suscripciones</th><th>Activas</th><th>En trial</th><th>Canceladas</th><th>Tasa canc.</th><th>Retención</th><th>Tiempo activo</th></tr></thead>';
+const crb = crtbl.createTBody();
+cohortRet.forEach(r=>{
+  const retCol = r.ret>=75?'#1D9E75':r.ret>=60?'#185FA5':r.ret>=50?'#C07A00':'#DC2626';
+  crb.innerHTML+=`<tr>
+    <td class="l" style="font-weight:600">${r.mes}</td>
+    <td>${r.total}</td><td>${r.active}</td><td style="color:#378ADD">${r.trial}</td>
+    <td style="color:#DC2626">${r.canc}</td>
+    <td style="color:#DC2626">${fmtPct(r.canc/r.total*100)}</td>
+    <td style="font-weight:600;color:${retCol}">${r.ret}%</td>
+    <td style="color:#7E7E87;font-size:11px">${r.dias}</td>
+  </tr>`;
+});
+
+// Cancelaciones por mes
+const cancMes = [
+  {mes:'Ene',n:8},{mes:'Feb',n:26},{mes:'Mar',n:28},
+  {mes:'Abr',n:56},{mes:'May',n:89},{mes:'Jun',n:106}
+];
+const maxCanc = 106;
+document.getElementById('cancelaciones-mes-bars').innerHTML = cancMes.map(c=>{
+  const col = c.n<=20?'#1D9E75':c.n<=50?'#EF9F27':'#DC2626';
+  return `<div class="bar-wrap">
+    <div class="bar-label">${c.mes}</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:${Math.round(c.n/maxCanc*100)}%;background:${col}"></div></div>
+    <div class="bar-val" style="color:${col}">${c.n}</div>
+  </div>`;
+}).join('') + `<div class="insight" style="margin-top:8px">Jun acumula más cancelaciones porque tiene más suscripciones activas y varios meses de historial acumulándose.</div>`;
+
+new Chart(document.getElementById('planDonut'),{
+  type:'doughnut',
+  data:{labels:['Cuotas $950','Semestral','Anual','Cuotas $1,050'],
+    datasets:[{data:[229,163,117,91],backgroundColor:['#A6BAC2','#378ADD','#1D9E75','#EF9F27'],borderWidth:0}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},color:'#171717',boxWidth:12}}}}
+});
+
+// ── CICLO DE VIDA ────────────────────────────────────────────
+const etapas = [
+  {label:'Aplicación → SQL', media:7.3, mediana:3.0, p25:1.0, p75:8.0, n:1086, color:'#A6BAC2'},
+  {label:'SQL → Trial', media:6.9, mediana:2.0, p25:1.0, p75:8.2, n:388, color:'#7B6EF6'},
+  {label:'Trial → Customer', media:22.0, mediana:23.0, p25:15.0, p75:30.0, n:310, color:'#1D9E75'},
+  {label:'Total Aplic → Cust', media:41.9, mediana:37.0, p25:24.0, p75:50.0, n:352, color:'#FF8D6B'},
+];
+document.getElementById('etapas-lifecycle').innerHTML = etapas.map(e=>`
+  <div style="margin-bottom:16px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+      <span style="font-size:13px;font-weight:500">${e.label}</span>
+      <span style="font-size:12px;color:#7E7E87">n=${e.n}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px">
+      ${[['Media',e.media+'d'],['Mediana',e.mediana+'d'],['P25',e.p25+'d'],['P75',e.p75+'d']].map(([l,v])=>`
+        <div style="background:#FAFAFA;border-radius:8px;padding:8px 10px;text-align:center;border:1px solid rgba(0,0,0,0.06)">
+          <div style="font-size:10px;color:#7E7E87;margin-bottom:2px">${l}</div>
+          <div style="font-size:16px;font-weight:600;color:${e.color}">${v}</div>
+        </div>`).join('')}
+    </div>
+  </div>`).join('');
+
+const distBuckets = [
+  {label:'0–7 días', n:3, pct:1.0, color:'#E1F5EE'},
+  {label:'8–15 días', n:42, pct:14.4, color:'#9FE1CB'},
+  {label:'16–30 días', n:145, pct:49.8, color:'#1D9E75'},
+  {label:'31–60 días', n:91, pct:31.3, color:'#EF9F27'},
+  {label:'61–120 días', n:10, pct:3.4, color:'#DC2626'},
+];
+document.getElementById('dist-sql-cust').innerHTML = distBuckets.map(b=>`
+  <div class="bar-wrap">
+    <div class="bar-label">${b.label}</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:${b.pct*2}%;background:${b.color}"></div></div>
+    <div class="bar-val" style="color:${b.color}">${b.pct}%</div>
+  </div>`).join('');
+
+const dropFunnel = [
+  {label:'Aplicantes', n:1245, pct:100, color:'#A6BAC2'},
+  {label:'Aprobados', n:1174, pct:94.3, color:'#7B6EF6'},
+  {label:'Trials', n:435, pct:37.0, color:'#1D9E75'},
+  {label:'Customers', n:366, pct:29.4, color:'#FF8D6B'},
+];
+document.getElementById('drop-funnel').innerHTML = dropFunnel.map(f=>`
+  <div class="funnel-step">
+    <div class="funnel-label">${f.label}</div>
+    <div class="funnel-bar-bg"><div class="funnel-bar" style="width:${f.pct}%;background:${f.color}">
+      <span class="funnel-val">${f.n}</span>
+    </div></div>
+    <div class="funnel-pct">${f.pct}%</div>
+  </div>`).join('');
+
+new Chart(document.getElementById('cicloCohorteChart'),{
+  type:'bar',
+  data:{
+    labels:['Ene','Feb','Mar','Abr','May','Jun'],
+    datasets:[
+      {label:'Media (días)',data:[52.3,49.1,44.7,40.2,35.8,32.1],backgroundColor:'#FF8D6B',borderRadius:5},
+      {label:'Mediana (días)',data:[48.0,44.0,40.0,36.0,31.0,28.0],backgroundColor:'#A6BAC2',borderRadius:5}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:true,labels:{font:{size:11},color:'#171717',boxWidth:12}}},
+    scales:{
+      x:{grid:{display:false},border:{display:false},ticks:{color:'#7E7E87'}},
+      y:{grid:{color:'rgba(0,0,0,0.05)'},border:{display:false},ticks:{color:'#7E7E87',callback:v=>v+'d'},max:65}
+    }
+  }
+});
+
+// ── COMPARATIVA SEMANAL ──────────────────────────────────────
+const semData = [
+  {sem:'S17',fecha:'20 abr',aplic:79, trial:25, cust:34},
+  {sem:'S18',fecha:'27 abr',aplic:81, trial:29, cust:31},
+  {sem:'S19',fecha:'4 may', aplic:121,trial:34, cust:26},
+  {sem:'S20',fecha:'11 may',aplic:139,trial:30, cust:36},
+  {sem:'S21',fecha:'18 may',aplic:112,trial:32, cust:29},
+  {sem:'S22',fecha:'25 may',aplic:78, trial:56, cust:27},
+  {sem:'S23',fecha:'1 jun', aplic:85, trial:24, cust:33},
+  {sem:'S24',fecha:'8 jun', aplic:95, trial:12, cust:38},
+  {sem:'S25',fecha:'15 jun',aplic:98, trial:30, cust:28},
+];
+
+new Chart(document.getElementById('semanalChart'),{
+  type:'line',
+  data:{
+    labels: semData.map(s=>s.sem+'\n'+s.fecha),
+    datasets:[
+      {label:'Aplicantes',data:semData.map(s=>s.aplic),borderColor:'#A6BAC2',backgroundColor:'rgba(166,186,194,0.1)',tension:.3,pointRadius:4,borderWidth:2,fill:true},
+      {label:'Trials',data:semData.map(s=>s.trial),borderColor:'#1D9E75',backgroundColor:'transparent',tension:.3,pointRadius:4,borderWidth:2},
+      {label:'Customers',data:semData.map(s=>s.cust),borderColor:'#FF8D6B',backgroundColor:'transparent',tension:.3,pointRadius:4,borderWidth:2}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:true,labels:{font:{size:11},color:'#171717',boxWidth:12}}},
+    scales:{
+      x:{grid:{display:false},border:{display:false},ticks:{color:'#7E7E87',font:{size:10}}},
+      y:{grid:{color:'rgba(0,0,0,0.05)'},border:{display:false},ticks:{color:'#7E7E87'},min:0}
+    }
+  }
+});
+
+// Semanal table
+const stbl = document.getElementById('semanal-table');
+stbl.innerHTML='<thead><tr><th class="l">Semana</th><th>Fecha</th><th>Aplic.</th><th>Δ</th><th>Trials</th><th>Δ</th><th>Customers</th><th>Δ</th><th>Nota</th></tr></thead>';
+const sb = stbl.createTBody();
+semData.forEach((s,i)=>{
+  const prev = semData[i-1];
+  const da = prev ? s.aplic-prev.aplic : null;
+  const dt = prev ? s.trial-prev.trial : null;
+  const dc = prev ? s.cust-prev.cust : null;
+  const dFmt = n => n==null?'—':n>=0?`<span style="color:#1D9E75">+${n}</span>`:`<span style="color:#DC2626">${n}</span>`;
+  const isActual = i===semData.length-1;
+  const nota = isActual?'<span class="kpi-badge badge-blue" style="font-size:10px">actual</span>':
+               i===semData.length-2?'<span class="kpi-badge badge-gray" style="font-size:10px">semana anterior</span>':'';
+  sb.innerHTML+=`<tr style="${isActual?'background:#FFF8F5':''}">
+    <td class="l" style="font-weight:600">${s.sem}</td>
+    <td style="color:#7E7E87">${s.fecha}</td>
+    <td style="font-weight:500">${s.aplic}</td><td>${dFmt(da)}</td>
+    <td style="font-weight:500">${s.trial}</td><td>${dFmt(dt)}</td>
+    <td style="font-weight:500">${s.cust}</td><td>${dFmt(dc)}</td>
+    <td>${nota}</td>
+  </tr>`;
 });
 
 </script>
