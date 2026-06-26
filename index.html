@@ -262,7 +262,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="page-title">Resumen ejecutivo</div>
   <div class="page-sub">SOMA+ · Base 24 jun 2026 · Actualización semanal</div>
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-label">MRR actual</div><div class="kpi-val">$629,000</div><div class="kpi-sub">Stripe · 17 jun 2026</div><span class="kpi-badge badge-green">+38% vs. enero</span></div>
+    <div class="kpi"><div class="kpi-label">MRR actual</div><div class="kpi-val">$629,030</div><div class="kpi-sub">Stripe MRR movement · 26 jun 2026</div><span class="kpi-badge badge-green">+42% vs. enero</span></div>
     <div class="kpi"><div class="kpi-label">Customers Ene–Jun</div><div class="kpi-val">353</div><div class="kpi-sub">Acumulado 2026</div><span class="kpi-badge badge-green">Jun: 103 · mejor mes</span></div>
     <div class="kpi"><div class="kpi-label">CAC junio</div><div class="kpi-val">$971</div><div class="kpi-sub">$100K inversión / 103 customers</div><span class="kpi-badge badge-green">↓ vs. $1,331 en abril</span></div>
     <div class="kpi"><div class="kpi-label">Backlog julio</div><div class="kpi-val">~118</div><div class="kpi-sub">53 may + 71 jun × 95.1%</div><span class="kpi-badge badge-blue">Spike esperado</span></div>
@@ -320,11 +320,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- MRR -->
 <section class="section" id="mrr">
   <div class="page-title">MRR y retención</div>
-  <div class="page-sub">Datos Stripe · Ene–Jun 2026</div>
+  <div class="page-sub">Datos Stripe · Ene–Jun 2026 · CSV 26 jun 2026</div>
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-label">MRR neto promedio / mes</div><div class="kpi-val">+$33,767</div><div class="kpi-sub">Promedio real Ene–Jun</div><span class="kpi-badge badge-green">MRR creciendo</span></div>
-    <div class="kpi"><div class="kpi-label">Reactivación promedio</div><div class="kpi-val">$51,472</div><div class="kpi-sub">55% de lo que compensa la pérdida</div><span class="kpi-badge badge-yellow">Componente crítico</span></div>
-    <div class="kpi"><div class="kpi-label">Churn MRR</div><div class="kpi-val">19.2%</div><div class="kpi-sub">Pérdida / MRR mes anterior · Stripe</div><span class="kpi-badge badge-yellow">Objetivo: &lt;15%</span></div>
+    <div class="kpi"><div class="kpi-label">MRR neto promedio / mes</div><div class="kpi-val">+$36,143</div><div class="kpi-sub">Promedio real Ene–Jun · base 26 jun</div><span class="kpi-badge badge-green">MRR creciendo</span></div>
+    <div class="kpi"><div class="kpi-label">Reactivación promedio</div><div class="kpi-val">$55,625</div><div class="kpi-sub">54% de lo que compensa la pérdida</div><span class="kpi-badge badge-yellow">Componente crítico</span></div>
+    <div class="kpi"><div class="kpi-label">Churn MRR</div><div class="kpi-val">20.3%</div><div class="kpi-sub">Prom Ene–Jun · Jun: 28.6% (spike)</div><span class="kpi-badge badge-red">Jun: alerta ↑</span></div>
   </div>
   <div class="card">
     <div class="card-title">Desglose MRR Movement mensual</div>
@@ -334,7 +334,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="two-col">
     <div class="card">
       <div class="card-title">MRR real + proyección diciembre</div>
-      <div class="card-sub">Conservador +$27K/mes · Base +$33.7K/mes</div>
+      <div class="card-sub">Conservador +$27K/mes · Base +$36.1K/mes (prom Ene–Jun actualizado)</div>
       <div class="chart-wrap" style="height:200px"><canvas id="mrrProy" role="img" aria-label="MRR real y proyectado. Dic conservador 775K, base 815K"></canvas></div>
     </div>
     <div class="card">
@@ -653,7 +653,7 @@ new Chart(document.getElementById('mrrResumenChart'),{
   data:{
     labels:['Ene','Feb','Mar','Abr','May','Jun'],
     datasets:[{
-      data:DATA.mrr_real,
+      data:[443330,458550,507380,531540,589760,629030],
       backgroundColor:DATA.mrr_real.map((_,i)=>i===5?'#FF8D6B':'#A6BAC2'),
       borderRadius:6,borderSkipped:false
     }]
@@ -672,7 +672,7 @@ const sems=[
   {label:'MRR creciendo',val:'Neto +$33,767/mes promedio',estado:'green'},
   {label:'Ratio entrada/pérdida',val:'1.37x (objetivo: >1.0x)',estado:'green'},
   {label:'CAC junio',val:'$971 — tendencia a la baja',estado:'green'},
-  {label:'Churn MRR',val:'19.2% (objetivo: <15%)',estado:'yellow'},
+  {label:'Churn MRR',val:'Prom 20.3% · Jun 28.6% — alerta',estado:'red'},
   {label:'Reactivaciones junio',val:'$34,660 — bajó vs. mayo',estado:'yellow'},
   {label:'Cobertura UTM',val:'38.7% (objetivo: >70%)',estado:'red'},
 ];
@@ -737,23 +737,56 @@ new Chart(document.getElementById('tiemposChart'),{
 
 // ── MRR ────────────────────────────────────
 const mmtbl=document.getElementById('mrr-movement-table');
-mmtbl.innerHTML='<thead><tr><th class="l">Mes</th><th>MRR inicio</th><th>+ Nuevo</th><th>+ Reactivación</th><th>+ Expansión</th><th>− Pérdida</th><th>Neto</th><th>MRR cierre</th></tr></thead>';
+// MRR Movement — datos CSV 26 jun 2026
+const MRR_MOV = [
+  {mes:'Ene',inicio:412170, nuevo:37940,  reac:62420, expan:5690, perdida:70010,  contrac:4880, neto:31160,  cierre:443330},
+  {mes:'Feb',inicio:443330, nuevo:54290,  reac:43250, expan:2850, perdida:81070,  contrac:4100, neto:15220,  cierre:458550},
+  {mes:'Mar',inicio:458550, nuevo:59190,  reac:60740, expan:950,  perdida:71060,  contrac:990,  neto:48830,  cierre:507380},
+  {mes:'Abr',inicio:507380, nuevo:80930,  reac:55300, expan:2990, perdida:112010, contrac:3050, neto:24160,  cierre:531540},
+  {mes:'May',inicio:531540, nuevo:126718, reac:52460, expan:950,  perdida:120918, contrac:990,  neto:58220,  cierre:589760},
+  {mes:'Jun',inicio:589760, nuevo:148600, reac:59580, expan:3800, perdida:168810, contrac:3900, neto:39270,  cierre:629030},
+];
+mmtbl.innerHTML='<thead><tr><th class="l">Mes</th><th>MRR inicio</th><th style="color:#1D9E75">+ Nuevo</th><th style="color:#378ADD">+ Reactivación</th><th style="color:#C07A00">+ Expansión</th><th style="color:#DC2626">− Pérdida</th><th style="color:#EF9F27">− Contrac.</th><th>Neto</th><th>MRR cierre</th></tr></thead>';
 const mmb=mmtbl.createTBody();
-let mc=412170;
-DATA.mrr_movement.forEach((r,i)=>{
-  const cl=DATA.mrr_real[i];const nc=r.neto>0?'#1D9E75':'#DC2626';
-  mmb.innerHTML+=`<tr><td class="l" style="font-weight:600">${r.mes}</td><td style="color:#7E7E87">${fmtP(mc)}</td><td style="color:#1D9E75">+${fmtN(r.nuevo)}</td><td style="color:#378ADD">+${fmtN(r.reac)}</td><td style="color:#C07A00">+${fmtN(r.expan)}</td><td style="color:#DC2626">${fmtN(r.perdida)}</td><td style="font-weight:600;color:${nc}">+${fmtN(r.neto)}</td><td style="font-weight:600">${fmtP(cl)}</td></tr>`;
-  mc=cl;
+MRR_MOV.forEach(r=>{
+  const nc=r.neto>=0?'#1D9E75':'#DC2626';
+  mmb.innerHTML+=`<tr>
+    <td class="l" style="font-weight:600">${r.mes}</td>
+    <td style="color:#7E7E87">${fmtP(r.inicio)}</td>
+    <td style="color:#1D9E75">+${fmtP(r.nuevo)}</td>
+    <td style="color:#378ADD">+${fmtP(r.reac)}</td>
+    <td style="color:#C07A00">+${fmtP(r.expan)}</td>
+    <td style="color:#DC2626">-${fmtP(r.perdida)}</td>
+    <td style="color:#EF9F27">-${fmtP(r.contrac)}</td>
+    <td style="font-weight:600;color:${nc}">${r.neto>=0?'+':''}${fmtP(r.neto)}</td>
+    <td style="font-weight:600">${fmtP(r.cierre)}</td>
+  </tr>`;
 });
+const tN6=MRR_MOV.reduce((s,r)=>s+r.nuevo,0)/6;
+const tR6=MRR_MOV.reduce((s,r)=>s+r.reac,0)/6;
+const tE6=MRR_MOV.reduce((s,r)=>s+r.expan,0)/6;
+const tP6=MRR_MOV.reduce((s,r)=>s+r.perdida,0)/6;
+const tC6=MRR_MOV.reduce((s,r)=>s+r.contrac,0)/6;
+const tNet6=MRR_MOV.reduce((s,r)=>s+r.neto,0)/6;
+mmb.innerHTML+=`<tr class="tr-tot">
+  <td class="l">Promedio/mes</td><td>-</td>
+  <td style="color:#1D9E75">+${fmtP(Math.round(tN6))}</td>
+  <td style="color:#378ADD">+${fmtP(Math.round(tR6))}</td>
+  <td style="color:#C07A00">+${fmtP(Math.round(tE6))}</td>
+  <td style="color:#DC2626">-${fmtP(Math.round(tP6))}</td>
+  <td style="color:#EF9F27">-${fmtP(Math.round(tC6))}</td>
+  <td style="font-weight:700;color:#1D9E75">+${fmtP(Math.round(tNet6))}</td>
+  <td>-</td>
+</tr>`;
 
 const pL=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-const cs=[null,null,null,null,null,612830],bs=[null,null,null,null,null,612830];
-let cv=612830,bv=612830;
-for(let i=0;i<6;i++){cv+=27014;bv+=33767;cs.push(Math.round(cv));bs.push(Math.round(bv));}
+const cs=[null,null,null,null,null,629030],bs=[null,null,null,null,null,629030];
+let cv=629030,bv=629030;
+for(let i=0;i<6;i++){cv+=27014;bv+=36143;cs.push(Math.round(cv));bs.push(Math.round(bv));}
 new Chart(document.getElementById('mrrProy'),{
   type:'line',
   data:{labels:pL,datasets:[
-    {label:'Real',data:[...DATA.mrr_real,...Array(6).fill(null)],borderColor:'#FF8D6B',backgroundColor:'rgba(255,141,107,0.1)',tension:.3,pointRadius:4,fill:true,borderWidth:2.5},
+    {label:'Real',data:[443330,458550,507380,531540,589760,629030,...Array(6).fill(null)],borderColor:'#FF8D6B',backgroundColor:'rgba(255,141,107,0.1)',tension:.3,pointRadius:4,fill:true,borderWidth:2.5},
     {label:'Conservador',data:cs,borderColor:'#EF9F27',backgroundColor:'transparent',tension:.3,pointRadius:3,borderDash:[5,4],borderWidth:1.5},
     {label:'Base',data:bs,borderColor:'#378ADD',backgroundColor:'transparent',tension:.3,pointRadius:3,borderWidth:2}
   ]},
@@ -763,8 +796,15 @@ new Chart(document.getElementById('mrrProy'),{
   }
 });
 
-const compData=[{label:'MRR Nuevo',val:75163,color:'#1D9E75'},{label:'Reactivación',val:51472,color:'#378ADD'},{label:'Expansión',val:2722,color:'#A6BAC2'},{label:'Pérdida',val:92755,color:'#DC2626'}];
-document.getElementById('mrr-components').innerHTML=compData.map(c=>`<div class="bar-wrap"><div class="bar-label">${c.label}</div><div class="bar-bg"><div class="bar-fill" style="width:${Math.round(c.val/92755*100)}%;background:${c.color}"></div></div><div class="bar-val" style="color:${c.color}">${fmtN(c.val)}</div></div>`).join('')+`<div style="margin-top:10px;padding:10px 12px;background:#FAFAFA;border-radius:8px;border:1px solid rgba(0,0,0,0.06)"><div style="font-size:12px;font-weight:600">Ratio entrada/pérdida: <span style="color:#1D9E75">1.37x</span></div><div style="font-size:11px;color:#7E7E87;margin-top:2px">Entrada: $129,357 · Pérdida: $92,755</div></div>`;
+const compData=[
+  {label:'MRR Nuevo',val:84611,color:'#1D9E75'},
+  {label:'Reactivación',val:55625,color:'#378ADD'},
+  {label:'Expansión',val:2872,color:'#A6BAC2'},
+  {label:'Pérdida',val:103980,color:'#DC2626'},
+  {label:'Contracción',val:2985,color:'#EF9F27'},
+];
+const maxComp=103980;
+document.getElementById('mrr-components').innerHTML=compData.map(c=>`<div class="bar-wrap"><div class="bar-label">${c.label}</div><div class="bar-bg"><div class="bar-fill" style="width:${Math.round(c.val/maxComp*100)}%;background:${c.color}"></div></div><div class="bar-val" style="color:${c.color}">${fmtN(c.val)}</div></div>`).join('')+`<div style="margin-top:10px;padding:10px 12px;background:#FAFAFA;border-radius:8px;border:1px solid rgba(0,0,0,0.06)"><div style="font-size:12px;font-weight:600">Ratio entrada/pérdida: <span style="color:#1D9E75">1.34x</span></div><div style="font-size:11px;color:#7E7E87;margin-top:2px">Entrada: $143,108/mes · Pérdida: $106,965/mes</div></div>`;
 
 const cancs=[{label:'Voluntaria 1er periodo',n:237,pct:31.9,color:'#7B6EF6'},{label:'Voluntaria antes de cobro',n:231,pct:31.1,color:'#A6BAC2'},{label:'Pago fallido 1er ciclo',n:137,pct:18.4,color:'#DC2626'},{label:'Pago fallido 1er periodo',n:55,pct:7.4,color:'#EF9F27'},{label:'Trial al vencer',n:37,pct:5.0,color:'#FF8D6B'},{label:'Voluntaria 1ra renovación',n:24,pct:3.2,color:'#888780'}];
 document.getElementById('cancelaciones-bars').innerHTML=cancs.map(c=>`<div class="bar-wrap"><div class="bar-label">${c.label} <span style="font-size:10px;color:#7E7E87">n=${c.n}</span></div><div class="bar-bg"><div class="bar-fill" style="width:${c.pct*2.5}%;background:${c.color}"></div></div><div class="bar-val" style="color:${c.color}">${c.pct}%</div></div>`).join('');
