@@ -303,6 +303,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div id="membresias-plan-bars"></div>
     </div>
   </div>
+
+  <p style="font-size:12px;font-weight:500;color:var(--soma-gray);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem">Past due — pago fallido en reintento</p>
+  <div class="kpi-grid" style="grid-template-columns:1fr">
+    <div class="kpi"><div class="kpi-label">Suscripciones en past due hoy</div><div class="kpi-val" id="pastdue-count-val">26</div><div class="kpi-sub" id="pastdue-count-sub">MRR en riesgo $65,520 · Stripe reintenta el cobro automáticamente</div><span class="kpi-badge badge-red">Contactar</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Contacto de personas en past due</div>
+    <div class="card-sub" id="pastdue-table-sub">Nombre, correo y teléfono · teléfono cruzado con la base de AC</div>
+    <div style="overflow-x:auto"><table class="tbl" id="pastdue-table"></table></div>
+  </div>
 </section>
 
 
@@ -517,6 +527,35 @@ var SUBS_SNAPSHOT = {
     {label:'Semestral', n:192, color:'#378ADD'},
     {label:'Trial', n:127, color:'#FF8D6B', esTrial:true},
     {label:'Cuotas $1,050', n:119, color:'#EF9F27'}
+  ],
+  past_due_mrr: 65520,
+  past_due: [
+    {nombre:'Oliver Eduardo Esparza Rocha', email:'oliveresparza59@gmail.com', tel:'5533886319', plan:'Cuotas $1,050'},
+    {nombre:'Santiago Arturo González Aramburu', email:'santigaramburu20@gmail.com', tel:'5559636351', plan:'Cuotas $1,050'},
+    {nombre:'Alejandra Jaqueline Benítez Rangel', email:'jaqui.b96@gmail.com', tel:'5563197891', plan:'Semestral'},
+    {nombre:'Felipe Morales Calderón', email:'felipemc39@gmail.com', tel:'4433487822', plan:'Semestral'},
+    {nombre:'Martín Flores', email:'martin.alberto.fl@gmail.com', tel:null, plan:'Semestral'},
+    {nombre:'Kathia González Zavala', email:'aihtak24@icloud.com', tel:'5522722745', plan:'Cuotas $1,050'},
+    {nombre:'Jose Masri Masri', email:'josemasri222@gmail.com', tel:'5563192945', plan:'Cuotas $1,050'},
+    {nombre:'Valentina Tsubaki', email:'7b7f58584b@privaterelay.appleid.com', tel:'5617738882', plan:'Semestral'},
+    {nombre:'Daniela Ruiz Zárate', email:'cr5jnrh5cw@privaterelay.appleid.com', tel:'corrupto', plan:'Semestral'},
+    {nombre:'JUAN JUAREZ ORTIZ', email:'supercel3110@gmail.com', tel:'corrupto', plan:'Semestral'},
+    {nombre:'Daniela Juarez', email:'juarezdani20@gmail.com', tel:'corrupto', plan:'Cuotas $950'},
+    {nombre:'Ingrid Nava García', email:'ingrid.navag8@gmail.com', tel:null, plan:'Semestral'},
+    {nombre:'Diana Julieta Quintan', email:'julietaquin@yahoo.com.mx', tel:null, plan:'Cuotas $950'},
+    {nombre:'Ana Ruiz', email:'anaruiza82@gmail.com', tel:null, plan:'Cuotas $950'},
+    {nombre:'Jose Emiliano Mendez Ortega', email:'emilianomdzo@gmail.com', tel:null, plan:'Cuotas $950'},
+    {nombre:'Jorge Cardoso', email:'cardosojorgep@gmail.com', tel:null, plan:'Cuotas $950'},
+    {nombre:'Aremi Huerta', email:'arehuer@gmail.com', tel:null, plan:'Cuotas $1,050'},
+    {nombre:'Erick Velasco', email:'erickvel37@gmail.com', tel:null, plan:'Cuotas $1,050'},
+    {nombre:'Francisco Alberto Rico Romo', email:'fricoromo@gmail.com', tel:null, plan:'Cuotas $1,050'},
+    {nombre:'Jesús Patricia Torres León', email:'jespatriciatorres@hotmail.com', tel:'corrupto', plan:'Cuotas $1,050'},
+    {nombre:'Alejandra Cueva Acosta', email:'cuac1005@gmail.com', tel:null, plan:'Cuotas $950'},
+    {nombre:'Octavio Garcia Mora', email:'octaviogarcmora@gmail.com', tel:null, plan:'Cuotas $1,050'},
+    {nombre:'Jose Arturo Albino piña', email:'josearturoalbinopina0@gmail.com', tel:null, plan:'Cuotas $950'},
+    {nombre:'Rodrigo de jesus Morales sanchez', email:'rigo_242@hotmail.com', tel:null, plan:'Semestral'},
+    {nombre:'Frida Alcántara', email:'frida.ac95@gmail.com', tel:null, plan:'Cuotas $950'},
+    {nombre:'Giselle Camacho', email:'gisellecamachodiaz@gmail.com', tel:null, plan:'Cuotas $950'}
   ]
 };
 
@@ -555,6 +594,26 @@ var SUBS_SNAPSHOT = {
       var tag = r.esTrial ? ' <span style="font-size:9px;background:#FF8D6B33;color:#B8471E;padding:1px 5px;border-radius:3px;font-weight:600">TRIAL</span>' : '';
       return '<div class="bar-wrap"><div class="bar-label">'+r.label+tag+'</div><div class="bar-bg"><div class="bar-fill" style="width:'+Math.round(r.n/maxP*100)+'%;background:'+r.color+'"></div></div><div class="bar-val">'+r.n+' <small style="color:#7E7E87">('+pct+'%)</small></div></div>';
     }).join('');
+  }
+
+  var pdCount = document.getElementById('pastdue-count-val');
+  if (pdCount) pdCount.textContent = s.past_due.length;
+  var pdSub = document.getElementById('pastdue-count-sub');
+  if (pdSub) pdSub.textContent = 'MRR en riesgo $'+s.past_due_mrr.toLocaleString('es-MX')+' · Stripe reintenta el cobro automáticamente';
+
+  var pdTbl = document.getElementById('pastdue-table');
+  if (pdTbl) {
+    var conTel = s.past_due.filter(function(p){return p.tel && p.tel!=='corrupto';}).length;
+    pdTbl.innerHTML = '<thead><tr><th class="l">Nombre</th><th class="l">Correo</th><th class="l">Teléfono</th><th class="l">Plan</th></tr></thead>';
+    var pdBody = pdTbl.createTBody();
+    s.past_due.forEach(function(p) {
+      var telTxt = p.tel === 'corrupto'
+        ? '<span style="color:#B83232">no legible (formato dañado)</span>'
+        : (p.tel || '<span style="color:#7E7E87">— no encontrado</span>');
+      pdBody.innerHTML += '<tr><td>'+p.nombre+'</td><td>'+p.email+'</td><td>'+telTxt+'</td><td>'+p.plan+'</td></tr>';
+    });
+    var tblSub = document.getElementById('pastdue-table-sub');
+    if (tblSub) tblSub.textContent = 'Nombre, correo y teléfono · teléfono cruzado con la base de AC ('+conTel+' de '+s.past_due.length+' encontrados)';
   }
 })();
 
