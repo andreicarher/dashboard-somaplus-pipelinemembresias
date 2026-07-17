@@ -71,6 +71,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <button class="nav-item" onclick="show('backlog',this)"><span class="dot"></span><span>SQL Pendientes</span></button>
     <button class="nav-item" onclick="show('utms',this)"><span class="dot"></span><span>Atribución</span></button>
     <button class="nav-item" onclick="show('renovaciones',this)"><span class="dot"></span><span>Renovaciones</span></button>
+    <button class="nav-item" onclick="show('trials',this)"><span class="dot"></span><span>Trials &amp; Membresías</span></button>
     <button class="nav-item" onclick="show('ciclovida',this)"><span class="dot"></span><span>Ciclo de vida</span></button>
     <button class="nav-item" onclick="show('semanal',this)"><span class="dot"></span><span>Comparativa semanal</span></button>
   </div>
@@ -244,6 +245,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="kpi"><div class="kpi-label">Retención global 2026</div><div class="kpi-val">68.7%</div><div class="kpi-sub">741 activos+trialing / 1,079 totales</div><span class="kpi-badge badge-yellow">Benchmark: 80%+</span></div>
     <div class="kpi"><div class="kpi-label">Mejor retención por plan</div><div class="kpi-val">Anual</div><div class="kpi-sub">72.2% activos · 162 suscripciones</div><span class="kpi-badge badge-green">Más estable</span></div>
     <div class="kpi"><div class="kpi-label">Cancelaciones recuperables</div><div class="kpi-val">25.8%</div><div class="kpi-sub">Pago fallido 1er ciclo + 1er periodo</div><span class="kpi-badge badge-yellow">192 personas</span></div>
+    <div class="kpi"><div class="kpi-label">Trialing activo (Stripe)</div><div class="kpi-val">127</div><div class="kpi-sub">MRR potencial $283,180 · 3 vencen hoy</div><span class="kpi-badge badge-blue">17 jul 2026</span></div>
+    <div class="kpi"><div class="kpi-label">Past due (pago fallido)</div><div class="kpi-val">26</div><div class="kpi-sub">MRR en riesgo $65,520 · en retry de Stripe</div><span class="kpi-badge badge-red">Atender</span></div>
+    <div class="kpi"><div class="kpi-label">Cancelaciones programadas</div><div class="kpi-val">0</div><div class="kpi-sub">Cancel At Period End = true, aún activas</div><span class="kpi-badge badge-green">Ninguna agendada</span></div>
   </div>
   <div class="two-col">
     <div class="card">
@@ -272,11 +276,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="card">
       <div class="card-title">Distribución activos por plan</div>
-      <div class="card-sub">601 activas hoy</div>
+      <div class="card-sub">1,092 activas hoy</div>
       <div style="position:relative;height:180px"><canvas id="planDonut"></canvas></div>
     </div>
   </div>
 </section>
+
+<!-- TRIALS & MEMBRESÍAS -->
+<section class="section" id="trials">
+  <div class="page-title">Trials &amp; Membresías activas</div>
+  <div class="page-sub" id="trials-page-sub">Fuente: Stripe Subscriptions · al 17 jul 2026</div>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">Trials activos hoy</div><div class="kpi-val" id="trials-total-val">127</div><div class="kpi-sub" id="trials-total-sub">MRR potencial $283,180</div><span class="kpi-badge badge-blue">En periodo de prueba</span></div>
+    <div class="kpi"><div class="kpi-label">Membresías activas hoy</div><div class="kpi-val" id="membresias-total-val">1,092</div><div class="kpi-sub">Incluye trials · activas + trialing + past_due</div><span class="kpi-badge badge-green">Base total</span></div>
+    <div class="kpi"><div class="kpi-label">Vencen en próximos 10 días</div><div class="kpi-val" id="trials-b1-val">51</div><div class="kpi-sub">De los 127 trials activos</div><span class="kpi-badge badge-yellow">Prioridad de seguimiento</span></div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">Trials por días para vencer</div>
+      <div class="card-sub">Rangos exclusivos · desde hoy</div>
+      <div id="trials-venc-bars"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Membresías activas por tipo</div>
+      <div class="card-sub" id="membresias-plan-card-sub">Cuotas $950, Cuotas $1,050, Semestral, Anual + Trial aparte</div>
+      <div id="membresias-plan-bars"></div>
+    </div>
+  </div>
+</section>
+
 
 <!-- CICLO DE VIDA -->
 <section class="section" id="ciclovida">
@@ -467,10 +495,69 @@ mkChart('planDonut', {
   type: 'doughnut',
   data: {
     labels: ['Cuotas $950','Semestral','Anual','Cuotas $1,050'],
-    datasets: [{data:[229,163,117,91], backgroundColor:['#A6BAC2','#378ADD','#1D9E75','#EF9F27'], borderWidth:0}]
+    datasets: [{data:[494,224,221,153], backgroundColor:['#A6BAC2','#378ADD','#1D9E75','#EF9F27'], borderWidth:0}]
   },
   options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12}}}}
 });
+
+// ── TRIALS & MEMBRESÍAS ─────────────────────────────────────
+// Única fuente a actualizar con cada base nueva de Stripe Subscriptions.
+var SUBS_SNAPSHOT = {
+  updated: ASOF,
+  trials_total: 127,
+  trials_mrr_potencial: 283180,
+  trials_buckets: [
+    {label:'0–10 días', n:51, color:'#DC2626'},
+    {label:'11–20 días', n:42, color:'#EF9F27'},
+    {label:'21–30 días', n:34, color:'#1D9E75'}
+  ],
+  membresias_por_tipo: [
+    {label:'Cuotas $950', n:444, color:'#A6BAC2'},
+    {label:'Anual', n:210, color:'#1D9E75'},
+    {label:'Semestral', n:192, color:'#378ADD'},
+    {label:'Trial', n:127, color:'#FF8D6B', esTrial:true},
+    {label:'Cuotas $1,050', n:119, color:'#EF9F27'}
+  ]
+};
+
+(function() {
+  var s = SUBS_SNAPSHOT;
+  var membresiasTotal = s.membresias_por_tipo.reduce(function(a,r){return a+r.n;}, 0);
+
+  var pageSub = document.getElementById('trials-page-sub');
+  if (pageSub) pageSub.textContent = 'Fuente: Stripe Subscriptions · al ' + s.updated;
+
+  var tTotal = document.getElementById('trials-total-val');
+  if (tTotal) tTotal.textContent = s.trials_total;
+  var tSub = document.getElementById('trials-total-sub');
+  if (tSub) tSub.textContent = 'MRR potencial $' + s.trials_mrr_potencial.toLocaleString('es-MX');
+
+  var mTotal = document.getElementById('membresias-total-val');
+  if (mTotal) mTotal.textContent = membresiasTotal.toLocaleString('es-MX');
+
+  var b1 = document.getElementById('trials-b1-val');
+  if (b1) b1.textContent = s.trials_buckets[0].n;
+
+  var vencEl = document.getElementById('trials-venc-bars');
+  if (vencEl) {
+    var maxB = Math.max.apply(null, s.trials_buckets.map(function(b){return b.n;}));
+    vencEl.innerHTML = s.trials_buckets.map(function(b) {
+      var pct = s.trials_total ? Math.round(b.n/s.trials_total*100) : 0;
+      return '<div class="bar-wrap"><div class="bar-label">'+b.label+'</div><div class="bar-bg"><div class="bar-fill" style="width:'+Math.round(b.n/maxB*100)+'%;background:'+b.color+'"></div></div><div class="bar-val">'+b.n+' <small style="color:#7E7E87">('+pct+'%)</small></div></div>';
+    }).join('');
+  }
+
+  var planEl = document.getElementById('membresias-plan-bars');
+  if (planEl) {
+    var maxP = Math.max.apply(null, s.membresias_por_tipo.map(function(r){return r.n;}));
+    planEl.innerHTML = s.membresias_por_tipo.map(function(r) {
+      var pct = membresiasTotal ? (r.n/membresiasTotal*100).toFixed(1) : 0;
+      var tag = r.esTrial ? ' <span style="font-size:9px;background:#FF8D6B33;color:#B8471E;padding:1px 5px;border-radius:3px;font-weight:600">TRIAL</span>' : '';
+      return '<div class="bar-wrap"><div class="bar-label">'+r.label+tag+'</div><div class="bar-bg"><div class="bar-fill" style="width:'+Math.round(r.n/maxP*100)+'%;background:'+r.color+'"></div></div><div class="bar-val">'+r.n+' <small style="color:#7E7E87">('+pct+'%)</small></div></div>';
+    }).join('');
+  }
+})();
+
 
 // ── CICLO DE VIDA ───────────────────────────────────────────
 var stages = [
