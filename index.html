@@ -369,6 +369,40 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     Las cohortes más recientes (mayo–julio) se ven muy sanas, pero llevan poco tiempo expuestas al riesgo de cancelar;
     no son directamente comparables contra enero todavía.
   </div>
+
+  <p style="font-size:12px;font-weight:500;color:var(--soma-gray);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem">Retención por tipo de plan (cohortes 2026)</p>
+  <div class="card">
+    <div class="card-title">La cancelación se concentra casi por completo en Mensual (Cuotas)</div>
+    <div class="card-sub">Mismas cohortes 2026, separadas por cadencia de plan · celdas con menos de 5 clientes se omiten por tamaño de muestra</div>
+    <div style="overflow-x:auto"><table class="tbl" id="retplan-mensual-table"></table></div>
+    <p style="font-size:11px;color:var(--soma-gray);margin:.9rem 0 .3rem;font-weight:600">Semestral</p>
+    <div style="overflow-x:auto"><table class="tbl" id="retplan-semestral-table"></table></div>
+    <p style="font-size:11px;color:var(--soma-gray);margin:.9rem 0 .3rem;font-weight:600">Anual</p>
+    <div style="overflow-x:auto"><table class="tbl" id="retplan-anual-table"></table></div>
+  </div>
+  <div class="insight" id="retplan-insight">
+    Mensual (Cuotas) es donde vive toda la caída real (80\u201398%). Semestral se ve prácticamente sano (100% en casi
+    todas las cohortes), pero recién en agosto empieza a llegar a su primer punto de renovación real \u2014 hay que
+    seguirlo de cerca. Anual sigue en 100% en todas las cohortes, pero es un punto ciego: ninguna cohorte de 2026
+    ha llegado siquiera a su primer aniversario todavía, así que no hay información real de si cancelan o no.
+  </div>
+
+  <p style="font-size:12px;font-weight:500;color:var(--soma-gray);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem">¿De dónde viene el MRR perdido?</p>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">MRR perdido · veteranos (pre-2026)</div><div class="kpi-val" id="origen-vet-val">$102,430</div><div class="kpi-sub" id="origen-vet-sub">105 clientes · 83% del MRR perdido 2026</div><span class="kpi-badge badge-red">Erosión de base antigua</span></div>
+    <div class="kpi"><div class="kpi-label">MRR perdido · nuevos (2026)</div><div class="kpi-val" id="origen-new-val">$20,440</div><div class="kpi-sub" id="origen-new-sub">20 clientes · 17% del MRR perdido 2026</div><span class="kpi-badge badge-yellow">Empezó en junio</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title">MRR perdido por mes, origen del cliente</div>
+    <div class="card-sub">Ene\u2013Jul 2026 · nuevo = primer pago en 2026 · veterano = primer pago antes de 2026</div>
+    <div class="chart-wrap" style="height:260px"><canvas id="origenMrrChart"></canvas></div>
+  </div>
+  <div class="insight" id="origen-insight">
+    Ene\u2013may: 100% de las cancelaciones son de veteranos \u2014 los clientes de 2026 todavía no llegaban a su primera
+    renovación. Jun\u2013jul: aparecen las primeras cancelaciones de clientes 2026 (10 en cada mes), justo cuando las
+    cohortes de ene\u2013feb cumplían 5\u20136 meses. Pero los veteranos siguen cancelando al mismo ritmo desde enero,
+    <b>antes</b> de que existiera el self-service \u2014 esa función no parece ser la causa raíz del MRR perdido.
+  </div>
 </section>
 
 
@@ -663,6 +697,87 @@ var RETENTION_COHORT = {
       body.innerHTML += '<tr><td class="l" style="font-weight:600">'+c.cohort+'</td><td>'+c.total+'</td>'+cells+'</tr>';
     });
   }
+})();
+
+// ── RETENCIÓN POR TIPO DE PLAN (2026) ────────────────────────
+var RETENTION_BY_PLAN = {
+  monthLabels: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago'],
+  mensual: [
+    {cohort:'Ene', total:28, vals:[100.0,100.0,100.0,100.0,100.0,82.1,82.1,82.1]},
+    {cohort:'Feb', total:30, vals:[null,100.0,100.0,100.0,100.0,96.7,80.0,80.0]},
+    {cohort:'Mar', total:31, vals:[null,null,100.0,100.0,100.0,100.0,93.5,93.5]},
+    {cohort:'Abr', total:35, vals:[null,null,null,100.0,100.0,94.3,91.4,91.4]},
+    {cohort:'May', total:42, vals:[null,null,null,null,100.0,95.2,95.2,95.2]},
+    {cohort:'Jun', total:55, vals:[null,null,null,null,null,100.0,98.2,98.2]},
+    {cohort:'Jul', total:65, vals:[null,null,null,null,null,null,100.0,100.0]},
+  ],
+  semestral: [
+    {cohort:'Ene', total:5,  vals:[100.0,100.0,100.0,100.0,100.0,100.0,80.0,80.0]},
+    {cohort:'Feb', total:14, vals:[null,100.0,100.0,100.0,100.0,100.0,100.0,100.0]},
+    {cohort:'Mar', total:12, vals:[null,null,100.0,100.0,100.0,100.0,100.0,100.0]},
+    {cohort:'Abr', total:8,  vals:[null,null,null,100.0,100.0,100.0,100.0,100.0]},
+    {cohort:'May', total:9,  vals:[null,null,null,null,100.0,100.0,100.0,100.0]},
+    {cohort:'Jun', total:23, vals:[null,null,null,null,null,100.0,100.0,100.0]},
+  ],
+  anual: [
+    {cohort:'Ene', total:7,  vals:[100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0]},
+    {cohort:'Feb', total:9,  vals:[null,100.0,100.0,100.0,100.0,100.0,100.0,100.0]},
+    {cohort:'Mar', total:6,  vals:[null,null,100.0,100.0,100.0,100.0,100.0,100.0]},
+    {cohort:'May', total:12, vals:[null,null,null,null,100.0,100.0,100.0,100.0]},
+    {cohort:'Jun', total:16, vals:[null,null,null,null,null,100.0,100.0,100.0]},
+  ]
+};
+
+(function() {
+  var d = RETENTION_BY_PLAN;
+  function renderPlanTable(elId, rows) {
+    var tbl = document.getElementById(elId);
+    if (!tbl) return;
+    tbl.innerHTML = '<thead><tr><th class="l">Cohorte</th><th>Clientes</th>' + d.monthLabels.map(function(m){return '<th>'+m+'</th>';}).join('') + '</tr></thead>';
+    var body = tbl.createTBody();
+    rows.forEach(function(c) {
+      var cellsHtml = d.monthLabels.map(function(m, i){
+        var v = c.vals[i];
+        if (v===undefined || v===null) return '<td>—</td>';
+        var col = v>=95?'#1D9E75':v>=85?'#EF9F27':'#DC2626';
+        return '<td style="font-weight:600;color:'+col+'">'+v.toFixed(1)+'%</td>';
+      }).join('');
+      body.innerHTML += '<tr><td class="l" style="font-weight:600">'+c.cohort+'</td><td>'+c.total+'</td>'+cellsHtml+'</tr>';
+    });
+  }
+  renderPlanTable('retplan-mensual-table', d.mensual);
+  renderPlanTable('retplan-semestral-table', d.semestral);
+  renderPlanTable('retplan-anual-table', d.anual);
+})();
+
+// ── ORIGEN DEL MRR PERDIDO (nuevos 2026 vs. veteranos) ───────
+var ORIGEN_MRR = {
+  months: ['Ene','Feb','Mar','Abr','May','Jun','Jul'],
+  veteranos: [8680, 20270, 11800, 16380, 12680, 21760, 10860],
+  nuevos:    [0, 0, 0, 0, 0, 10200, 10240],
+};
+(function() {
+  var d = ORIGEN_MRR;
+  var fmtMx = function(n) { return '$' + Math.round(n).toLocaleString('es-MX'); };
+  mkChart('origenMrrChart', {
+    type: 'bar',
+    data: {
+      labels: d.months,
+      datasets: [
+        {label:'Veteranos (pre-2026)', data:d.veteranos, backgroundColor:'#7E7E87', borderRadius:4, stack:'s'},
+        {label:'Nuevos (2026)', data:d.nuevos, backgroundColor:'#FF8D6B', borderRadius:4, stack:'s'},
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'top',labels:{font:{size:11},boxWidth:12}},
+        tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+': '+fmtMx(ctx.raw);}}}},
+      scales:{
+        x:{stacked:true, grid:{display:false},border:{display:false},ticks:{color:'#7E7E87',font:{size:10}}},
+        y:{stacked:true, grid:{color:'rgba(0,0,0,0.05)'},border:{display:false},ticks:{color:'#7E7E87',callback:function(v){return '$'+(v/1000)+'k';}}}
+      }
+    }
+  });
 })();
 
 // ── TRIALS & MEMBRESÍAS ─────────────────────────────────────
