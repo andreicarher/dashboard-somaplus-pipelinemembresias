@@ -346,9 +346,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div style="font-size:13px;color:#3A3A3A;line-height:1.7;padding-top:.5rem">
       A cada cliente se le asigna una <b>cadencia esperada de pago</b> según su plan (Cuotas $950/$1,050 = mensual,
       Semestral $5,940 = cada 6 meses, Anual $10,800 = cada 12 meses). Si no aparece un pago dentro de una
-      <b>ventana de gracia</b> (cadencia + 20 días) después de la fecha esperada, se marca como cancelado ese mes.
-      Esto evita el falso positivo de contar como "cancelado" a alguien del plan Semestral que simplemente
-      no le tocaba pagar todavía. <span style="color:#B83232;font-weight:600">Nota: la ventana de gracia (20 días) es un supuesto pendiente de confirmar contra los días reales de reintento de Stripe.</span>
+      <b>ventana de gracia de 7 días</b> (confirmada por el equipo: es el reintento real de Stripe antes de suspender
+      la membresía) después de la fecha esperada, se marca como cancelado ese mes.
+      <br><br>
+      <span style="color:#B83232;font-weight:700">⚠️ Confirmado por reconciliación: este método solo captura ~16% del MRR
+      que Stripe reporta oficialmente como "Pérdida" cada mes.</span> No es un problema de la ventana de gracia (ya la
+      corregimos a 7 días reales y el resultado no cambió) ni de qué montos se incluyen (lo probamos con 3 filtros distintos).
+      El problema es de fondo: este método solo detecta "dejó de pagar cuando le tocaba" — pero Stripe registra la pérdida
+      de MRR en el momento en que el cliente <i>decide</i> cancelar, que casi siempre ocurre antes, sobre todo en planes
+      Semestral y Anual (alguien puede cancelar en el mes 2 pero seguir "viéndose activo" hasta el mes 6-12 porque ya pagó
+      ese periodo). <b>Por eso los % de retención de esta sección deben leerse como un límite superior optimista, no como
+      el número real</b> — la fuente confiable para el monto en pesos de "Pérdida" sigue siendo la tabla de MRR Movement
+      (pestaña MRR & Retención). Para corregir esto de raíz se necesita el dato real de cancelación de Stripe
+      (vía Sigma: campos <code>canceled_at</code> / <code>cancellation_details</code>), que ningún export estándar de la
+      UI nos ha dado hasta ahora.
     </div>
   </div>
 
@@ -365,9 +376,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 
   <div class="insight" id="retcoh-insight">
-    Enero es la cohorte con más desgaste (85.0% a 7 meses) — el primer quiebre visible fue en junio (100%→87.5%).
-    Las cohortes más recientes (mayo–julio) se ven muy sanas, pero llevan poco tiempo expuestas al riesgo de cancelar;
-    no son directamente comparables contra enero todavía.
+    Enero sigue siendo la cohorte con más desgaste (81.4% a 8 meses). Las cohortes más recientes (mayo–julio) se ven
+    muy sanas, pero llevan poco tiempo expuestas al riesgo de cancelar; no son directamente comparables contra enero
+    todavía — y como se explica arriba, estos porcentajes probablemente están inflados para todas las cohortes por
+    igual, así que la comparación relativa entre ellas es más confiable que el número absoluto de cada una.
   </div>
 
   <p style="font-size:12px;font-weight:500;color:var(--soma-gray);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem">Retención por tipo de plan (cohortes 2026)</p>
@@ -381,27 +393,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div style="overflow-x:auto"><table class="tbl" id="retplan-anual-table"></table></div>
   </div>
   <div class="insight" id="retplan-insight">
-    Mensual (Cuotas) es donde vive toda la caída real (80\u201398%). Semestral se ve prácticamente sano (100% en casi
-    todas las cohortes), pero recién en agosto empieza a llegar a su primer punto de renovación real \u2014 hay que
-    seguirlo de cerca. Anual sigue en 100% en todas las cohortes, pero es un punto ciego: ninguna cohorte de 2026
-    ha llegado siquiera a su primer aniversario todavía, así que no hay información real de si cancelan o no.
+    Mensual (Cuotas) es donde vive toda la caída real (70–98%, con Feb como la más golpeada). Semestral se ve
+    prácticamente sano (100% en casi todas las cohortes), pero recién en agosto empieza a llegar a su primer punto de
+    renovación real (Ene ya bajó a 66.7%) — hay que seguirlo de cerca. Anual sigue en 100% en todas las cohortes,
+    pero es un punto ciego: ninguna cohorte de 2026 ha llegado siquiera a su primer aniversario todavía, así que no
+    hay información real de si cancelan o no.
   </div>
 
   <p style="font-size:12px;font-weight:500;color:var(--soma-gray);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem">¿De dónde viene el MRR perdido?</p>
+  <div style="background:#FEECEC;border-left:4px solid #B83232;border-radius:6px;padding:12px 16px;margin-bottom:1rem;font-size:13px;color:#7A1F1F;font-weight:600">
+    ⚠️ NO CONFIABLE EN PESOS — usar solo como referencia direccional. Confirmado por reconciliación (ventana de gracia real de 7 días): este bloque solo detecta ~16% del MRR que Stripe reporta oficialmente como perdido cada mes. La causa es estructural, no un error de calibración — ver metodología arriba. Para el monto en pesos real, usar siempre la tabla de MRR Movement (pestaña MRR &amp; Retención).
+  </div>
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-label">MRR perdido · veteranos (pre-2026)</div><div class="kpi-val" id="origen-vet-val">$102,430</div><div class="kpi-sub" id="origen-vet-sub">105 clientes · 83% del MRR perdido 2026</div><span class="kpi-badge badge-red">Erosión de base antigua</span></div>
-    <div class="kpi"><div class="kpi-label">MRR perdido · nuevos (2026)</div><div class="kpi-val" id="origen-new-val">$20,440</div><div class="kpi-sub" id="origen-new-sub">20 clientes · 17% del MRR perdido 2026</div><span class="kpi-badge badge-yellow">Empezó en junio</span></div>
+    <div class="kpi"><div class="kpi-label">MRR perdido · veteranos (pre-2026)</div><div class="kpi-val" id="origen-vet-val">$107,240</div><div class="kpi-sub" id="origen-vet-sub">110 clientes · 81% del MRR perdido detectado</div><span class="kpi-badge badge-red">Erosión de base antigua</span></div>
+    <div class="kpi"><div class="kpi-label">MRR perdido · nuevos (2026)</div><div class="kpi-val" id="origen-new-val">$25,290</div><div class="kpi-sub" id="origen-new-sub">25 clientes · 19% del MRR perdido detectado</div><span class="kpi-badge badge-yellow">Empezó en junio</span></div>
   </div>
   <div class="card">
     <div class="card-title">MRR perdido por mes, origen del cliente</div>
-    <div class="card-sub">Ene\u2013Jul 2026 · nuevo = primer pago en 2026 · veterano = primer pago antes de 2026</div>
+    <div class="card-sub">Ene–Jul 2026 · nuevo = primer pago en 2026 · veterano = primer pago antes de 2026 · ⚠️ solo ~16% del total real, ver advertencia arriba</div>
     <div class="chart-wrap" style="height:260px"><canvas id="origenMrrChart"></canvas></div>
   </div>
   <div class="insight" id="origen-insight">
-    Ene\u2013may: 100% de las cancelaciones son de veteranos \u2014 los clientes de 2026 todavía no llegaban a su primera
-    renovación. Jun\u2013jul: aparecen las primeras cancelaciones de clientes 2026 (10 en cada mes), justo cuando las
-    cohortes de ene\u2013feb cumplían 5\u20136 meses. Pero los veteranos siguen cancelando al mismo ritmo desde enero,
-    <b>antes</b> de que existiera el self-service \u2014 esa función no parece ser la causa raíz del MRR perdido.
+    Ene–may: 100% de las cancelaciones detectadas son de veteranos — los clientes de 2026 todavía no llegaban a su primera
+    renovación. Jun–jul: aparecen las primeras cancelaciones de clientes 2026, justo cuando las cohortes de ene–feb
+    cumplían 5–6 meses. Los veteranos cancelan desde enero, <b>antes</b> de que existiera el self-service — esa función
+    no parece ser la causa raíz. <span style="color:#B83232;font-weight:700">Advertencia de confiabilidad (actualizada):
+    ya probamos la ventana de gracia real de Stripe (7 días, confirmada por el equipo) y el resultado no cambió — este
+    método sigue capturando solo ~16% del total oficial de "Pérdida" de MRR Movement. El patrón direccional (veteranos
+    primero, nuevos desde junio) probablemente se sostiene, pero ningún monto en pesos de este bloque debe usarse en
+    reportes o decisiones sin la advertencia de arriba.</span>
   </div>
 </section>
 
@@ -643,18 +663,19 @@ mkChart('planDonut', {
 // Fuente: Stripe Payments histórico completo. Actualizar reprocesando el export
 // cada vez que haya una base nueva de pagos (ver metodología en la tarjeta de la sección).
 var RETENTION_COHORT = {
-  updated: '7 ago 2026', // fecha del export de Payments usado, no necesariamente ASOF
+  updated: '12 ago 2026', // fecha del export de Payments usado, no necesariamente ASOF
+  gracia_dias: 7, // confirmado por el equipo: ventana real de reintento de Stripe antes de cancelar
   months: ['2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08'],
   monthLabels: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago'],
   cohorts: [
-    {cohort:'Ene', total:40, vals:[100.0,100.0,100.0,100.0,100.0,87.5,85.0,85.0]},
-    {cohort:'Feb', total:53, vals:[null,100.0,100.0,100.0,100.0,98.1,88.7,88.7]},
-    {cohort:'Mar', total:49, vals:[null,null,100.0,100.0,100.0,100.0,95.9,95.9]},
+    {cohort:'Ene', total:43, vals:[100.0,97.7,97.7,97.7,97.7,88.4,83.7,81.4]},
+    {cohort:'Feb', total:53, vals:[null,100.0,100.0,100.0,100.0,98.1,83.0,79.2]},
+    {cohort:'Mar', total:50, vals:[null,null,100.0,100.0,100.0,100.0,96.0,94.0]},
     {cohort:'Abr', total:49, vals:[null,null,null,100.0,100.0,95.9,93.9,93.9]},
-    {cohort:'May', total:63, vals:[null,null,null,null,100.0,96.8,96.8,96.8]},
-    {cohort:'Jun', total:94, vals:[null,null,null,null,null,100.0,98.9,98.9]},
-    {cohort:'Jul', total:81, vals:[null,null,null,null,null,null,100.0,100.0]},
-    {cohort:'Ago', total:12, vals:[null,null,null,null,null,null,null,100.0]},
+    {cohort:'May', total:63, vals:[null,null,null,null,100.0,96.8,95.2,95.2]},
+    {cohort:'Jun', total:95, vals:[null,null,null,null,null,100.0,98.9,97.9]},
+    {cohort:'Jul', total:84, vals:[null,null,null,null,null,null,100.0,98.8]},
+    {cohort:'Ago', total:25, vals:[null,null,null,null,null,null,null,100.0]},
   ]
 };
 
@@ -703,28 +724,31 @@ var RETENTION_COHORT = {
 var RETENTION_BY_PLAN = {
   monthLabels: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago'],
   mensual: [
-    {cohort:'Ene', total:28, vals:[100.0,100.0,100.0,100.0,100.0,82.1,82.1,82.1]},
-    {cohort:'Feb', total:30, vals:[null,100.0,100.0,100.0,100.0,96.7,80.0,80.0]},
-    {cohort:'Mar', total:31, vals:[null,null,100.0,100.0,100.0,100.0,93.5,93.5]},
+    {cohort:'Ene', total:30, vals:[100.0,96.7,96.7,96.7,96.7,83.3,80.0,80.0]},
+    {cohort:'Feb', total:30, vals:[null,100.0,100.0,100.0,100.0,96.7,70.0,70.0]},
+    {cohort:'Mar', total:31, vals:[null,null,100.0,100.0,100.0,100.0,93.5,90.3]},
     {cohort:'Abr', total:35, vals:[null,null,null,100.0,100.0,94.3,91.4,91.4]},
-    {cohort:'May', total:42, vals:[null,null,null,null,100.0,95.2,95.2,95.2]},
-    {cohort:'Jun', total:55, vals:[null,null,null,null,null,100.0,98.2,98.2]},
-    {cohort:'Jul', total:65, vals:[null,null,null,null,null,null,100.0,100.0]},
+    {cohort:'May', total:42, vals:[null,null,null,null,100.0,95.2,92.9,92.9]},
+    {cohort:'Jun', total:55, vals:[null,null,null,null,null,100.0,98.2,96.4]},
+    {cohort:'Jul', total:67, vals:[null,null,null,null,null,null,100.0,98.5]},
   ],
   semestral: [
-    {cohort:'Ene', total:5,  vals:[100.0,100.0,100.0,100.0,100.0,100.0,80.0,80.0]},
-    {cohort:'Feb', total:14, vals:[null,100.0,100.0,100.0,100.0,100.0,100.0,100.0]},
-    {cohort:'Mar', total:12, vals:[null,null,100.0,100.0,100.0,100.0,100.0,100.0]},
+    {cohort:'Ene', total:6,  vals:[100.0,100.0,100.0,100.0,100.0,100.0,83.3,66.7]},
+    {cohort:'Feb', total:14, vals:[null,100.0,100.0,100.0,100.0,100.0,100.0,85.7]},
+    {cohort:'Mar', total:13, vals:[null,null,100.0,100.0,100.0,100.0,100.0,100.0]},
     {cohort:'Abr', total:8,  vals:[null,null,null,100.0,100.0,100.0,100.0,100.0]},
     {cohort:'May', total:9,  vals:[null,null,null,null,100.0,100.0,100.0,100.0]},
     {cohort:'Jun', total:23, vals:[null,null,null,null,null,100.0,100.0,100.0]},
+    {cohort:'Jul', total:8,  vals:[null,null,null,null,null,null,100.0,100.0]},
   ],
   anual: [
     {cohort:'Ene', total:7,  vals:[100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0]},
     {cohort:'Feb', total:9,  vals:[null,100.0,100.0,100.0,100.0,100.0,100.0,100.0]},
     {cohort:'Mar', total:6,  vals:[null,null,100.0,100.0,100.0,100.0,100.0,100.0]},
+    {cohort:'Abr', total:6,  vals:[null,null,null,100.0,100.0,100.0,100.0,100.0]},
     {cohort:'May', total:12, vals:[null,null,null,null,100.0,100.0,100.0,100.0]},
-    {cohort:'Jun', total:16, vals:[null,null,null,null,null,100.0,100.0,100.0]},
+    {cohort:'Jun', total:17, vals:[null,null,null,null,null,100.0,100.0,100.0]},
+    {cohort:'Jul', total:9,  vals:[null,null,null,null,null,null,100.0,100.0]},
   ]
 };
 
@@ -753,8 +777,8 @@ var RETENTION_BY_PLAN = {
 // ── ORIGEN DEL MRR PERDIDO (nuevos 2026 vs. veteranos) ───────
 var ORIGEN_MRR = {
   months: ['Ene','Feb','Mar','Abr','May','Jun','Jul'],
-  veteranos: [8680, 20270, 11800, 16380, 12680, 21760, 10860],
-  nuevos:    [0, 0, 0, 0, 0, 10200, 10240],
+  veteranos: [10640, 12280, 15850, 11430, 16580, 16770, 23690],
+  nuevos:    [0, 950, 0, 0, 0, 9150, 15190],
 };
 (function() {
   var d = ORIGEN_MRR;
