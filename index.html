@@ -399,6 +399,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     completo y simplemente decidir no continuar; no hay señal de insatisfacción a medio plazo en estos datos.
   </div>
 
+  <p style="font-size:12px;font-weight:500;color:var(--soma-gray);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem">Ingresos brutos y netos mensuales</p>
+  <div class="card">
+    <div class="card-title">Ingresos de membresía por mes — bruto vs. neto</div>
+    <div class="card-sub" id="revmensual-card-sub">Ene 2025–Ago 2026 · bruto = todos los pagos de membresía · neto = bruto − reembolsos/disputas · ⚠️ reembolsos solo confirmados hasta el 1 ago 2026, meses posteriores probablemente subestiman el neto</div>
+    <div class="chart-wrap" style="height:300px"><canvas id="revMensualChart"></canvas></div>
+  </div>
+  <div class="insight" id="revmensual-insight">
+    El ingreso mensual casi se duplicó entre enero 2025 ($385K neto) y julio 2026 ($860K neto). Los reembolsos son
+    consistentemente chicos frente al bruto (típicamente &lt;3%), así que el crecimiento no se explica por
+    "cobrar más y devolver más" — es crecimiento real de la base. Agosto 2026 se ve sin reembolsos porque el archivo
+    de reembolsos/disputas todavía no se actualiza a esa fecha, no porque no los haya habido.
+  </div>
+
   <p style="font-size:12px;font-weight:500;color:var(--soma-gray);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem">¿De dónde viene el MRR perdido?</p>
   <div style="background:#FEECEC;border-left:4px solid #B83232;border-radius:6px;padding:12px 16px;margin-bottom:1rem;font-size:13px;color:#7A1F1F;font-weight:600">
     ⚠️ NO CONFIABLE EN PESOS — usar solo como referencia direccional. Confirmado por reconciliación (ventana de gracia real de 7 días): este bloque solo detecta ~16% del MRR que Stripe reporta oficialmente como perdido cada mes. La causa es estructural, no un error de calibración — ver metodología arriba. Para el monto en pesos real, usar siempre la tabla de MRR Movement (pestaña MRR &amp; Retención).
@@ -666,7 +679,7 @@ mkChart('planDonut', {
 // "en_curso" = todavía dentro de su plazo esperado, no se puede juzgar. Actualizar reprocesando
 // unified_payments con la misma metodología cada vez que haya un export nuevo.
 var CUOTAS_950 = { // Anual, 12 pagos esperados
-  updated: '21 ago 2026',
+  updated: '27 ago 2026',
   cohorts: [
     {cohort:'2025-01', total:34, completo:23, cancelo:10, en_curso:1},
     {cohort:'2025-02', total:32, completo:21, cancelo:10, en_curso:1},
@@ -676,22 +689,22 @@ var CUOTAS_950 = { // Anual, 12 pagos esperados
     {cohort:'2025-06', total:19, completo:16, cancelo:3,  en_curso:0},
     {cohort:'2025-07', total:18, completo:14, cancelo:4,  en_curso:0},
     {cohort:'2025-08', total:12, completo:8,  cancelo:4,  en_curso:0},
-    {cohort:'2025-09', total:28, completo:3,  cancelo:12, en_curso:13},
+    {cohort:'2025-09', total:28, completo:3,  cancelo:13, en_curso:12},
     {cohort:'2025-10', total:24, completo:0,  cancelo:2,  en_curso:22},
-    {cohort:'2025-11', total:33, completo:0,  cancelo:8,  en_curso:25},
+    {cohort:'2025-11', total:33, completo:0,  cancelo:9,  en_curso:24},
     {cohort:'2025-12', total:22, completo:0,  cancelo:1,  en_curso:21},
     {cohort:'2026-01', total:23, completo:0,  cancelo:0,  en_curso:23},
     {cohort:'2026-02', total:30, completo:0,  cancelo:4,  en_curso:26},
     {cohort:'2026-03', total:29, completo:0,  cancelo:2,  en_curso:27},
     {cohort:'2026-04', total:33, completo:0,  cancelo:4,  en_curso:29},
-    {cohort:'2026-05', total:36, completo:0,  cancelo:3,  en_curso:33},
+    {cohort:'2026-05', total:36, completo:0,  cancelo:4,  en_curso:32},
     {cohort:'2026-06', total:42, completo:0,  cancelo:3,  en_curso:39},
-    {cohort:'2026-07', total:58, completo:0,  cancelo:4,  en_curso:54},
-    {cohort:'2026-08', total:28, completo:0,  cancelo:0,  en_curso:28},
+    {cohort:'2026-07', total:58, completo:0,  cancelo:6,  en_curso:52},
+    {cohort:'2026-08', total:37, completo:0,  cancelo:0,  en_curso:37},
   ]
 };
 var CUOTAS_1050 = { // Semestral, 6 pagos esperados
-  updated: '21 ago 2026',
+  updated: '27 ago 2026',
   cohorts: [
     {cohort:'2025-01', total:25, completo:13, cancelo:12, en_curso:0},
     {cohort:'2025-02', total:11, completo:8,  cancelo:3,  en_curso:0},
@@ -705,14 +718,14 @@ var CUOTAS_1050 = { // Semestral, 6 pagos esperados
     {cohort:'2025-10', total:11, completo:8,  cancelo:3,  en_curso:0},
     {cohort:'2025-11', total:11, completo:5,  cancelo:6,  en_curso:0},
     {cohort:'2025-12', total:12, completo:8,  cancelo:4,  en_curso:0},
-    {cohort:'2026-01', total:16, completo:5,  cancelo:11, en_curso:0},
-    {cohort:'2026-02', total:9,  completo:3,  cancelo:5,  en_curso:1},
+    {cohort:'2026-01', total:16, completo:6,  cancelo:10, en_curso:0},
+    {cohort:'2026-02', total:9,  completo:5,  cancelo:3,  en_curso:1},
     {cohort:'2026-03', total:12, completo:0,  cancelo:7,  en_curso:5},
     {cohort:'2026-04', total:13, completo:0,  cancelo:2,  en_curso:11},
     {cohort:'2026-05', total:14, completo:0,  cancelo:1,  en_curso:13},
-    {cohort:'2026-06', total:19, completo:0,  cancelo:0,  en_curso:19},
+    {cohort:'2026-06', total:19, completo:0,  cancelo:1,  en_curso:18},
     {cohort:'2026-07', total:20, completo:0,  cancelo:0,  en_curso:20},
-    {cohort:'2026-08', total:15, completo:0,  cancelo:0,  en_curso:15},
+    {cohort:'2026-08', total:22, completo:0,  cancelo:0,  en_curso:22},
   ]
 };
 
@@ -759,7 +772,7 @@ var CONTADO_5940 = {
     {cohort:'2025-07', total:8,  renovaron:3},  {cohort:'2025-08', total:5,  renovaron:2},
     {cohort:'2025-09', total:11, renovaron:2},  {cohort:'2025-10', total:9,  renovaron:1},
     {cohort:'2025-11', total:9,  renovaron:5},  {cohort:'2025-12', total:7,  renovaron:2},
-    {cohort:'2026-01', total:9,  renovaron:4},
+    {cohort:'2026-01', total:11, renovaron:5},
   ]
 };
 var CONTADO_10800 = {
@@ -786,6 +799,39 @@ var CONTADO_10800 = {
   }
   renderContadoTable('contado5940-table', CONTADO_5940);
   renderContadoTable('contado10800-table', CONTADO_10800);
+})();
+
+// ── INGRESOS BRUTOS VS. NETOS MENSUALES ──────────────────────
+// Fuente: Stripe Payments histórico (bruto) + export de Reembolsos/Disputas (neto).
+// El archivo de reembolsos solo está confirmado hasta el 1 ago 2026 — meses posteriores subestiman reembolsos.
+var REV_MENSUAL = {
+  months: ['2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08'],
+  monthLabels: ['Ene 25','Feb 25','Mar 25','Abr 25','May 25','Jun 25','Jul 25','Ago 25','Sep 25','Oct 25','Nov 25','Dic 25','Ene 26','Feb 26','Mar 26','Abr 26','May 26','Jun 26','Jul 26','Ago 26*'],
+  bruto: [407652,271251,402861,347836,322260,397500,425617,396773,565589,489771,465684,541421,671722,575566,714845,666827,765658,955095,878620,827382],
+  neto:  [385012,264261,385964,345836,321210,397500,425603,393836,563589,485771,465684,540471,663882,569626,704045,666827,748174,955095,859880,827382],
+};
+(function() {
+  var d = REV_MENSUAL;
+  var fmtMx = function(n) { return '$' + Math.round(n).toLocaleString('es-MX'); };
+  mkChart('revMensualChart', {
+    type: 'bar',
+    data: {
+      labels: d.monthLabels,
+      datasets: [
+        {label:'Bruto', data:d.bruto, backgroundColor:'#A6BAC2', borderRadius:4},
+        {label:'Neto', data:d.neto, backgroundColor:'#FF8D6B', borderRadius:4},
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'top',labels:{font:{size:11},boxWidth:12}},
+        tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+': '+fmtMx(ctx.raw);}}}},
+      scales:{
+        x:{grid:{display:false},border:{display:false},ticks:{color:'#7E7E87',font:{size:9},maxRotation:60,minRotation:60}},
+        y:{grid:{color:'rgba(0,0,0,0.05)'},border:{display:false},ticks:{color:'#7E7E87',callback:function(v){return '$'+(v/1000)+'k';}}}
+      }
+    }
+  });
 })();
 
 // ── ORIGEN DEL MRR PERDIDO (nuevos 2026 vs. veteranos) ───────
