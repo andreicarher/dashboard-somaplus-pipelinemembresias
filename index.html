@@ -341,99 +341,124 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="page-sub" id="retencion-page-sub">Fuente: Stripe Payments (histórico completo) · cohorte = mes del primer pago · cohortes 2025–2026</div>
 
   <div class="card">
-    <div class="card-title">¿Cómo se calcula? (corregido)</div>
-    <div class="card-sub">Metodología · los planes de pago tienen plazo fijo, no son mensualidades indefinidas</div>
+    <div class="card-title">Ingresos de membresía por mes — bruto, neto y nuevos miembros de pago</div>
+    <div class="card-sub" id="revmensual-card-sub">Ene 2025–Ago 2026 · barras: bruto = todos los pagos de membresía, neto = bruto − reembolsos/disputas · línea: primer pago válido de cada cliente ese mes · ⚠️ reembolsos solo confirmados hasta el 1 ago 2026, meses posteriores probablemente subestiman el neto</div>
+    <div class="chart-wrap" style="height:320px"><canvas id="revMensualChart"></canvas></div>
+  </div>
+  <div class="insight" id="revmensual-insight">
+    El ingreso mensual casi se duplicó entre enero 2025 ($385K neto) y julio 2026 ($860K neto), pero los nuevos
+    miembros de pago no crecieron al mismo ritmo (87→85 en ese rango) — el ingreso está creciendo más por
+    <b>acumulación de base y renovaciones</b> que por una aceleración proporcional de adquisición. Los reembolsos son
+    consistentemente chicos frente al bruto (típicamente &lt;3%). Agosto 2026 se ve sin reembolsos porque el archivo
+    de reembolsos/disputas todavía no se actualiza a esa fecha, no porque no los haya habido.
+  </div>
+
+  <div style="background:#E8F5F0;border-left:4px solid #1D9E75;border-radius:6px;padding:12px 16px;margin-bottom:1.25rem;font-size:13px;color:#04342C;font-weight:600">
+    ✅ Actualizado con dato real de Stripe: encontramos el campo <code>Ended At</code> (fecha real de cancelación) y
+    <code>Cancellation Reason</code> (motivo real) en el export de Subscriptions. Ya no es un método inferido — es el
+    evento real. Reconciliado contra el MRR Movement oficial: captura 105% del total (antes solo 14–16%).
+  </div>
+
+  <div class="card">
+    <div class="card-title">¿Cómo se calcula? (con datos reales de cancelación)</div>
+    <div class="card-sub">Metodología · ya no se infiere, se usa el evento real de Stripe</div>
     <div style="font-size:13px;color:#3A3A3A;line-height:1.7;padding-top:.5rem">
-      Corrección importante sobre la versión anterior de esta sección: <b>Cuotas $950 y $1,050 no son "planes mensuales
-      indefinidos"</b> — son la forma de pagar en abonos un compromiso de plazo fijo (<b>$950 × 12 = plan Anual</b>,
-      <b>$1,050 × 6 = plan Semestral</b>), exactamente el mismo compromiso que $10,800 y $5,940 de contado. Alguien que
-      paga sus 6 o 12 cuotas completas <b>no canceló — cumplió su plazo</b>.
+      Cada suscripción en Stripe trae <b><code>Ended At (UTC)</code></b> (el momento exacto en que terminó) y
+      <b><code>Cancellation Reason</code></b> (<code>cancellation_requested</code> = el cliente/Concierge la canceló;
+      <code>payment_failed</code> = se le rechazó el cobro y Stripe la dio de baja sola). Esto reemplaza el método
+      anterior (inferir la cancelación por ausencia de pago), que solo alcanzaba a capturar 14–16% del MRR perdido real.
       <br><br>
-      Con eso corregido, medimos dos cosas distintas según el tipo de pago:
+      <b>Cuotas ($950 Anual, $1,050 Semestral):</b> siguen siendo un compromiso de plazo fijo pagado en abonos.
+      Cruzamos la fecha real de cancelación (<code>Ended At</code>) contra cuántas cuotas había pagado el cliente
+      hasta ese momento: si llegó a las 12 o 6 esperadas, <b>completó su plazo</b>; si canceló antes, es
+      <b>cancelación temprana real</b> — ya no una suposición por hueco de pago.
       <br><br>
-      <b>Cuotas (plazo fijo, se ve el detalle mes a mes):</b> a cada cliente se le compara su número de pagos hechos
-      contra las cuotas esperadas de su plan. Si deja de pagar <i>antes</i> de completar sus cuotas (con 7 días de
-      gracia, confirmados por el equipo), se marca como <b>cancelación temprana</b> — la señal real de alerta. Si
-      completa sus cuotas, se marca como <b>completó su plazo</b> (fin natural, no es una señal negativa en sí misma).
-      <br><br>
-      <b>De contado (plazo fijo, pagado por adelantado):</b> aquí <b>no hay forma de ver si cancelan a medio plazo</b>
-      — ya pagaron todo. Lo único que podemos medir es si, al vencerse su plazo (6 o 12 meses después), vuelven a
-      pagar (<b>renovación</b>) o no. Esto es un punto ciego real, no un supuesto nuestro: un cliente de contado que
-      deja de usar la membresía en el mes 2 se ve idéntico, en los datos de pago, a uno que la disfrutó los 6 meses
-      completos.
+      <b>De contado ($5,940 Semestral, $10,800 Anual):</b> ahora también podemos ver si la suscripción se marcó como
+      cancelada antes de que se venciera su plazo natural, no solo si renovó después. Sigue existiendo la limitación
+      de que el uso real de la membresía no se ve en estos datos, pero la señal de cancelación ya es un hecho, no una
+      inferencia.
     </div>
   </div>
 
-  <p style="font-size:12px;font-weight:500;color:var(--soma-gray);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem">Cuotas — cancelación temprana vs. completó su plazo</p>
+  <p style="font-size:12px;font-weight:500;color:var(--soma-gray);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem">¿Por qué cancelan? — motivo real (Stripe)</p>
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-label">Cuotas $950 (Anual, 12 pagos)</div><div class="kpi-val" id="cuotas950-val">~30%</div><div class="kpi-sub" id="cuotas950-sub">cancelación temprana, cohortes maduras (2025)</div><span class="kpi-badge badge-red">Real, no es fin de plazo</span></div>
-    <div class="kpi"><div class="kpi-label">Cuotas $1,050 (Semestral, 6 pagos)</div><div class="kpi-val" id="cuotas1050-val">~48%</div><div class="kpi-sub" id="cuotas1050-sub">cancelación temprana, cohortes maduras (2025)</div><span class="kpi-badge badge-red">Casi 1 de cada 2</span></div>
+    <div class="kpi"><div class="kpi-label">Cancelación pedida</div><div class="kpi-val" id="motivo-req-val">603</div><div class="kpi-sub" id="motivo-req-sub">55% · $593,820 MRR equiv. (Ene–Ago 2026)</div><span class="kpi-badge badge-blue">Cliente o Concierge</span></div>
+    <div class="kpi"><div class="kpi-label">Tarjeta rechazada</div><div class="kpi-val" id="motivo-fail-val">495</div><div class="kpi-sub" id="motivo-fail-sub">45% · $485,910 MRR equiv. (Ene–Ago 2026)</div><span class="kpi-badge badge-yellow">Stripe la dio de baja sola</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Motivo de cancelación por mes</div>
+    <div class="card-sub">Ene–Ago 2026 · cancelación pedida vs. tarjeta rechazada, conteo de suscripciones</div>
+    <div class="chart-wrap" style="height:280px"><canvas id="motivoMesChart"></canvas></div>
+  </div>
+  <div class="insight" id="motivo-insight">
+    Ene–jul: "tarjeta rechazada" venía creciendo casi al parejo de "cancelación pedida" (24→113 vs 54→125). En
+    <b>agosto el patrón se rompe</b>: cancelación pedida se dispara a 155 mientras que tarjeta rechazada cae a 55 —
+    posible efecto de la nueva regla de suspensión automática al quitar el método de pago (más gente cancela
+    directamente en vez de simplemente dejar que falle el cobro). Por plan: en <b>Cuotas $950 (Anual)</b>, la mayoría
+    de las cancelaciones son por tarjeta rechazada (252 vs 123) — ahí el problema puede ser tanto de cobro como de
+    intención. En Contado, casi todo es cancelación pedida (esperable, no hay cobro recurrente que falle a medio plazo).
+  </div>
+
+  <p style="font-size:12px;font-weight:500;color:var(--soma-gray);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem">Cuotas — cancelación temprana vs. completó su plazo (dato real)</p>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">Cuotas $950 (Anual, 12 pagos)</div><div class="kpi-val" id="cuotas950-val">~67%</div><div class="kpi-sub" id="cuotas950-sub">cancelación temprana real, cohortes maduras (2025)</div><span class="kpi-badge badge-red">2 de cada 3</span></div>
+    <div class="kpi"><div class="kpi-label">Cuotas $1,050 (Semestral, 6 pagos)</div><div class="kpi-val" id="cuotas1050-val">~60%</div><div class="kpi-sub" id="cuotas1050-sub">cancelación temprana real, cohortes maduras (2025)</div><span class="kpi-badge badge-red">3 de cada 5</span></div>
+  </div>
+  <div style="background:#FEECEC;border-left:4px solid #B83232;border-radius:6px;padding:12px 16px;margin-bottom:1rem;font-size:13px;color:#7A1F1F;font-weight:600">
+    ⚠️ Estos números son considerablemente peores que lo que reportábamos antes (~30% y ~48%) — no porque algo haya
+    empeorado, sino porque el método anterior subestimaba la cancelación real. Este es el número correcto, no una
+    corrección menor.
   </div>
   <div class="card">
     <div class="card-title">Cuotas $950 — Anual, 12 pagos esperados</div>
-    <div class="card-sub">Cohortes con tiempo suficiente para haber completado su plazo (+1 mes de margen) · "en curso" = todavía dentro de su plazo esperado</div>
+    <div class="card-sub">Ground truth: fecha real de cancelación (Ended At) cruzada contra cuotas pagadas · "en curso" = todavía activa, sin cancelar</div>
     <div style="overflow-x:auto"><table class="tbl" id="cuotas950-table"></table></div>
   </div>
   <div class="card">
     <div class="card-title">Cuotas $1,050 — Semestral, 6 pagos esperados</div>
-    <div class="card-sub">Cohortes con tiempo suficiente para haber completado su plazo (+1 mes de margen)</div>
+    <div class="card-sub">Ground truth: fecha real de cancelación (Ended At) cruzada contra cuotas pagadas</div>
     <div style="overflow-x:auto"><table class="tbl" id="cuotas1050-table"></table></div>
   </div>
   <div class="insight" id="cuotas-insight">
-    Marzo 2025 ($950, 58.6%) y agosto 2025 ($1,050, 75%) son las cohortes con peor cancelación temprana de todo el
-    histórico — casi nadie de esas cohortes llegó a completar su plazo. Las cohortes de 2026 todavía se ven sanas,
-    pero la mayoría sigue "en curso" (no ha llegado su momento de completar) — no son comparables contra 2025 todavía.
+    Enero 2025 ($950, 68% cancelación temprana sobre 105 casos) y varias cohortes de 2025 rondan 55-75% —
+    la cancelación temprana no es un problema aislado de un mes, es un patrón sostenido todo el año. Las cohortes de
+    2026 muestran menos cancelación absoluta solo porque muchas siguen "en curso" — no hay que leerlas todavía como
+    "van mejor".
   </div>
 
-  <p style="font-size:12px;font-weight:500;color:var(--soma-gray);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem">De contado — tasa de renovación al vencer el plazo</p>
+  <p style="font-size:12px;font-weight:500;color:var(--soma-gray);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem">De contado — renovación y cancelación real</p>
   <div class="card">
-    <div class="card-title">Semestral $5,940 y Anual $10,800 — renovación post-plazo</div>
-    <div class="card-sub">Solo cohortes cuyo plazo ya venció · ⚠️ no mide cancelación a medio plazo, es un punto ciego real de este tipo de pago</div>
+    <div class="card-title">Semestral $5,940 y Anual $10,800 — estado real por cohorte</div>
+    <div class="card-sub">Ground truth: Status y Ended At de Stripe · "No renovó" incluye tanto plazo vencido sin renovar como cancelación confirmada antes de vencer</div>
     <div style="overflow-x:auto"><table class="tbl" id="contado5940-table"></table></div>
     <p style="font-size:11px;color:var(--soma-gray);margin:.9rem 0 .3rem;font-weight:600">Anual $10,800</p>
     <div style="overflow-x:auto"><table class="tbl" id="contado10800-table"></table></div>
   </div>
   <div class="insight" id="contado-insight">
-    La renovación de contado ronda 30–60% según la cohorte, sin un patrón claro de mejora o deterioro en el tiempo.
-    Recordatorio: esto NO es lo mismo que "cancelación" — un cliente que no renueva pudo haber disfrutado su plazo
-    completo y simplemente decidir no continuar; no hay señal de insatisfacción a medio plazo en estos datos.
+    La renovación de contado sigue rondando 30–60% según la cohorte. A diferencia de Cuotas, aquí la mayoría de las
+    "no renovaciones" son fin de plazo natural sin señal de cancelación anticipada — el dato real confirma que el
+    punto ciego de "cancelación a medio plazo" en Contado es efectivamente poco frecuente, no solo invisible.
   </div>
 
-  <p style="font-size:12px;font-weight:500;color:var(--soma-gray);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem">Ingresos brutos y netos mensuales</p>
-  <div class="card">
-    <div class="card-title">Ingresos de membresía por mes — bruto vs. neto</div>
-    <div class="card-sub" id="revmensual-card-sub">Ene 2025–Ago 2026 · bruto = todos los pagos de membresía · neto = bruto − reembolsos/disputas · ⚠️ reembolsos solo confirmados hasta el 1 ago 2026, meses posteriores probablemente subestiman el neto</div>
-    <div class="chart-wrap" style="height:300px"><canvas id="revMensualChart"></canvas></div>
-  </div>
-  <div class="insight" id="revmensual-insight">
-    El ingreso mensual casi se duplicó entre enero 2025 ($385K neto) y julio 2026 ($860K neto). Los reembolsos son
-    consistentemente chicos frente al bruto (típicamente &lt;3%), así que el crecimiento no se explica por
-    "cobrar más y devolver más" — es crecimiento real de la base. Agosto 2026 se ve sin reembolsos porque el archivo
-    de reembolsos/disputas todavía no se actualiza a esa fecha, no porque no los haya habido.
-  </div>
-
-  <p style="font-size:12px;font-weight:500;color:var(--soma-gray);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem">¿De dónde viene el MRR perdido?</p>
-  <div style="background:#FEECEC;border-left:4px solid #B83232;border-radius:6px;padding:12px 16px;margin-bottom:1rem;font-size:13px;color:#7A1F1F;font-weight:600">
-    ⚠️ NO CONFIABLE EN PESOS — usar solo como referencia direccional. Confirmado por reconciliación (ventana de gracia real de 7 días): este bloque solo detecta ~16% del MRR que Stripe reporta oficialmente como perdido cada mes. La causa es estructural, no un error de calibración — ver metodología arriba. Para el monto en pesos real, usar siempre la tabla de MRR Movement (pestaña MRR &amp; Retención).
+  <p style="font-size:12px;font-weight:500;color:var(--soma-gray);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem">¿De dónde viene el MRR perdido? (dato real)</p>
+  <div style="background:#E8F5F0;border-left:4px solid #1D9E75;border-radius:6px;padding:12px 16px;margin-bottom:1rem;font-size:13px;color:#04342C;font-weight:600">
+    ✅ Ahora sí es confiable en pesos — reconciliado contra MRR Movement oficial: 104.9% de cobertura (Ene–Jul 2026),
+    usando <code>Ended At</code> real en vez de inferencia por hueco de pago.
   </div>
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-label">MRR perdido · veteranos (pre-2026)</div><div class="kpi-val" id="origen-vet-val">$107,240</div><div class="kpi-sub" id="origen-vet-sub">110 clientes · 81% del MRR perdido detectado</div><span class="kpi-badge badge-red">Erosión de base antigua</span></div>
-    <div class="kpi"><div class="kpi-label">MRR perdido · nuevos (2026)</div><div class="kpi-val" id="origen-new-val">$25,290</div><div class="kpi-sub" id="origen-new-sub">25 clientes · 19% del MRR perdido detectado</div><span class="kpi-badge badge-yellow">Empezó en junio</span></div>
+    <div class="kpi"><div class="kpi-label">MRR perdido · veteranos (pre-2026)</div><div class="kpi-val" id="origen-vet-val">$875,870</div><div class="kpi-sub" id="origen-vet-sub">890 casos · 81% del MRR perdido (Ene–Ago)</div><span class="kpi-badge badge-red">Erosión de base antigua</span></div>
+    <div class="kpi"><div class="kpi-label">MRR perdido · nuevos (2026)</div><div class="kpi-val" id="origen-new-val">$203,860</div><div class="kpi-sub" id="origen-new-sub">208 casos · 19% del MRR perdido (Ene–Ago)</div><span class="kpi-badge badge-yellow">Crece con la base 2026</span></div>
   </div>
   <div class="card">
     <div class="card-title">MRR perdido por mes, origen del cliente</div>
-    <div class="card-sub">Ene–Jul 2026 · nuevo = primer pago en 2026 · veterano = primer pago antes de 2026 · ⚠️ solo ~16% del total real, ver advertencia arriba</div>
+    <div class="card-sub">Ene–Ago 2026 · nuevo = primer pago en 2026 · veterano = primer pago antes de 2026 · fuente: Ended At real</div>
     <div class="chart-wrap" style="height:260px"><canvas id="origenMrrChart"></canvas></div>
   </div>
   <div class="insight" id="origen-insight">
-    Ene–may: 100% de las cancelaciones detectadas son de veteranos — los clientes de 2026 todavía no llegaban a su primera
-    renovación. Jun–jul: aparecen las primeras cancelaciones de clientes 2026, justo cuando las cohortes de ene–feb
-    cumplían 5–6 meses. Los veteranos cancelan desde enero, <b>antes</b> de que existiera el self-service — esa función
-    no parece ser la causa raíz. <span style="color:#B83232;font-weight:700">Advertencia de confiabilidad (actualizada):
-    ya probamos la ventana de gracia real de Stripe (7 días, confirmada por el equipo) y el resultado no cambió — este
-    método sigue capturando solo ~16% del total oficial de "Pérdida" de MRR Movement. El patrón direccional (veteranos
-    primero, nuevos desde junio) probablemente se sostiene, pero ningún monto en pesos de este bloque debe usarse en
-    reportes o decisiones sin la advertencia de arriba.</span>
+    Los veteranos siguen siendo la mayor parte del MRR perdido todo el año (81% acumulado), y crecen en términos
+    absolutos mes a mes ($67K en enero → $178K en julio) — no es un problema que se esté resolviendo solo. El MRR
+    perdido de clientes nuevos (2026) también crece con el tiempo ($9K en enero → $56K en julio), lo cual es esperable
+    a medida que esas cohortes maduran y empiezan a tocar sus primeros puntos de cancelación.
   </div>
 </section>
 
@@ -680,54 +705,101 @@ mkChart('planDonut', {
 // $950 = plan Anual pagado en 12 cuotas · $1,050 = plan Semestral pagado en 6 cuotas.
 // "en_curso" = todavía dentro de su plazo esperado, no se puede juzgar. Actualizar reprocesando
 // unified_payments con la misma metodología cada vez que haya un export nuevo.
+// ── MOTIVO DE CANCELACIÓN (dato real: Cancellation Reason de Stripe) ─
+var MOTIVO_CANCELACION = {
+  months: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago'],
+  cancellation_requested: [54,41,49,49,56,74,125,155],
+  payment_failed: [24,22,33,57,78,113,113,55],
+  por_plan: [
+    {plan:'Cuotas $950 (Anual)', requested:123, failed:252},
+    {plan:'Cuotas $1,050 (Semestral)', requested:136, failed:135},
+    {plan:'Semestral contado', requested:273, failed:84},
+    {plan:'Anual contado', requested:71, failed:24},
+  ]
+};
+(function() {
+  var d = MOTIVO_CANCELACION;
+  var totReq = d.cancellation_requested.reduce(function(a,b){return a+b;},0);
+  var totFail = d.payment_failed.reduce(function(a,b){return a+b;},0);
+  var tot = totReq+totFail;
+  var e1v = document.getElementById('motivo-req-val'); if(e1v) e1v.textContent = totReq;
+  var e1s = document.getElementById('motivo-req-sub'); if(e1s) e1s.textContent = Math.round(totReq/tot*100)+'% · $593,820 MRR equiv. (Ene–Ago 2026)';
+  var e2v = document.getElementById('motivo-fail-val'); if(e2v) e2v.textContent = totFail;
+  var e2s = document.getElementById('motivo-fail-sub'); if(e2s) e2s.textContent = Math.round(totFail/tot*100)+'% · $485,910 MRR equiv. (Ene–Ago 2026)';
+
+  mkChart('motivoMesChart', {
+    type: 'bar',
+    data: {
+      labels: d.months,
+      datasets: [
+        {label:'Cancelación pedida', data:d.cancellation_requested, backgroundColor:'#378ADD', borderRadius:4},
+        {label:'Tarjeta rechazada', data:d.payment_failed, backgroundColor:'#EF9F27', borderRadius:4},
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'top',labels:{font:{size:11},boxWidth:12}},
+        tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+': '+ctx.raw;}}}},
+      scales:{
+        x:{grid:{display:false},border:{display:false},ticks:{color:'#7E7E87',font:{size:10}}},
+        y:{grid:{color:'rgba(0,0,0,0.05)'},border:{display:false},ticks:{color:'#7E7E87'}}
+      }
+    }
+  });
+})();
+
+// ── CUOTAS: completó su plazo vs. canceló antes (GROUND TRUTH) ───────
+// Fuente: Ended At (UTC) + Cancellation Reason de Stripe Subscriptions, cruzado contra
+// número real de pagos hechos (unified_payments) al momento de Ended At.
+// $950 = Anual (12 cuotas) · $1,050 = Semestral (6 cuotas).
 var CUOTAS_950 = { // Anual, 12 pagos esperados
-  updated: '27 ago 2026',
+  updated: '2 sept 2026 (ground truth: Ended At)',
   cohorts: [
-    {cohort:'2025-01', total:34, completo:23, cancelo:10, en_curso:1},
-    {cohort:'2025-02', total:32, completo:21, cancelo:10, en_curso:1},
-    {cohort:'2025-03', total:29, completo:12, cancelo:17, en_curso:0},
-    {cohort:'2025-04', total:11, completo:6,  cancelo:4,  en_curso:1},
-    {cohort:'2025-05', total:10, completo:6,  cancelo:4,  en_curso:0},
-    {cohort:'2025-06', total:19, completo:16, cancelo:3,  en_curso:0},
-    {cohort:'2025-07', total:18, completo:14, cancelo:4,  en_curso:0},
-    {cohort:'2025-08', total:12, completo:8,  cancelo:4,  en_curso:0},
-    {cohort:'2025-09', total:28, completo:3,  cancelo:13, en_curso:12},
-    {cohort:'2025-10', total:24, completo:0,  cancelo:2,  en_curso:22},
-    {cohort:'2025-11', total:33, completo:0,  cancelo:9,  en_curso:24},
-    {cohort:'2025-12', total:22, completo:0,  cancelo:1,  en_curso:21},
-    {cohort:'2026-01', total:23, completo:0,  cancelo:0,  en_curso:23},
-    {cohort:'2026-02', total:30, completo:0,  cancelo:4,  en_curso:26},
-    {cohort:'2026-03', total:29, completo:0,  cancelo:2,  en_curso:27},
-    {cohort:'2026-04', total:33, completo:0,  cancelo:4,  en_curso:29},
-    {cohort:'2026-05', total:36, completo:0,  cancelo:4,  en_curso:32},
-    {cohort:'2026-06', total:42, completo:0,  cancelo:3,  en_curso:39},
-    {cohort:'2026-07', total:58, completo:0,  cancelo:6,  en_curso:52},
-    {cohort:'2026-08', total:37, completo:0,  cancelo:0,  en_curso:37},
+    {cohort:'2025-01', total:105, completo:33, cancelo:71, en_curso:1},
+    {cohort:'2025-02', total:61,  completo:26, cancelo:34, en_curso:1},
+    {cohort:'2025-03', total:49,  completo:13, cancelo:36, en_curso:0},
+    {cohort:'2025-04', total:27,  completo:7,  cancelo:19, en_curso:1},
+    {cohort:'2025-05', total:32,  completo:6,  cancelo:26, en_curso:0},
+    {cohort:'2025-06', total:42,  completo:16, cancelo:26, en_curso:0},
+    {cohort:'2025-07', total:50,  completo:17, cancelo:33, en_curso:0},
+    {cohort:'2025-08', total:17,  completo:8,  cancelo:9,  en_curso:0},
+    {cohort:'2025-09', total:40,  completo:5,  cancelo:16, en_curso:19},
+    {cohort:'2025-10', total:38,  completo:2,  cancelo:17, en_curso:19},
+    {cohort:'2025-11', total:45,  completo:0,  cancelo:21, en_curso:24},
+    {cohort:'2025-12', total:27,  completo:0,  cancelo:6,  en_curso:21},
+    {cohort:'2026-01', total:31,  completo:0,  cancelo:8,  en_curso:23},
+    {cohort:'2026-02', total:32,  completo:0,  cancelo:6,  en_curso:26},
+    {cohort:'2026-03', total:34,  completo:0,  cancelo:7,  en_curso:27},
+    {cohort:'2026-04', total:44,  completo:0,  cancelo:14, en_curso:30},
+    {cohort:'2026-05', total:43,  completo:0,  cancelo:13, en_curso:30},
+    {cohort:'2026-06', total:49,  completo:0,  cancelo:10, en_curso:39},
+    {cohort:'2026-07', total:71,  completo:0,  cancelo:19, en_curso:52},
+    {cohort:'2026-08', total:58,  completo:0,  cancelo:14, en_curso:44},
   ]
 };
 var CUOTAS_1050 = { // Semestral, 6 pagos esperados
-  updated: '27 ago 2026',
+  updated: '2 sept 2026 (ground truth: Ended At)',
   cohorts: [
-    {cohort:'2025-01', total:25, completo:13, cancelo:12, en_curso:0},
-    {cohort:'2025-02', total:11, completo:8,  cancelo:3,  en_curso:0},
-    {cohort:'2025-03', total:10, completo:3,  cancelo:7,  en_curso:0},
-    {cohort:'2025-04', total:13, completo:7,  cancelo:6,  en_curso:0},
-    {cohort:'2025-05', total:7,  completo:6,  cancelo:1,  en_curso:0},
-    {cohort:'2025-06', total:8,  completo:3,  cancelo:5,  en_curso:0},
-    {cohort:'2025-07', total:7,  completo:4,  cancelo:3,  en_curso:0},
-    {cohort:'2025-08', total:4,  completo:1,  cancelo:3,  en_curso:0},
-    {cohort:'2025-09', total:9,  completo:5,  cancelo:4,  en_curso:0},
-    {cohort:'2025-10', total:11, completo:8,  cancelo:3,  en_curso:0},
-    {cohort:'2025-11', total:11, completo:5,  cancelo:6,  en_curso:0},
-    {cohort:'2025-12', total:12, completo:8,  cancelo:4,  en_curso:0},
-    {cohort:'2026-01', total:16, completo:6,  cancelo:10, en_curso:0},
-    {cohort:'2026-02', total:9,  completo:5,  cancelo:3,  en_curso:1},
-    {cohort:'2026-03', total:12, completo:0,  cancelo:7,  en_curso:5},
-    {cohort:'2026-04', total:13, completo:0,  cancelo:2,  en_curso:11},
-    {cohort:'2026-05', total:14, completo:0,  cancelo:1,  en_curso:13},
-    {cohort:'2026-06', total:19, completo:0,  cancelo:1,  en_curso:18},
-    {cohort:'2026-07', total:20, completo:0,  cancelo:0,  en_curso:20},
-    {cohort:'2026-08', total:22, completo:0,  cancelo:0,  en_curso:22},
+    {cohort:'2025-01', total:57, completo:21, cancelo:36, en_curso:0},
+    {cohort:'2025-02', total:27, completo:12, cancelo:15, en_curso:0},
+    {cohort:'2025-03', total:25, completo:6,  cancelo:19, en_curso:0},
+    {cohort:'2025-04', total:30, completo:13, cancelo:17, en_curso:0},
+    {cohort:'2025-05', total:13, completo:9,  cancelo:4,  en_curso:0},
+    {cohort:'2025-06', total:11, completo:4,  cancelo:7,  en_curso:0},
+    {cohort:'2025-07', total:10, completo:5,  cancelo:5,  en_curso:0},
+    {cohort:'2025-08', total:5,  completo:1,  cancelo:4,  en_curso:0},
+    {cohort:'2025-09', total:13, completo:6,  cancelo:7,  en_curso:0},
+    {cohort:'2025-10', total:17, completo:10, cancelo:7,  en_curso:0},
+    {cohort:'2025-11', total:17, completo:5,  cancelo:12, en_curso:0},
+    {cohort:'2025-12', total:18, completo:10, cancelo:8,  en_curso:0},
+    {cohort:'2026-01', total:23, completo:6,  cancelo:17, en_curso:0},
+    {cohort:'2026-02', total:14, completo:5,  cancelo:8,  en_curso:1},
+    {cohort:'2026-03', total:16, completo:0,  cancelo:6,  en_curso:10},
+    {cohort:'2026-04', total:14, completo:0,  cancelo:4,  en_curso:10},
+    {cohort:'2026-05', total:18, completo:0,  cancelo:5,  en_curso:13},
+    {cohort:'2026-06', total:21, completo:0,  cancelo:4,  en_curso:17},
+    {cohort:'2026-07', total:26, completo:0,  cancelo:7,  en_curso:19},
+    {cohort:'2026-08', total:30, completo:0,  cancelo:3,  en_curso:27},
   ]
 };
 
@@ -763,26 +835,26 @@ var CUOTAS_1050 = { // Semestral, 6 pagos esperados
   var e2 = document.getElementById('cuotas1050-val'); if (e2 && v1050!==null) e2.textContent = '~'+Math.round(v1050)+'%';
 })();
 
-// ── DE CONTADO: tasa de renovación al vencer el plazo ────────
+// ── DE CONTADO: estado real por cohorte (GROUND TRUTH) ───────────────
 // $5,940 = Semestral (6 meses) · $10,800 = Anual (12 meses), pagados de una vez.
-// Solo se incluyen cohortes cuyo plazo YA venció (+1 mes de margen) — no hay forma de ver cancelación a medio plazo.
+// Fuente: Status + Ended At de Stripe Subscriptions (ya no solo "¿pagó de nuevo?").
 var CONTADO_5940 = {
   cohorts: [
-    {cohort:'2025-01', total:22, renovaron:12}, {cohort:'2025-02', total:9,  renovaron:3},
-    {cohort:'2025-03', total:16, renovaron:5},  {cohort:'2025-04', total:11, renovaron:7},
-    {cohort:'2025-05', total:8,  renovaron:1},  {cohort:'2025-06', total:10, renovaron:5},
-    {cohort:'2025-07', total:8,  renovaron:3},  {cohort:'2025-08', total:5,  renovaron:2},
-    {cohort:'2025-09', total:11, renovaron:2},  {cohort:'2025-10', total:9,  renovaron:1},
-    {cohort:'2025-11', total:9,  renovaron:5},  {cohort:'2025-12', total:7,  renovaron:2},
-    {cohort:'2026-01', total:11, renovaron:5},
+    {cohort:'2025-01', total:45, renovaron:33}, {cohort:'2025-02', total:14, renovaron:8},
+    {cohort:'2025-03', total:24, renovaron:13}, {cohort:'2025-04', total:22, renovaron:18},
+    {cohort:'2025-05', total:12, renovaron:2},  {cohort:'2025-06', total:15, renovaron:10},
+    {cohort:'2025-07', total:12, renovaron:6},  {cohort:'2025-08', total:9,  renovaron:6},
+    {cohort:'2025-09', total:13, renovaron:4},  {cohort:'2025-10', total:13, renovaron:2},
+    {cohort:'2025-11', total:14, renovaron:10}, {cohort:'2025-12', total:10, renovaron:4},
+    {cohort:'2026-01', total:18, renovaron:11}, {cohort:'2026-02', total:27, renovaron:18},
   ]
 };
 var CONTADO_10800 = {
   cohorts: [
-    {cohort:'2025-01', total:8, renovaron:5}, {cohort:'2025-02', total:6, renovaron:0},
-    {cohort:'2025-03', total:9, renovaron:3}, {cohort:'2025-04', total:5, renovaron:0},
-    {cohort:'2025-05', total:5, renovaron:3}, {cohort:'2025-06', total:6, renovaron:2},
-    {cohort:'2025-07', total:4, renovaron:3},
+    {cohort:'2025-01', total:13, renovaron:10}, {cohort:'2025-02', total:6,  renovaron:0},
+    {cohort:'2025-03', total:14, renovaron:7},  {cohort:'2025-04', total:5,  renovaron:0},
+    {cohort:'2025-05', total:9,  renovaron:7},  {cohort:'2025-06', total:9,  renovaron:4},
+    {cohort:'2025-07', total:12, renovaron:11}, {cohort:'2025-08', total:9,  renovaron:4},
   ]
 };
 
@@ -790,7 +862,7 @@ var CONTADO_10800 = {
   function renderContadoTable(elId, data) {
     var tbl = document.getElementById(elId);
     if (!tbl) return;
-    tbl.innerHTML = '<thead><tr><th class="l">Cohorte</th><th>Clientes (plazo vencido)</th><th>Renovaron</th><th>% renovación</th></tr></thead>';
+    tbl.innerHTML = '<thead><tr><th class="l">Cohorte</th><th>Clientes</th><th>Renovaron</th><th>% renovación</th></tr></thead>';
     var body = tbl.createTBody();
     data.cohorts.forEach(function(c) {
       var pct = c.total>0 ? (c.renovaron/c.total*100) : 0;
@@ -811,6 +883,7 @@ var REV_MENSUAL = {
   monthLabels: ['Ene 25','Feb 25','Mar 25','Abr 25','May 25','Jun 25','Jul 25','Ago 25','Sep 25','Oct 25','Nov 25','Dic 25','Ene 26','Feb 26','Mar 26','Abr 26','May 26','Jun 26','Jul 26','Ago 26*'],
   bruto: [407652,271251,402861,347836,322260,397500,425617,396773,565589,489771,465684,541421,671722,575566,714845,666827,765658,955095,878620,827382],
   neto:  [385012,264261,385964,345836,321210,397500,425603,393836,563589,485771,465684,540471,663882,569626,704045,666827,748174,955095,859880,827382],
+  nuevos:[87,56,59,36,17,39,23,15,53,37,48,35,43,53,50,49,65,95,85,76],
 };
 (function() {
   var d = REV_MENSUAL;
@@ -820,27 +893,33 @@ var REV_MENSUAL = {
     data: {
       labels: d.monthLabels,
       datasets: [
-        {label:'Bruto', data:d.bruto, backgroundColor:'#A6BAC2', borderRadius:4},
-        {label:'Neto', data:d.neto, backgroundColor:'#FF8D6B', borderRadius:4},
+        {label:'Bruto', data:d.bruto, backgroundColor:'#A6BAC2', borderRadius:4, order:2, yAxisID:'y'},
+        {label:'Neto', data:d.neto, backgroundColor:'#FF8D6B', borderRadius:4, order:2, yAxisID:'y'},
+        {label:'Nuevos miembros de pago', data:d.nuevos, type:'line', borderColor:'#171717', backgroundColor:'#171717', borderWidth:2, pointRadius:3, pointBackgroundColor:'#171717', tension:.3, order:1, yAxisID:'y1'},
       ]
     },
     options: {
       responsive:true, maintainAspectRatio:false,
       plugins:{legend:{display:true,position:'top',labels:{font:{size:11},boxWidth:12}},
-        tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+': '+fmtMx(ctx.raw);}}}},
+        tooltip:{callbacks:{label:function(ctx){
+          if (ctx.dataset.yAxisID==='y1') return ctx.dataset.label+': '+ctx.raw;
+          return ctx.dataset.label+': '+fmtMx(ctx.raw);
+        }}}},
       scales:{
         x:{grid:{display:false},border:{display:false},ticks:{color:'#7E7E87',font:{size:9},maxRotation:60,minRotation:60}},
-        y:{grid:{color:'rgba(0,0,0,0.05)'},border:{display:false},ticks:{color:'#7E7E87',callback:function(v){return '$'+(v/1000)+'k';}}}
+        y:{position:'left',grid:{color:'rgba(0,0,0,0.05)'},border:{display:false},ticks:{color:'#7E7E87',callback:function(v){return '$'+(v/1000)+'k';}}},
+        y1:{position:'right',grid:{display:false},border:{display:false},ticks:{color:'#171717',stepSize:20},title:{display:true,text:'Nuevos miembros',color:'#171717',font:{size:10}}}
       }
     }
   });
 })();
 
-// ── ORIGEN DEL MRR PERDIDO (nuevos 2026 vs. veteranos) ───────
+// ── ORIGEN DEL MRR PERDIDO (nuevos 2026 vs. veteranos) — GROUND TRUTH ─
+// Fuente: Ended At real de Stripe Subscriptions, cruzado con cohorte de primer pago (año).
 var ORIGEN_MRR = {
-  months: ['Ene','Feb','Mar','Abr','May','Jun','Jul'],
-  veteranos: [10640, 12280, 15850, 11430, 16580, 16770, 23690],
-  nuevos:    [0, 950, 0, 0, 0, 9150, 15190],
+  months: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago'],
+  veteranos: [67560, 55710, 75340, 87280, 115000, 143960, 177510, 153510],
+  nuevos:    [8760, 5730, 4980, 17520, 16910, 39950, 56460, 53550],
 };
 (function() {
   var d = ORIGEN_MRR;
@@ -869,46 +948,48 @@ var ORIGEN_MRR = {
 // ── TRIALS & MEMBRESÍAS ─────────────────────────────────────
 // Única fuente a actualizar con cada base nueva de Stripe Subscriptions.
 var SUBS_SNAPSHOT = {
-  updated: ASOF,
-  trials_total: 146,
-  trials_mrr_potencial: 356470,
+  updated: '2 sept 2026',
+  trials_total: 139,
+  trials_mrr_potencial: 359560,
   trials_buckets: [
-    {label:'0–10 días', n:72, color:'#DC2626'},
-    {label:'11–20 días', n:50, color:'#EF9F27'},
-    {label:'21–30 días', n:24, color:'#1D9E75'}
+    {label:'0–10 días', n:75, color:'#DC2626'},
+    {label:'11–20 días', n:43, color:'#EF9F27'},
+    {label:'21–30 días', n:21, color:'#1D9E75'}
   ],
   membresias_por_tipo: [
-    {label:'Cuotas $950', n:458, color:'#A6BAC2'},
-    {label:'Anual', n:214, color:'#1D9E75'},
-    {label:'Semestral', n:176, color:'#378ADD'},
-    {label:'Trial', n:146, color:'#FF8D6B', esTrial:true},
-    {label:'Cuotas $1,050', n:124, color:'#EF9F27'}
+    {label:'Cuotas $950', n:473, color:'#A6BAC2'},
+    {label:'Anual', n:223, color:'#1D9E75'},
+    {label:'Semestral', n:182, color:'#378ADD'},
+    {label:'Trial', n:139, color:'#FF8D6B', esTrial:true},
+    {label:'Cuotas $1,050', n:138, color:'#EF9F27'}
   ],
   altas_por_mes: [
-    {label:'Ene', n:92},
-    {label:'Feb', n:78},
-    {label:'Mar', n:93},
-    {label:'Abr', n:102},
-    {label:'May', n:145},
-    {label:'Jun', n:130},
-    {label:'Jul', n:223}
+    {label:'Ene', n:143},
+    {label:'Feb', n:122},
+    {label:'Mar', n:145},
+    {label:'Abr', n:182},
+    {label:'May', n:275},
+    {label:'Jun', n:238},
+    {label:'Jul', n:273},
+    {label:'Ago', n:247},
+    {label:'Sep', n:19}
   ],
-  past_due_mrr: 28670,
+  past_due_mrr: 23350,
   past_due: [
-    {nombre:'Daniel Melo Arriag', email:'melodma73@gmail.com', tel:'+525554002708', plan:'Semestral'},
-    {nombre:'LUIS ERNESTO RODRÍGUEZ CALA', email:'lerguez23@gmail.com', tel:'+525539785369', plan:'Semestral'},
-    {nombre:'Eduardo Diaz', email:'eduhernandez290802@gmail.com', tel:null, plan:'Cuotas $1,050'},
-    {nombre:'Veronica Barrios Romero', email:'veronicabarrios580@gmail.com', tel:'5530442764', plan:'Semestral'},
-    {nombre:'Alessa Fitz', email:'alessafitz@gmail.com', tel:null, plan:'Cuotas $1,050'},
-    {nombre:'CLAUDIA JAQUELINE ARCE JIMENEZ', email:'claudia.arcemkt@gmail.com', tel:'+525563190150', plan:'Cuotas $1,050'},
-    {nombre:'Marianela Valdez', email:'marianela_valdez@mac.com', tel:'+525544943179', plan:'Cuotas $950'},
-    {nombre:'Sergio Ochoa', email:'oigrese4@gmail.com', tel:'+525518782042', plan:'Cuotas $950'},
-    {nombre:'Jorge alberto Ochoa sanchez', email:'jorgeochma@hotmail.com', tel:'+528718869963', plan:'Cuotas $950'},
-    {nombre:'Ricardo Belmont', email:'licbelmonts@gmail.com', tel:'+525514528709', plan:'Cuotas $950'},
-    {nombre:'Reinhard Suchowitzki', email:'r.suchowitzki@gmail.com', tel:'5662292900', plan:'Cuotas $950'},
-    {nombre:'Dalia Rincon', email:'daliarncn@icloud.com', tel:'+18583195224', plan:'Cuotas $1,050'},
-    {nombre:'Daira Borden Vazquez', email:'dairav.borden@gmail.com', tel:'5528646194', plan:'Cuotas $950'},
-    {nombre:'Rafael Gutierrez', email:'rafagut1177@gmail.com', tel:'+525552152276', plan:'Cuotas $950'}
+    {nombre:'Rogerio Espindola Herrera', email:'mujermaravilla1984ww@icloud.com', tel:'+525531035883', plan:'Anual'},
+    {nombre:'German Torres Santiago', email:'germantorressantiago@gmail.com', tel:'+525579465864', plan:'Cuotas $1,050'},
+    {nombre:'Omar Plomares', email:'oplomares@gmail.com', tel:'+525550325034', plan:'Cuotas $950'},
+    {nombre:'Armando Ramire', email:'avenidacentral18@gmail.com', tel:'+525661042800', plan:'Cuotas $950'},
+    {nombre:'José David PEDRAZA', email:'contactojosedapedraza@gmail.com', tel:'+525518902806', plan:'Cuotas $950'},
+    {nombre:'Isaac Anastacio', email:'isaacab858@gmail.com', tel:'+525521963408', plan:'Cuotas $950'},
+    {nombre:'Isela Trevino', email:'iselatrevino@me.com', tel:'5525591145', plan:'Cuotas $950'},
+    {nombre:'Diego Alejandro Galicia Iniesta', email:'diego.iniesta@pipetlab.com', tel:'+525539075057', plan:'Cuotas $950'},
+    {nombre:'Paola Benavent Hernández', email:'benavent.paola@gmail.com', tel:'+522224267682', plan:'Cuotas $950'},
+    {nombre:'Fernando Paniagua', email:'alcoholespame@gmail.com', tel:'+525574741359', plan:'Cuotas $950'},
+    {nombre:'Joaquín Bernal Santos', email:'joacobernals@gmail.com', tel:'+525579297319', plan:'Cuotas $950'},
+    {nombre:'Santiago Cores', email:'s.coreshernandez@gmail.com', tel:'+525536504992', plan:'Cuotas $1,050'},
+    {nombre:'Philippe Olin Frot Mora', email:'philippefrot@gmail.com', tel:'+522213007057', plan:'Cuotas $950'},
+    {nombre:'Claudia Ramirez', email:'ccramirezperez@icloud.com', tel:'5566943668', plan:'Cuotas $950'}
   ]
 };
 
