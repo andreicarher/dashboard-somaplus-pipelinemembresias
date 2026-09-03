@@ -69,7 +69,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <button class="nav-item" onclick="show('pipeline',this)"><span class="dot"></span><span>Pipeline</span></button>
     <button class="nav-item" onclick="show('mrr',this)"><span class="dot"></span><span>MRR &amp; Retención</span></button>
     <button class="nav-item" onclick="show('backlog',this)"><span class="dot"></span><span>SQL Pendientes</span></button>
-    <button class="nav-item" onclick="show('utms',this)"><span class="dot"></span><span>Atribución</span></button>
     <button class="nav-item" onclick="show('trials',this)"><span class="dot"></span><span>Trials &amp; Membresías</span></button>
     <button class="nav-item" onclick="show('retencion-ingresos',this)"><span class="dot"></span><span>Retención de Ingresos</span></button>
     <button class="nav-item" onclick="show('ciclovida',this)"><span class="dot"></span><span>Ciclo de vida</span></button>
@@ -175,7 +174,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="two-col">
     <div class="card">
       <div class="card-title">MRR real + proyección diciembre</div>
-      <div class="card-sub">Conservador +$27K/mes · Base +$38.9K/mes</div>
+      <div class="card-sub">Conservador +$35K/mes · Base +$43.4K/mes (prom. crecimiento real 2026)</div>
       <div class="chart-wrap" style="height:200px"><canvas id="mrrProy"></canvas></div>
     </div>
     <div class="card">
@@ -215,46 +214,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </section>
 
 <!-- UTMs -->
-<section class="section" id="utms">
-  <div class="page-title">Atribución y creatives</div>
-  <div class="page-sub" id="utms-page-sub">UTMs consolidados · cobertura 49.2% · Lead y Subscriber excluidos</div>
-  <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-label">Mejor CR E2E por fuente</div><div class="kpi-val">30.3%</div><div class="kpi-sub">tiktok (n=66) · 33.3% aplic→trial</div><span class="kpi-badge badge-green">Mayor eficiencia</span></div>
-    <div class="kpi"><div class="kpi-label">Mayor volumen</div><div class="kpi-val">Instagram</div><div class="kpi-sub">572 aplic · CR E2E 21.0%</div><span class="kpi-badge badge-blue">69% del tráfico con UTM</span></div>
-    <div class="kpi"><div class="kpi-label">Alerta cobertura</div><div class="kpi-val">50.8%</div><div class="kpi-sub">Sin UTM — sin atribución</div><span class="kpi-badge badge-red">Objetivo: &lt;30%</span></div>
-  </div>
-  <div class="two-col">
-    <div class="card">
-      <div class="card-title">CR E2E por fuente</div>
-      <div class="card-sub">Aplicantes → customers</div>
-      <div id="source-bars"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">CR E2E por medio</div>
-      <div class="card-sub">Aplicantes → customers</div>
-      <div id="medium-bars"></div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-title">Mejores campañas por trials y customers generados</div>
-    <div class="card-sub">Campañas con ≥10 aplicantes · ordenadas por customers generados</div>
-    <div style="overflow-x:auto"><table class="tbl" id="campaign-table"></table></div>
-  </div>
-  <div class="two-col">
-    <div class="card">
-      <div class="card-title">Top creatives por CR E2E</div>
-      <div class="card-sub">Contenidos con ≥5 aplicantes</div>
-      <div id="creative-bars"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Volumen vs. CR por creative</div>
-      <div class="card-sub">Eje X: aplicantes · Eje Y: CR E2E% · tamaño = customers generados</div>
-      <div class="chart-wrap" style="height:280px"><canvas id="scatterChart"></canvas></div>
-    </div>
-  </div>
-  <div class="insight" id="utms-insight">Por volumen: "RO_MX_LEA_PRO_AplicaciónWebMembresía" domina — genera más trials (61) y más customers (53) que cualquier otra campaña, con CR E2E sólido (30.1%). Le siguen "...INFLUENCER" (25 trials, 24 customers) y "...INFLUENCER Open Advantage" (23 trials, pero solo 13 customers — se cae más entre trial y pago). Por eficiencia (CR%, bajo volumen): "RO_MX_LEA_PRO_MembresíaSOMA+" y "RO_MX_VID_BRA_VideoViews" convierten mejor pero con pocos aplicantes.</div>
-</section>
-
 <!-- RENOVACIONES -->
 <!-- TRIALS & MEMBRESÍAS -->
 <section class="section" id="trials">
@@ -422,7 +381,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- CICLO DE VIDA -->
 <section class="section" id="ciclovida">
   <div class="page-title">Ciclo de vida del miembro</div>
-  <div class="page-sub" id="ciclo-page-sub">Desde la aplicación hasta el pago · Fuente: AC base 8 jul 2026</div>
+  <div class="page-sub" id="ciclo-page-sub">Desde la aplicación hasta el pago · Fuente: AC base 1 sept 2026</div>
   <div class="kpi-grid">
     <div class="kpi"><div class="kpi-label">Ciclo total promedio</div><div class="kpi-val">35.2d</div><div class="kpi-sub">Aplicación → primer pago · mediana 18.0d</div><span class="kpi-badge badge-blue">~5 semanas</span></div>
     <div class="kpi"><div class="kpi-label">Etapa más larga</div><div class="kpi-val">Trial → Cust</div><div class="kpi-sub">Media 21.7d · mediana 15.0d</div><span class="kpi-badge badge-yellow">Determina el ciclo</span></div>
@@ -1364,26 +1323,30 @@ if (mmtbl) {
     var bg = r.parcial?'background:#FFFDF5;':'';
     mmb.innerHTML += '<tr style="'+bg+'"><td class="l" style="font-weight:600">'+r.mes+pb+'</td><td style="color:#7E7E87">'+fmtP(r.inicio)+'</td><td style="color:#1D9E75">+'+fmtP(r.nuevo)+'</td><td style="color:#378ADD">+'+fmtP(r.reac)+'</td><td style="color:#C07A00">+'+fmtP(r.expan)+'</td><td style="color:#DC2626">-'+fmtP(r.perdida)+'</td><td style="color:#EF9F27">-'+fmtP(r.contrac)+'</td><td style="font-weight:600;color:'+nc+'">'+(r.neto>=0?'+':'')+fmtP(r.neto)+'</td><td style="font-weight:600">'+fmtP(r.cierre)+'</td></tr>';
   });
-  var tN=MRR_MOV.filter(function(r){return !r.parcial;}).reduce(function(s,r){return s+r.nuevo;},0)/6;
-  var tR=MRR_MOV.filter(function(r){return !r.parcial;}).reduce(function(s,r){return s+r.reac;},0)/6;
-  var tP=MRR_MOV.filter(function(r){return !r.parcial;}).reduce(function(s,r){return s+r.perdida;},0)/6;
-  var tNet=MRR_MOV.filter(function(r){return !r.parcial;}).reduce(function(s,r){return s+r.neto;},0)/6;
+  var closedRows = MRR_MOV.filter(function(r){return !r.parcial;});
+  var nClosed = closedRows.length;
+  var tN=closedRows.reduce(function(s,r){return s+r.nuevo;},0)/nClosed;
+  var tR=closedRows.reduce(function(s,r){return s+r.reac;},0)/nClosed;
+  var tP=closedRows.reduce(function(s,r){return s+r.perdida;},0)/nClosed;
+  var tNet=closedRows.reduce(function(s,r){return s+r.neto;},0)/nClosed;
   mmb.innerHTML += '<tr class="tr-tot"><td class="l">Prom/mes</td><td>—</td><td style="color:#1D9E75">+'+fmtP(Math.round(tN))+'</td><td style="color:#378ADD">+'+fmtP(Math.round(tR))+'</td><td>—</td><td style="color:#DC2626">-'+fmtP(Math.round(tP))+'</td><td>—</td><td style="font-weight:700;color:#1D9E75">+'+fmtP(Math.round(tNet))+'</td><td>—</td></tr>';
 }
 
 var pL=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+var avgNetoCerrado = MRR_MOV.filter(function(r){return !r.parcial;}).reduce(function(s,r){return s+r.neto;},0) / MRR_MOV.filter(function(r){return !r.parcial;}).length;
+var CONSERVADOR_MENSUAL = 35000; // escenario fijo conservador, $35,000 MXN/mes
 var cs=[null,null,null,null,null,null,null,null,758440],bs=[null,null,null,null,null,null,null,null,758440];
 var cv=758440,bv=758440;
-for(var i=0;i<3;i++){cv+=28706;bv+=41353;cs.push(Math.round(cv));bs.push(Math.round(bv));}
+for(var i=0;i<3;i++){cv+=CONSERVADOR_MENSUAL;bv+=avgNetoCerrado;cs.push(Math.round(cv));bs.push(Math.round(bv));}
 mkChart('mrrProy',{
   type:'line',
   data:{labels:pL,datasets:[
     {label:'Real',data:[443330,458550,507380,531540,589760,645660,701640,759510,758440,null,null,null],borderColor:'#FF8D6B',backgroundColor:'rgba(255,141,107,0.1)',tension:.3,pointRadius:4,fill:true,borderWidth:2.5},
-    {label:'Conservador',data:cs,borderColor:'#EF9F27',backgroundColor:'transparent',tension:.3,pointRadius:3,borderDash:[5,4],borderWidth:1.5},
-    {label:'Base',data:bs,borderColor:'#378ADD',backgroundColor:'transparent',tension:.3,pointRadius:3,borderWidth:2}
+    {label:'Conservador ($35K/mes)',data:cs,borderColor:'#EF9F27',backgroundColor:'transparent',tension:.3,pointRadius:3,borderDash:[5,4],borderWidth:1.5},
+    {label:'Base (prom. crecimiento 2026)',data:bs,borderColor:'#378ADD',backgroundColor:'transparent',tension:.3,pointRadius:3,borderWidth:2}
   ]},
   options:{responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return ctx.raw?ctx.dataset.label+': $'+Math.round(ctx.raw/1000)+'K':null;}}}},
+    plugins:{legend:{display:true,position:'bottom',labels:{font:{size:10},boxWidth:12}},tooltip:{callbacks:{label:function(ctx){return ctx.raw?ctx.dataset.label+': $'+Math.round(ctx.raw/1000)+'K':null;}}}},
     scales:{
       x:{grid:{display:false},border:{display:false},ticks:{color:'#7E7E87'}},
       y:{grid:{color:'rgba(0,0,0,0.05)'},border:{display:false},ticks:{color:'#7E7E87',callback:function(v){return '$'+v/1000+'K';}},min:380000}
@@ -1444,61 +1407,7 @@ if (agingEl) {
   }).join('');
 }
 
-// ── UTMs ────────────────────────────────────────────────────
-var srcBars = document.getElementById('source-bars');
-if (srcBars) {
-  var srcColors={'ig':'#7B6EF6','fb':'#378ADD','tiktok':'#1D9E75','influencer':'#FF8D6B','activecampaign':'#A6BAC2'};
-  srcBars.innerHTML = DATA.utms_source.map(function(s){
-    var col=srcColors[s.source]||'#888';
-    return '<div class="bar-wrap"><div class="bar-label">'+s.source+' <span style="font-size:10px;color:#7E7E87">(n='+s.aplic+')</span></div><div class="bar-bg"><div class="bar-fill" style="width:'+(s.cr*2)+'%;background:'+col+'"></div></div><div class="bar-val" style="color:'+col+'">'+s.cr+'%</div></div>';
-  }).join('');
-}
-
-var medBars = document.getElementById('medium-bars');
-if (medBars) {
-  var medColors={'paid':'#378ADD','social':'#7B6EF6','organic':'#1D9E75','email':'#FF8D6B'};
-  medBars.innerHTML = DATA.utms_medium.map(function(m){
-    var col=medColors[m.medium]||'#888';
-    return '<div class="bar-wrap"><div class="bar-label">'+m.medium+' <span style="font-size:10px;color:#7E7E87">(n='+m.aplic+')</span></div><div class="bar-bg"><div class="bar-fill" style="width:'+(m.cr*2)+'%;background:'+col+'"></div></div><div class="bar-val" style="color:'+col+'">'+m.cr+'%</div></div>';
-  }).join('');
-}
-
-var campTbl = document.getElementById('campaign-table');
-if (campTbl) {
-  campTbl.innerHTML = '<thead><tr><th class="l">Campaña</th><th>Aplic.</th><th>Trials</th><th>Customers</th><th>CR aplic→trial</th><th>CR E2E</th></tr></thead>';
-  var campBody = campTbl.createTBody();
-  var campSorted = DATA.utms_campaign.slice().sort(function(a,b){ return b.cust - a.cust || b.trial - a.trial; });
-  campSorted.forEach(function(c) {
-    var crE2Ecol = c.cr>=30?'#1D9E75':c.cr>=15?'#378ADD':c.cr>=8?'#EF9F27':'#DC2626';
-    campBody.innerHTML += '<tr><td class="l" title="'+c.name+'" style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+c.name+'</td><td>'+c.aplic+'</td><td style="font-weight:600;color:#185FA5">'+c.trial+'</td><td style="font-weight:700;color:#1D9E75">'+c.cust+'</td><td>'+c.cr_trial+'%</td><td style="color:'+crE2Ecol+';font-weight:500">'+c.cr+'%</td></tr>';
-  });
-}
-
-var crBars = document.getElementById('creative-bars');
-if (crBars) {
-  var tc = DATA.utms_content.slice(0,10);
-  var mxCR = Math.max.apply(null, tc.map(function(c){return c.cr;}));
-  crBars.innerHTML = tc.map(function(c){
-    var col=c.cr>=50?'#1D9E75':c.cr>=30?'#378ADD':c.cr>=15?'#EF9F27':'#DC2626';
-    return '<div class="bar-wrap"><div class="bar-label" title="'+c.name+'">'+c.name+' <span style="font-size:10px;color:#7E7E87">(n='+c.aplic+')</span></div><div class="bar-bg"><div class="bar-fill" style="width:'+Math.round(c.cr/mxCR*100)+'%;background:'+col+'"></div></div><div class="bar-val" style="color:'+col+'">'+c.cr+'%</div></div>';
-  }).join('');
-}
-
-var scatterData = DATA.utms_content.filter(function(c){return c.aplic>=5;}).map(function(c){
-  return {x:c.aplic, y:c.cr, r:Math.max(6,Math.sqrt(c.cust)*4), label:c.name};
-});
-mkChart('scatterChart',{
-  type:'bubble',
-  data:{datasets:[{data:scatterData,backgroundColor:'rgba(166,186,194,0.6)',borderColor:'#A6BAC2',borderWidth:1}]},
-  options:{
-    responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return ctx.raw.label+' — '+ctx.raw.x+' aplic · '+ctx.raw.y+'% CR';}}}},
-    scales:{
-      x:{grid:{color:'rgba(0,0,0,0.05)'},border:{display:false},ticks:{color:'#7E7E87'},title:{display:true,text:'Aplicantes',color:'#7E7E87',font:{size:11}}},
-      y:{grid:{color:'rgba(0,0,0,0.05)'},border:{display:false},ticks:{color:'#7E7E87',callback:function(v){return v+'%';}},title:{display:true,text:'CR E2E %',color:'#7E7E87',font:{size:11}}}
-    }
-  }
-});
+// ── FIN: pipeline dinámico, sección Atribución retirada ──────
 
 }); // end window.addEventListener('load')
 
