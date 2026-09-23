@@ -256,7 +256,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="card">
     <div class="card-title">Ingresos de membresía por mes — bruto, neto y nuevos miembros de pago</div>
-    <div class="card-sub" id="revmensual-card-sub">Ene 2025–Sep 2026* · barras: bruto = todos los pagos de membresía, neto = bruto − reembolsos · línea: primer pago válido de cada cliente ese mes · reembolsos confirmados hasta el 4 sept 2026 · Sep 2026 es parcial (solo hasta el día 10)</div>
+    <div class="card-sub" id="revmensual-card-sub">Ene 2025–Sep 2026* · barras: bruto = todos los pagos de membresía, neto = bruto − reembolsos · línea: primer pago válido de cada cliente ese mes · reembolsos confirmados hasta el 4 sept 2026 · Sep 2026 es parcial (solo hasta el día 23)</div>
     <div class="chart-wrap" style="height:320px"><canvas id="revMensualChart"></canvas></div>
   </div>
   <div class="insight" id="revmensual-insight">
@@ -264,8 +264,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     histórico) — pero los nuevos miembros de pago no crecieron al mismo ritmo (87→93 en ese rango) — el ingreso está
     creciendo más por <b>acumulación de base y renovaciones</b> que por una aceleración proporcional de adquisición.
     Los reembolsos son consistentemente chicos frente al bruto (típicamente &lt;3%), incluyendo agosto ($1,900) y
-    septiembre ($1,050) — ya con datos reales, no supuestos. Septiembre es parcial (solo hasta el día 10) — no sacar
-    conclusiones de ese punto todavía.
+    septiembre ($1,050) — ya con datos reales, no supuestos. Septiembre lleva $805K neto en 23 días — a ese ritmo
+    terminaría por debajo de agosto, pero aún faltan días de cierre de mes (que suelen concentrar renovaciones) para
+    saberlo con certeza.
   </div>
 
   <div style="background:#E8F5F0;border-left:4px solid #1D9E75;border-radius:6px;padding:12px 16px;margin-bottom:1.25rem;font-size:13px;color:#04342C;font-weight:600">
@@ -750,9 +751,9 @@ var CONTADO_10800 = {
 var REV_MENSUAL = {
   months: ['2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08','2026-09'],
   monthLabels: ['Ene 25','Feb 25','Mar 25','Abr 25','May 25','Jun 25','Jul 25','Ago 25','Sep 25','Oct 25','Nov 25','Dic 25','Ene 26','Feb 26','Mar 26','Abr 26','May 26','Jun 26','Jul 26','Ago 26','Sep 26*'],
-  bruto: [407652,271251,402861,347836,322260,397500,425617,396773,565589,489771,465684,541421,671722,575566,714845,666827,765658,955095,878620,979452,294725],
-  neto:  [385012,264261,385964,346886,321210,397500,425603,393836,563589,485771,465684,541421,664832,575566,704045,666827,748174,955095,859880,977552,293675],
-  nuevos:[87,56,59,36,17,39,23,15,53,37,48,35,43,53,50,49,65,95,85,93,26],
+  bruto: [407652,271251,402861,347836,322260,397500,425617,396773,565589,489771,465684,541421,671722,575566,714845,666827,765658,955095,878620,979452,806359],
+  neto:  [385012,264261,385964,346886,321210,397500,425603,393836,563589,485771,465684,541421,664832,575566,704045,666827,748174,955095,859880,977552,805309],
+  nuevos:[87,56,59,36,17,39,23,15,53,37,48,35,43,53,50,49,65,95,85,93,62],
 };
 (function() {
   var d = REV_MENSUAL;
