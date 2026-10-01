@@ -390,7 +390,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- NUEVOS POR PLAN -->
 <section class="section" id="nuevos-por-plan">
   <div class="page-title">Nuevos miembros de pago por plan</div>
-  <div class="page-sub">Primer pago válido de cada cliente, por mes · Fuente: Stripe Payments (histórico completo)</div>
+  <div class="page-sub">Primer pago válido de cada cliente, por mes · Fuente: Stripe Payments (histórico completo) · "Reactivados (Winback)" son clientes que ya habían pagado antes, cancelaron, y regresaron con cupón de descuento — no cuentan como nuevos</div>
 
   <div class="card">
     <div class="card-title">Selecciona un mes</div>
@@ -830,10 +830,15 @@ var NUEVOS_POR_PLAN = {
   cuotas1050: [23,11,9,12,5,7,5,0,9,10,11,8,11,8,11,9,12,17,20,26,19,1],
   semestral:  [22,9,14,9,6,10,6,4,11,6,8,7,6,14,13,8,9,23,8,17,13,0],
   anual:      [8,6,8,5,3,4,4,5,13,3,3,8,7,9,6,6,12,17,9,9,7,0],
+  // Reactivados vía cupón Winback (XKZUrVaW, 1q57QXHO) — clientes que YA habían pagado antes,
+  // canceraron, y regresaron con 15% de descuento. No son "nuevos" (no es su primer pago nunca),
+  // por eso van en categoría aparte, no restan de las demas series.
+  reactivados: [0,0,0,0,0,0,0,0,5,1,0,0,0,0,0,0,0,0,0,0,7,1],
 };
 var PLAN_COLORS = {
   'Cuotas $950 (Anual)': '#A6BAC2',
   'Cuotas $1,050 (Semestral)': '#EF9F27',
+  'Reactivados (Winback)': '#7B6EF6',
   'Semestral contado': '#378ADD',
   'Anual contado': '#1D9E75',
 };
@@ -849,19 +854,25 @@ var PLAN_COLORS = {
       'Cuotas $1,050 (Semestral)': d.cuotas1050[idx],
       'Semestral contado': d.semestral[idx],
       'Anual contado': d.anual[idx],
+      'Reactivados (Winback)': d.reactivados[idx],
     };
   }
 
   function renderMonth(idx) {
     var m = getMonthData(idx);
-    var planes = ['Cuotas $950 (Anual)','Cuotas $1,050 (Semestral)','Semestral contado','Anual contado'];
+    var planesNuevos = ['Cuotas $950 (Anual)','Cuotas $1,050 (Semestral)','Semestral contado','Anual contado'];
+    var totalNuevos = planesNuevos.reduce(function(s,p){return s+m[p];},0);
+    var totalReact = m['Reactivados (Winback)'];
+    var planes = totalReact > 0 ? planesNuevos.concat(['Reactivados (Winback)']) : planesNuevos;
     var valores = planes.map(function(p){ return m[p]; });
-    var total = valores.reduce(function(a,b){return a+b;},0);
+    var total = totalNuevos + totalReact;
 
     var titleEl = document.getElementById('nuevos-pie-title');
     if (titleEl) titleEl.textContent = 'Desglose por tipo de membresía — ' + m.label;
     var subEl = document.getElementById('nuevos-pie-sub');
-    if (subEl) subEl.textContent = total + ' nuevos miembros ese mes';
+    if (subEl) subEl.textContent = totalReact > 0
+      ? totalNuevos + ' nuevos miembros + ' + totalReact + ' reactivados (Winback) ese mes'
+      : totalNuevos + ' nuevos miembros ese mes';
 
     if (pieChartInstance) pieChartInstance.destroy();
     var ctx = document.getElementById('nuevosPlanPie');
@@ -920,6 +931,7 @@ var PLAN_COLORS = {
         {label:'Cuotas $1,050 (Semestral)', data:d.cuotas1050, backgroundColor:PLAN_COLORS['Cuotas $1,050 (Semestral)'], stack:'s'},
         {label:'Semestral contado', data:d.semestral, backgroundColor:PLAN_COLORS['Semestral contado'], stack:'s'},
         {label:'Anual contado', data:d.anual, backgroundColor:PLAN_COLORS['Anual contado'], stack:'s'},
+        {label:'Reactivados (Winback)', data:d.reactivados, backgroundColor:PLAN_COLORS['Reactivados (Winback)'], stack:'s'},
       ]
     },
     options: {
