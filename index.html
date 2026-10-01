@@ -302,10 +302,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 
   <p style="font-size:12px;font-weight:500;color:var(--soma-gray);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem">¿Por qué cancelan? — motivo real (Stripe)</p>
-  <p style="font-size:11px;color:var(--soma-gray);margin:-.5rem 0 .75rem">Actualizado 24 sept 2026 — deduplicado (37 filas repetidas) y excluyendo 3 casos con tarjeta pendiente de actualizar por más de 15 días.</p>
+  <p style="font-size:11px;color:var(--soma-gray);margin:-.5rem 0 .75rem">Actualizado 1 oct 2026 — deduplicado (37 filas repetidas) y excluyendo 3 casos con tarjeta pendiente de actualizar por más de 15 días.</p>
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-label">Cancelación pedida</div><div class="kpi-val" id="motivo-req-val">731</div><div class="kpi-sub" id="motivo-req-sub">58% · $719,610 MRR equiv. (Ene–Sep* 2026)</div><span class="kpi-badge badge-blue">Cliente o Concierge</span></div>
-    <div class="kpi"><div class="kpi-label">Tarjeta rechazada</div><div class="kpi-val" id="motivo-fail-val">536</div><div class="kpi-sub" id="motivo-fail-sub">42% · $526,000 MRR equiv. (Ene–Sep* 2026)</div><span class="kpi-badge badge-yellow">Stripe la dio de baja sola</span></div>
+    <div class="kpi"><div class="kpi-label">Cancelación pedida</div><div class="kpi-val" id="motivo-req-val">774</div><div class="kpi-sub" id="motivo-req-sub">59% · $762,110 MRR equiv. (Ene–Oct* 2026)</div><span class="kpi-badge badge-blue">Cliente o Concierge</span></div>
+    <div class="kpi"><div class="kpi-label">Tarjeta rechazada</div><div class="kpi-val" id="motivo-fail-val">549</div><div class="kpi-sub" id="motivo-fail-sub">41% · $538,950 MRR equiv. (Ene–Oct* 2026)</div><span class="kpi-badge badge-yellow">Stripe la dio de baja sola</span></div>
   </div>
   <div class="card">
     <div class="card-title">Motivo de cancelación por mes</div>
@@ -316,9 +316,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     Ene–jul: "tarjeta rechazada" venía creciendo casi al parejo de "cancelación pedida" (24→112 vs 54→125). En
     <b>agosto el patrón se rompe</b>: cancelación pedida se dispara a 153 mientras que tarjeta rechazada cae a 55 —
     posible efecto de la nueva regla de suspensión automática al quitar el método de pago (más gente cancela
-    directamente en vez de simplemente dejar que falle el cobro). Septiembre (parcial) confirma la tendencia: sigue
-    dominando la cancelación pedida (130 vs 43). Por plan: en <b>Cuotas $950 (Anual)</b>, la mayoría de las
-    cancelaciones son por tarjeta rechazada (278 vs 156) — ahí el problema puede ser tanto de cobro como de
+    directamente en vez de simplemente dejar que falle el cobro). Septiembre (ya cerrado) confirma la tendencia con
+    fuerza: 168 pedidas vs. 56 tarjeta rechazada — la brecha más grande del año. Por plan: en <b>Cuotas $950
+    (Anual)</b>, la mayoría de las cancelaciones son por tarjeta rechazada (285 vs 172) — ahí el problema puede ser
+    tanto de cobro como de
     intención. En Contado, casi todo es cancelación pedida (esperable, no hay cobro recurrente que falle a medio plazo).
   </div>
 
@@ -369,8 +370,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     usando <code>Ended At</code> real en vez de inferencia por hueco de pago.
   </div>
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-label">MRR perdido · veteranos (pre-2026)</div><div class="kpi-val" id="origen-vet-val">$448,630</div><div class="kpi-sub" id="origen-vet-sub">63% del MRR perdido con cohorte identificada (Ene–Sep*)</div><span class="kpi-badge badge-red">Erosión de base antigua</span></div>
-    <div class="kpi"><div class="kpi-label">MRR perdido · nuevos (2026)</div><div class="kpi-val" id="origen-new-val">$266,840</div><div class="kpi-sub" id="origen-new-sub">37% del MRR perdido con cohorte identificada (Ene–Sep*)</div><span class="kpi-badge badge-yellow">Crece con la base 2026</span></div>
+    <div class="kpi"><div class="kpi-label">MRR perdido · veteranos (pre-2026)</div><div class="kpi-val" id="origen-vet-val">$465,130</div><div class="kpi-sub" id="origen-vet-sub">62% del MRR perdido con cohorte identificada (Ene–Oct*)</div><span class="kpi-badge badge-red">Erosión de base antigua</span></div>
+    <div class="kpi"><div class="kpi-label">MRR perdido · nuevos (2026)</div><div class="kpi-val" id="origen-new-val">$284,710</div><div class="kpi-sub" id="origen-new-sub">38% del MRR perdido con cohorte identificada (Ene–Oct*)</div><span class="kpi-badge badge-yellow">Crece con la base 2026</span></div>
   </div>
   <div class="card">
     <div class="card-title">MRR perdido por mes, origen del cliente</div>
@@ -378,13 +379,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="chart-wrap" style="height:260px"><canvas id="origenMrrChart"></canvas></div>
   </div>
   <div class="insight" id="origen-insight">
-    <b style="color:#B83232">Corrección 24 sept 2026:</b> esta gráfica tenía un bug — los casos sin cohorte identificable se
-    clasificaban por error como "veterano" en vez de excluirse. Ya corregido: de los veteranos siguen siendo la
-    mayoría del MRR perdido (63% de los casos con cohorte identificada), pero no tan abrumadora como se reportaba
-    antes (80%). Los nuevos (2026) representan 37% y crecen rápido mes a mes ($9K en enero → $71K en agosto).
+    Los veteranos siguen siendo la mayoría del MRR perdido (62% de los casos con cohorte identificada), con los
+    nuevos (2026) en 38% y creciendo rápido mes a mes ($9K en enero → $72K en agosto, el pico hasta ahora).
   </div>
-  <div style="font-size:11px;color:var(--soma-gray);margin-top:.5rem">Nota: 535 cancelaciones de 2026 (42% del total) no tienen ningún pago exitoso registrado — casi todas corresponden a suscripciones canceladas antes de que se completara un primer cobro (la persona inició el proceso de pago pero canceló antes de que existiera un pago real que cruzar). Se excluyen de este split por no tener cohorte de origen. Datos deduplicados (37 filas repetidas) y excluyendo 3 casos con tarjeta pendiente de actualizar por más de 15 días.</div>
-  <div style="font-size:11px;color:var(--soma-gray);margin-top:.5rem">Nota: 534 cancelaciones de 2026 no pudieron cruzarse contra un primer pago identificable (posible pago con monto atípico o cliente que solo tuvo trial) — no están incluidas en este split. Datos deduplicados (37 filas repetidas removidas) y excluyendo 3 casos con tarjeta pendiente de actualizar por más de 15 días.</div>
+  <div style="font-size:11px;color:var(--soma-gray);margin-top:.5rem">Nota: 556 cancelaciones de 2026 (42% del total) no tienen ningún pago exitoso registrado — casi todas corresponden a suscripciones canceladas antes de que se completara un primer cobro (la persona inició el proceso de pago pero canceló antes de que existiera un pago real que cruzar). Se excluyen de este split por no tener cohorte de origen. Datos deduplicados (37 filas repetidas) y excluyendo 3 casos con tarjeta pendiente de actualizar por más de 15 días.</div>
 </section>
 
 
@@ -579,14 +577,14 @@ if (cancBars) {
 // unified_payments con la misma metodología cada vez que haya un export nuevo.
 // ── MOTIVO DE CANCELACIÓN (dato real: Cancellation Reason de Stripe) ─
 var MOTIVO_CANCELACION = {
-  months: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep*'],
-  cancellation_requested: [54,41,49,49,56,74,125,153,130],
-  payment_failed: [24,22,33,56,78,113,112,55,43],
+  months: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct*'],
+  cancellation_requested: [54,41,49,49,56,74,125,153,168,5],
+  payment_failed: [24,22,33,56,78,113,112,55,56,0],
   por_plan: [
-    {plan:'Cuotas $950 (Anual)', requested:156, failed:278},
-    {plan:'Cuotas $1,050 (Semestral)', requested:165, failed:147},
-    {plan:'Semestral contado', requested:324, failed:85},
-    {plan:'Anual contado', requested:86, failed:26},
+    {plan:'Cuotas $950 (Anual)', requested:172, failed:285},
+    {plan:'Cuotas $1,050 (Semestral)', requested:179, failed:153},
+    {plan:'Semestral contado', requested:334, failed:85},
+    {plan:'Anual contado', requested:89, failed:26},
   ]
 };
 (function() {
@@ -595,9 +593,9 @@ var MOTIVO_CANCELACION = {
   var totFail = d.payment_failed.reduce(function(a,b){return a+b;},0);
   var tot = totReq+totFail;
   var e1v = document.getElementById('motivo-req-val'); if(e1v) e1v.textContent = totReq;
-  var e1s = document.getElementById('motivo-req-sub'); if(e1s) e1s.textContent = Math.round(totReq/tot*100)+'% · $719,610 MRR equiv. (Ene–Sep* 2026)';
+  var e1s = document.getElementById('motivo-req-sub'); if(e1s) e1s.textContent = Math.round(totReq/tot*100)+'% · $762,110 MRR equiv. (Ene–Oct* 2026)';
   var e2v = document.getElementById('motivo-fail-val'); if(e2v) e2v.textContent = totFail;
-  var e2s = document.getElementById('motivo-fail-sub'); if(e2s) e2s.textContent = Math.round(totFail/tot*100)+'% · $526,000 MRR equiv. (Ene–Sep* 2026)';
+  var e2s = document.getElementById('motivo-fail-sub'); if(e2s) e2s.textContent = Math.round(totFail/tot*100)+'% · $538,950 MRR equiv. (Ene–Oct* 2026)';
 
   mkChart('motivoMesChart', {
     type: 'bar',
@@ -625,7 +623,7 @@ var MOTIVO_CANCELACION = {
 // número real de pagos hechos (unified_payments) al momento de Ended At.
 // $950 = Anual (12 cuotas) · $1,050 = Semestral (6 cuotas).
 var CUOTAS_950 = { // Anual, 12 pagos esperados
-  updated: '24 sept 2026 (ground truth: Ended At, deduplicado, excl. tarjeta pendiente >15d)',
+  updated: '1 oct 2026 (ground truth: Ended At, deduplicado, excl. tarjeta pendiente >15d)',
   cohorts: [
     {cohort:'2025-01', total:106, completo:35, cancelo:70, en_curso:1},
     {cohort:'2025-02', total:63,  completo:28, cancelo:34, en_curso:1},
@@ -635,25 +633,25 @@ var CUOTAS_950 = { // Anual, 12 pagos esperados
     {cohort:'2025-06', total:43,  completo:17, cancelo:26, en_curso:0},
     {cohort:'2025-07', total:50,  completo:17, cancelo:33, en_curso:0},
     {cohort:'2025-08', total:17,  completo:8,  cancelo:9,  en_curso:0},
-    {cohort:'2025-09', total:42,  completo:7,  cancelo:21, en_curso:14},
-    {cohort:'2025-10', total:38,  completo:13, cancelo:17, en_curso:8},
+    {cohort:'2025-09', total:44,  completo:9,  cancelo:25, en_curso:10},
+    {cohort:'2025-10', total:38,  completo:15, cancelo:17, en_curso:6},
     {cohort:'2025-11', total:46,  completo:0,  cancelo:22, en_curso:24},
-    {cohort:'2025-12', total:27,  completo:0,  cancelo:6,  en_curso:21},
+    {cohort:'2025-12', total:28,  completo:0,  cancelo:7,  en_curso:21},
     {cohort:'2026-01', total:31,  completo:0,  cancelo:9,  en_curso:22},
     {cohort:'2026-02', total:32,  completo:0,  cancelo:6,  en_curso:26},
-    {cohort:'2026-03', total:34,  completo:0,  cancelo:8,  en_curso:26},
-    {cohort:'2026-04', total:42,  completo:0,  cancelo:12, en_curso:30},
-    {cohort:'2026-05', total:45,  completo:0,  cancelo:14, en_curso:31},
+    {cohort:'2026-03', total:35,  completo:0,  cancelo:9,  en_curso:26},
+    {cohort:'2026-04', total:42,  completo:0,  cancelo:13, en_curso:29},
+    {cohort:'2026-05', total:45,  completo:0,  cancelo:16, en_curso:29},
     {cohort:'2026-06', total:49,  completo:0,  cancelo:13, en_curso:36},
-    {cohort:'2026-07', total:72,  completo:0,  cancelo:24, en_curso:48},
-    {cohort:'2026-08', total:60,  completo:0,  cancelo:19, en_curso:41},
-    {cohort:'2026-09', total:43,  completo:0,  cancelo:8,  en_curso:35},
+    {cohort:'2026-07', total:72,  completo:0,  cancelo:26, en_curso:46},
+    {cohort:'2026-08', total:61,  completo:0,  cancelo:19, en_curso:42},
+    {cohort:'2026-09', total:57,  completo:0,  cancelo:10, en_curso:47},
   ]
 };
 var CUOTAS_1050 = { // Semestral, 6 pagos esperados
-  updated: '24 sept 2026 (ground truth: Ended At, deduplicado, excl. tarjeta pendiente >15d)',
+  updated: '1 oct 2026 (ground truth: Ended At, deduplicado, excl. tarjeta pendiente >15d)',
   cohorts: [
-    {cohort:'2025-01', total:57, completo:21, cancelo:36, en_curso:0},
+    {cohort:'2025-01', total:58, completo:22, cancelo:36, en_curso:0},
     {cohort:'2025-02', total:27, completo:12, cancelo:15, en_curso:0},
     {cohort:'2025-03', total:25, completo:6,  cancelo:19, en_curso:0},
     {cohort:'2025-04', total:30, completo:13, cancelo:17, en_curso:0},
@@ -667,13 +665,14 @@ var CUOTAS_1050 = { // Semestral, 6 pagos esperados
     {cohort:'2025-12', total:18, completo:10, cancelo:8,  en_curso:0},
     {cohort:'2026-01', total:23, completo:6,  cancelo:17, en_curso:0},
     {cohort:'2026-02', total:14, completo:6,  cancelo:8,  en_curso:0},
-    {cohort:'2026-03', total:17, completo:0,  cancelo:11, en_curso:6},
-    {cohort:'2026-04', total:14, completo:2,  cancelo:4,  en_curso:8},
+    {cohort:'2026-03', total:17, completo:1,  cancelo:14, en_curso:2},
+    {cohort:'2026-04', total:14, completo:3,  cancelo:5,  en_curso:6},
     {cohort:'2026-05', total:18, completo:0,  cancelo:5,  en_curso:13},
     {cohort:'2026-06', total:21, completo:0,  cancelo:4,  en_curso:17},
-    {cohort:'2026-07', total:26, completo:0,  cancelo:8,  en_curso:18},
-    {cohort:'2026-08', total:30, completo:0,  cancelo:6,  en_curso:24},
-    {cohort:'2026-09', total:22, completo:0,  cancelo:3,  en_curso:19},
+    {cohort:'2026-07', total:26, completo:0,  cancelo:9,  en_curso:17},
+    {cohort:'2026-08', total:30, completo:0,  cancelo:7,  en_curso:23},
+    {cohort:'2026-09', total:27, completo:0,  cancelo:4,  en_curso:23},
+    {cohort:'2026-10', total:1,  completo:0,  cancelo:0,  en_curso:1},
   ]
 };
 
@@ -721,7 +720,7 @@ var CONTADO_5940 = {
     {cohort:'2025-09', total:14, renovaron:5},  {cohort:'2025-10', total:13, renovaron:2},
     {cohort:'2025-11', total:14, renovaron:10}, {cohort:'2025-12', total:10, renovaron:4},
     {cohort:'2026-01', total:18, renovaron:11}, {cohort:'2026-02', total:27, renovaron:18},
-    {cohort:'2026-03', total:20, renovaron:5},
+    {cohort:'2026-03', total:21, renovaron:7},
   ]
 };
 var CONTADO_10800 = {
@@ -793,9 +792,9 @@ var REV_MENSUAL = {
 // ── ORIGEN DEL MRR PERDIDO (nuevos 2026 vs. veteranos) — GROUND TRUTH ─
 // Fuente: Ended At real de Stripe Subscriptions, cruzado con cohorte de primer pago (año).
 var ORIGEN_MRR = {
-  months: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep*'],
-  veteranos: [52840, 43830, 59710, 55560, 42020, 59490, 59240, 36860, 39080],
-  nuevos:    [8760, 5730, 5970, 17520, 17900, 39950, 56500, 71170, 43340],
+  months: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct*'],
+  veteranos: [52840, 43830, 59710, 55560, 42020, 59490, 59240, 36860, 53480, 2100],
+  nuevos:    [8760, 5730, 5970, 17520, 17900, 39950, 56500, 72120, 58280, 1980],
 };
 (function() {
   var d = ORIGEN_MRR;
@@ -824,20 +823,20 @@ var ORIGEN_MRR = {
 // ── TRIALS & MEMBRESÍAS ─────────────────────────────────────
 // Única fuente a actualizar con cada base nueva de Stripe Subscriptions.
 var SUBS_SNAPSHOT = {
-  updated: '24 sept 2026',
-  trials_total: 115,
-  trials_mrr_potencial: 355830,
+  updated: '1 oct 2026',
+  trials_total: 97,
+  trials_mrr_potencial: 338000,
   trials_buckets: [
-    {label:'0–10 días', n:75, color:'#DC2626'},
-    {label:'11–20 días', n:25, color:'#EF9F27'},
-    {label:'21–30 días', n:15, color:'#1D9E75'}
+    {label:'0–10 días', n:61, color:'#DC2626'},
+    {label:'11–20 días', n:23, color:'#EF9F27'},
+    {label:'21–30 días', n:13, color:'#1D9E75'}
   ],
   membresias_por_tipo: [
-    {label:'Cuotas $950', n:503, color:'#A6BAC2'},
+    {label:'Cuotas $950', n:502, color:'#A6BAC2'},
     {label:'Anual', n:229, color:'#1D9E75'},
     {label:'Semestral', n:178, color:'#378ADD'},
-    {label:'Trial', n:115, color:'#FF8D6B', esTrial:true},
-    {label:'Cuotas $1,050', n:142, color:'#EF9F27'}
+    {label:'Trial', n:97, color:'#FF8D6B', esTrial:true},
+    {label:'Cuotas $1,050', n:139, color:'#EF9F27'}
   ],
   altas_por_mes: [
     {label:'Ene', n:143},
@@ -848,30 +847,40 @@ var SUBS_SNAPSHOT = {
     {label:'Jun', n:238},
     {label:'Jul', n:273},
     {label:'Ago', n:247},
-    {label:'Sep', n:203}
+    {label:'Sep', n:243},
+    {label:'Oct', n:3}
   ],
-  past_due_mrr: 19600,
+  past_due_mrr: 28250,
   past_due: [
-    {nombre:'German Torres Santiago', email:'germantorressantiago@gmail.com', tel:'+525579465864', plan:'Cuotas $1,050'},
-    {nombre:'Miranda Gómez', email:'miranda.gl@icloud.com', tel:'+525585798520', plan:'Cuotas $950'},
-    {nombre:'Arianna Barrera Granada', email:'arimalinellli@rocketmail.com', tel:null, plan:'Cuotas $1,050'},
-    {nombre:'Sergio Rodríguez Carmona', email:'sergio.rodriguez44@outlook.com', tel:null, plan:'Cuotas $950'},
-    {nombre:'Roberto Murillo', email:'beto_murray1991@hotmail.com', tel:null, plan:'Cuotas $950'},
-    {nombre:'Eduardo Abreu', email:'eduardoabreu1102@gmail.com', tel:'+527712842301', plan:'Cuotas $950'},
-    {nombre:'Shadany Ortega', email:'shadortegalozano@gmail.com', tel:null, plan:'Cuotas $1,050'},
-    {nombre:'Alejandra Ripoll', email:'askinnylab@gmail.com', tel:'+525525642711', plan:'Cuotas $1,050'},
-    {nombre:'Brenda Alejandra Buenrostro Abarca', email:'baba_t7@hotmail.com', tel:'+525523259465', plan:'Cuotas $1,050'},
-    {nombre:'Ana Carolina López Hernandez', email:'ana_carolina56@hotmail.com', tel:'+525515102147', plan:'Cuotas $950'},
-    {nombre:'Tania Ayala Angles', email:'tan.angles@gmail.com', tel:'+525532245194', plan:'Cuotas $950'},
-    {nombre:'Hanna Vazquez', email:'fz56s6vnbw@privaterelay.appleid.com', tel:'4931480476', plan:'Cuotas $1,050'},
-    {nombre:'Araceli Treviño', email:'treviaraceli@hotmail.com', tel:'+525579989592', plan:'Cuotas $950'},
-    {nombre:'Miguel Ferro', email:'mifel_99@outlook.com', tel:'+525577629335', plan:'Cuotas $950'},
-    {nombre:'Valeria Carrión', email:'valcarrion@gmail.com', tel:'+525645542749', plan:'Cuotas $950'},
-    {nombre:'Jose Alberto Beltran', email:'j.a_beltran@consultant.com', tel:'+525530294951', plan:'Cuotas $950'},
-    {nombre:'Fabiola Jimenez', email:'fajmnz.06@gmail.com', tel:'+16194951503', plan:'Cuotas $950'},
-    {nombre:'Enrique Vargas González', email:'envago@me.com', tel:'+525628467976', plan:'Cuotas $950'},
-    {nombre:'Miguel Anaya', email:'miguel_anaya48@hotmail.com', tel:'+525530847140', plan:'Cuotas $950'},
-    {nombre:'Rebeca Regueiro', email:'becaregueiroamorin@gmail.com', tel:'+525575006238', plan:'Cuotas $950'}
+    {nombre:'Paola Cardenas', email:'pao.car.mej@gmail.com', tel:'+525579215537', plan:'Cuotas $950'},
+    {nombre:'Daniel Sanchez Acosta', email:'sanchezacostadaniel@gmail.com', tel:null, plan:'Cuotas $1,050'},
+    {nombre:'Angie Daniela Arenas Dominguez', email:'angie_dani07@hotmail.com', tel:null, plan:'Cuotas $950'},
+    {nombre:'Emma Daniela de la Cerda Nicolás', email:'emmadaniela.nicolas@gmail.com', tel:'+525530369810', plan:'Cuotas $1,050'},
+    {nombre:'Karenna De la Mora', email:'karennadelam@gmail.com', tel:'+525518529322', plan:'Cuotas $950'},
+    {nombre:'Emir Palma', email:'emirpm.29@gmail.com', tel:null, plan:'Cuotas $1,050'},
+    {nombre:'Irving Reyes Cisneros', email:'irvingrc08@gmail.com', tel:null, plan:'Cuotas $950'},
+    {nombre:'Perla Almanza Aranda', email:'almanzap777@gmail.com', tel:'+525534934912', plan:'Cuotas $950'},
+    {nombre:'Daniela Peña Martínez Peña', email:'adanielamartz@gmail.com', tel:null, plan:'Cuotas $1,050'},
+    {nombre:'Felipe Celaya', email:'generalpipe@outlook.com', tel:'+525535006790', plan:'Cuotas $950'},
+    {nombre:'Isela Trevino', email:'iselatrevino@me.com', tel:'5525591145', plan:'Cuotas $950'},
+    {nombre:'Brooks Crittenton', email:'tlkpotry@gmail.com', tel:'6196322836', plan:'Cuotas $950'},
+    {nombre:'Katia Ramírez', email:'katzram@hotmail.com', tel:'+525527296498', plan:'Cuotas $950'},
+    {nombre:'Tamara Herrera', email:'t_herrera2@hotmail.com', tel:'+528180205823', plan:'Cuotas $950'},
+    {nombre:'José Roberto García Cuevas', email:'robgarciacuevas@hotmail.com', tel:'+525513533910', plan:'Cuotas $950'},
+    {nombre:'Jose Manuel Allende', email:'boloallende1@gmail.com', tel:'+525525617566', plan:'Cuotas $950'},
+    {nombre:'Rodolfo Bocanegra', email:'rboca92@gmail.com', tel:'+525535661942', plan:'Cuotas $950'},
+    {nombre:'Italia Peña', email:'italiaahtziri@gmail.com', tel:'+525525591509', plan:'Cuotas $1,050'},
+    {nombre:'Rodrigo Zamora', email:'zzamora78@gmail.com', tel:'+525620118400', plan:'Cuotas $950'},
+    {nombre:'Jimena Márquez Chávez', email:'jimena.marque798@gmail.com', tel:'+525538970905', plan:'Cuotas $1,050'},
+    {nombre:'Miguel Angel Garcia', email:'magarcia@amvission.com', tel:'+525551448695', plan:'Cuotas $1,050'},
+    {nombre:'Mario Sanchez Vela', email:'svmario92@gmail.com', tel:'+525522728744', plan:'Cuotas $950'},
+    {nombre:'Silvino Esquivel', email:'silvinoesquivel98@gmail.com', tel:'5614290014', plan:'Cuotas $950'},
+    {nombre:'Jesús Núñez Garibay', email:'jesus.nug@gmail.com', tel:'+524772646090', plan:'Cuotas $950'},
+    {nombre:'Yonatan Castañon', email:'castanonyonatan@gmail.com', tel:'+522228627002', plan:'Cuotas $950'},
+    {nombre:'Maria Fernanda Gomez', email:'fergs096@gmail.com', tel:'+522221396411', plan:'Cuotas $950'},
+    {nombre:'Gabriela Bowen Martínez', email:'gabowen1993@gmail.com', tel:'+525527043185', plan:'Cuotas $950'},
+    {nombre:'Fernanda Garibay', email:'fergc85@hotmail.com', tel:'+525516463716', plan:'Cuotas $950'},
+    {nombre:'Leonardo Romero', email:'leo.romerovv@gmail.com', tel:null, plan:'Cuotas $950'}
   ]
 };
 
