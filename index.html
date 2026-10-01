@@ -71,6 +71,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <button class="nav-item" onclick="show('backlog',this)"><span class="dot"></span><span>SQL Pendientes</span></button>
     <button class="nav-item" onclick="show('trials',this)"><span class="dot"></span><span>Trials &amp; Membresías</span></button>
     <button class="nav-item" onclick="show('retencion-ingresos',this)"><span class="dot"></span><span>Retención de Ingresos</span></button>
+    <button class="nav-item" onclick="show('nuevos-por-plan',this)"><span class="dot"></span><span>Nuevos por Plan</span></button>
     <button class="nav-item" onclick="show('ciclovida',this)"><span class="dot"></span><span>Ciclo de vida</span></button>
     <button class="nav-item" onclick="show('semanal',this)"><span class="dot"></span><span>Comparativa semanal</span></button>
   </div>
@@ -225,7 +226,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="kpi-grid">
     <div class="kpi"><div class="kpi-label">Trials activos hoy</div><div class="kpi-val" id="trials-total-val">127</div><div class="kpi-sub" id="trials-total-sub">MRR potencial $283,180</div><span class="kpi-badge badge-blue">En periodo de prueba</span></div>
     <div class="kpi"><div class="kpi-label">Membresías activas hoy</div><div class="kpi-val" id="membresias-total-val">1,092</div><div class="kpi-sub">Incluye trials · activas + trialing + past_due</div><span class="kpi-badge badge-green">Base total</span></div>
-    <div class="kpi"><div class="kpi-label">Vencen en próximos 10 días</div><div class="kpi-val" id="trials-b1-val">51</div><div class="kpi-sub">De los 127 trials activos</div><span class="kpi-badge badge-yellow">Prioridad de seguimiento</span></div>
+    <div class="kpi"><div class="kpi-label">Vencen en próximos 10 días</div><div class="kpi-val" id="trials-b1-val">51</div><div class="kpi-sub" id="trials-b1-sub">De los 127 trials activos</div><span class="kpi-badge badge-yellow">Prioridad de seguimiento</span></div>
   </div>
   <div class="two-col">
     <div class="card">
@@ -385,6 +386,37 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div style="font-size:11px;color:var(--soma-gray);margin-top:.5rem">Nota: 556 cancelaciones de 2026 (42% del total) no tienen ningún pago exitoso registrado — casi todas corresponden a suscripciones canceladas antes de que se completara un primer cobro (la persona inició el proceso de pago pero canceló antes de que existiera un pago real que cruzar). Se excluyen de este split por no tener cohorte de origen. Datos deduplicados (37 filas repetidas) y excluyendo 3 casos con tarjeta pendiente de actualizar por más de 15 días.</div>
 </section>
 
+
+<!-- NUEVOS POR PLAN -->
+<section class="section" id="nuevos-por-plan">
+  <div class="page-title">Nuevos miembros de pago por plan</div>
+  <div class="page-sub">Primer pago válido de cada cliente, por mes · Fuente: Stripe Payments (histórico completo)</div>
+
+  <div class="card">
+    <div class="card-title">Selecciona un mes</div>
+    <div class="card-sub">El desglose de abajo se actualiza según el mes elegido</div>
+    <select id="nuevos-mes-selector" style="margin-top:.75rem;padding:8px 14px;border-radius:8px;border:1px solid var(--color-border-secondary,#ddd);font-size:14px;font-weight:500;background:white;min-width:160px"></select>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title" id="nuevos-pie-title">Desglose por tipo de membresía</div>
+      <div class="card-sub" id="nuevos-pie-sub">Nuevos miembros de ese mes, por plan</div>
+      <div style="position:relative;height:260px"><canvas id="nuevosPlanPie"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Detalle por plan</div>
+      <div class="card-sub">Conteo y % del total de ese mes</div>
+      <div style="overflow-x:auto"><table class="tbl" id="nuevos-plan-table"></table></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Nuevos miembros por mes — todos los planes</div>
+    <div class="card-sub">Barras apiladas, Ene 2025–Oct 2026* · haz clic en una barra para ver su desglose arriba</div>
+    <div class="chart-wrap" style="height:300px"><canvas id="nuevosPlanStackChart"></canvas></div>
+  </div>
+</section>
 
 <!-- CICLO DE VIDA -->
 <section class="section" id="ciclovida">
@@ -789,6 +821,128 @@ var REV_MENSUAL = {
   });
 })();
 
+// ── NUEVOS MIEMBROS DE PAGO POR PLAN (desglose mensual) ──────
+// Fuente: Stripe Payments histórico completo · primer pago válido por cliente, por mes.
+var NUEVOS_POR_PLAN = {
+  months: ['2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08','2026-09','2026-10'],
+  monthLabels: ['Ene 25','Feb 25','Mar 25','Abr 25','May 25','Jun 25','Jul 25','Ago 25','Sep 25','Oct 25','Nov 25','Dic 25','Ene 26','Feb 26','Mar 26','Abr 26','May 26','Jun 26','Jul 26','Ago 26','Sep 26','Oct 26*'],
+  cuotas950:  [33,31,27,10,4,18,8,6,20,18,26,12,19,22,20,26,30,38,47,42,36,0],
+  cuotas1050: [23,11,9,12,5,7,5,0,9,10,11,8,11,8,11,9,12,17,20,26,19,1],
+  semestral:  [22,9,14,9,6,10,6,4,11,6,8,7,6,14,13,8,9,23,8,17,13,0],
+  anual:      [8,6,8,5,3,4,4,5,13,3,3,8,7,9,6,6,12,17,9,9,7,0],
+};
+var PLAN_COLORS = {
+  'Cuotas $950 (Anual)': '#A6BAC2',
+  'Cuotas $1,050 (Semestral)': '#EF9F27',
+  'Semestral contado': '#378ADD',
+  'Anual contado': '#1D9E75',
+};
+(function() {
+  var d = NUEVOS_POR_PLAN;
+  var sel = document.getElementById('nuevos-mes-selector');
+  var pieChartInstance = null;
+
+  function getMonthData(idx) {
+    return {
+      label: d.monthLabels[idx],
+      'Cuotas $950 (Anual)': d.cuotas950[idx],
+      'Cuotas $1,050 (Semestral)': d.cuotas1050[idx],
+      'Semestral contado': d.semestral[idx],
+      'Anual contado': d.anual[idx],
+    };
+  }
+
+  function renderMonth(idx) {
+    var m = getMonthData(idx);
+    var planes = ['Cuotas $950 (Anual)','Cuotas $1,050 (Semestral)','Semestral contado','Anual contado'];
+    var valores = planes.map(function(p){ return m[p]; });
+    var total = valores.reduce(function(a,b){return a+b;},0);
+
+    var titleEl = document.getElementById('nuevos-pie-title');
+    if (titleEl) titleEl.textContent = 'Desglose por tipo de membresía — ' + m.label;
+    var subEl = document.getElementById('nuevos-pie-sub');
+    if (subEl) subEl.textContent = total + ' nuevos miembros ese mes';
+
+    if (pieChartInstance) pieChartInstance.destroy();
+    var ctx = document.getElementById('nuevosPlanPie');
+    pieChartInstance = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: planes,
+        datasets: [{ data: valores, backgroundColor: planes.map(function(p){return PLAN_COLORS[p];}), borderWidth: 0 }]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{
+          legend:{position:'right', labels:{font:{size:11}, boxWidth:12}},
+          tooltip:{callbacks:{label:function(ctx){
+            var pct = total ? Math.round(ctx.raw/total*100) : 0;
+            return ctx.label+': '+ctx.raw+' ('+pct+'%)';
+          }}}
+        }
+      }
+    });
+
+    var tbl = document.getElementById('nuevos-plan-table');
+    if (tbl) {
+      tbl.innerHTML = '<thead><tr><th class="l">Plan</th><th>Nuevos</th><th>% del mes</th></tr></thead>';
+      var body = tbl.createTBody();
+      planes.forEach(function(p) {
+        var v = m[p];
+        var pct = total ? (v/total*100) : 0;
+        var color = PLAN_COLORS[p];
+        body.innerHTML += '<tr><td class="l"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+color+';margin-right:6px"></span>'+p+'</td>'+
+          '<td style="font-weight:600">'+v+'</td><td>'+pct.toFixed(1)+'%</td></tr>';
+      });
+      body.innerHTML += '<tr style="font-weight:700;border-top:1px solid var(--color-border-tertiary,#ddd)"><td class="l">Total</td><td>'+total+'</td><td>100%</td></tr>';
+    }
+  }
+
+  // Poblar el selector (mas reciente primero)
+  if (sel) {
+    for (var i = d.months.length - 1; i >= 0; i--) {
+      var opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = d.monthLabels[i];
+      sel.appendChild(opt);
+    }
+    sel.value = d.months.length - 1;
+    sel.addEventListener('change', function(){ renderMonth(parseInt(this.value, 10)); });
+  }
+
+  // Grafica de barras apiladas, clickeable para cambiar el mes de arriba
+  mkChart('nuevosPlanStackChart', {
+    type: 'bar',
+    data: {
+      labels: d.monthLabels,
+      datasets: [
+        {label:'Cuotas $950 (Anual)', data:d.cuotas950, backgroundColor:PLAN_COLORS['Cuotas $950 (Anual)'], stack:'s'},
+        {label:'Cuotas $1,050 (Semestral)', data:d.cuotas1050, backgroundColor:PLAN_COLORS['Cuotas $1,050 (Semestral)'], stack:'s'},
+        {label:'Semestral contado', data:d.semestral, backgroundColor:PLAN_COLORS['Semestral contado'], stack:'s'},
+        {label:'Anual contado', data:d.anual, backgroundColor:PLAN_COLORS['Anual contado'], stack:'s'},
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      onClick: function(evt, elements) {
+        if (elements && elements.length) {
+          var idx = elements[0].index;
+          if (sel) sel.value = idx;
+          renderMonth(idx);
+        }
+      },
+      plugins:{legend:{display:true,position:'top',labels:{font:{size:10},boxWidth:12}}},
+      scales:{
+        x:{stacked:true, grid:{display:false},border:{display:false},ticks:{color:'#7E7E87',font:{size:9},maxRotation:60,minRotation:60}},
+        y:{stacked:true, grid:{color:'rgba(0,0,0,0.05)'},border:{display:false},ticks:{color:'#7E7E87'}}
+      }
+    }
+  });
+
+  // Render inicial: el mes mas reciente
+  renderMonth(d.months.length - 1);
+})();
+
 // ── ORIGEN DEL MRR PERDIDO (nuevos 2026 vs. veteranos) — GROUND TRUTH ─
 // Fuente: Ended At real de Stripe Subscriptions, cruzado con cohorte de primer pago (año).
 var ORIGEN_MRR = {
@@ -901,6 +1055,8 @@ var SUBS_SNAPSHOT = {
 
   var b1 = document.getElementById('trials-b1-val');
   if (b1) b1.textContent = s.trials_buckets[0].n;
+  var b1sub = document.getElementById('trials-b1-sub');
+  if (b1sub) b1sub.textContent = 'De los ' + s.trials_total + ' trials activos';
 
   var vencEl = document.getElementById('trials-venc-bars');
   if (vencEl) {
