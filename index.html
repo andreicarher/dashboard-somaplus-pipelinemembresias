@@ -265,7 +265,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="insight" id="revmensual-insight">
     El ingreso mensual más que se duplicó entre enero 2025 ($385K neto) y septiembre 2026 ($1.03M neto, nuevo mes más
-    alto del histórico, superando a agosto) — pero los nuevos miembros de pago no crecieron al mismo ritmo (87→78 en
+    alto del histórico, superando a agosto) — pero los nuevos miembros de pago no crecieron al mismo ritmo (100→87 en
     ese rango) — el ingreso está creciendo más por <b>acumulación de base y renovaciones</b> que por una aceleración
     proporcional de adquisición. Esto contrasta con el MRR Movement de Stripe, que muestra septiembre como el primer
     mes <b>negativo</b> del año (neto -$56K) — ambas cosas pueden ser ciertas a la vez: entra más dinero bruto por
@@ -390,7 +390,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- NUEVOS POR PLAN -->
 <section class="section" id="nuevos-por-plan">
   <div class="page-title">Nuevos miembros de pago por plan</div>
-  <div class="page-sub">Primer pago válido de cada cliente, por mes · Fuente: Stripe Payments (histórico completo) · "Reactivados (Winback)" son clientes que ya habían pagado antes, cancelaron, y regresaron con cupón de descuento — no cuentan como nuevos</div>
+  <div class="page-sub">Primer pago válido de cada cliente, por mes · Fuente: Stripe Payments (histórico completo) · "Reactivados (Winback)" son clientes que ya habían pagado antes, cancelaron, y regresaron con cupón de descuento — no cuentan como nuevos · Corregido 3 oct 2026: el conteo incluye primeros cobros con descuento y variaciones de $1 sobre el precio de lista</div>
 
   <div class="card">
     <div class="card-title">Selecciona un mes</div>
@@ -409,6 +409,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="card-sub">Conteo y % del total de ese mes</div>
       <div style="overflow-x:auto"><table class="tbl" id="nuevos-plan-table"></table></div>
     </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Nuevos miembros con descuento</div>
+    <div class="card-sub" id="nuevos-desc-sub">—</div>
+    <div style="overflow-x:auto"><table class="tbl" id="nuevos-desc-table"></table></div>
+    <div id="nuevos-desc-notas" style="font-size:11px;color:var(--soma-gray)"></div>
+    <p style="font-size:11px;color:var(--soma-gray);margin:1rem 0 .4rem;font-weight:600">Historial: meses con nuevos que llegaron con descuento</p>
+    <div style="overflow-x:auto"><table class="tbl" id="nuevos-desc-hist"></table></div>
+    <p style="font-size:11px;color:var(--soma-gray);margin:.75rem 0 0">Se considera descuento cuando el primer cobro fue menor al precio de lista de su plan y coincide con un cupón o con un % redondo. El nombre del cupón es el de Stripe (WINBACK15 = <code>XKZUrVaW</code>); los demás se muestran por ID hasta confirmar su nombre.</p>
   </div>
 
   <div class="card">
@@ -790,7 +800,7 @@ var REV_MENSUAL = {
   monthLabels: ['Ene 25','Feb 25','Mar 25','Abr 25','May 25','Jun 25','Jul 25','Ago 25','Sep 25','Oct 25','Nov 25','Dic 25','Ene 26','Feb 26','Mar 26','Abr 26','May 26','Jun 26','Jul 26','Ago 26','Sep 26','Oct 26*'],
   bruto: [407652,271251,402861,347836,322260,397500,425617,396773,565589,489771,465684,541421,671722,575566,714845,666827,765658,955095,878620,979452,1035312,4985],
   neto:  [385012,264261,385964,346886,321210,397500,425603,393836,563589,485771,465684,541421,664832,575566,704045,666827,748174,955095,859880,977552,1034262,4985],
-  nuevos:[87,56,59,36,17,39,23,15,53,37,48,35,43,53,50,49,65,95,85,93,78,1],
+  nuevos:[100,52,59,36,16,45,24,14,54,37,48,35,40,52,50,49,65,92,81,89,87,1],
 };
 (function() {
   var d = REV_MENSUAL;
@@ -826,10 +836,10 @@ var REV_MENSUAL = {
 var NUEVOS_POR_PLAN = {
   months: ['2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08','2026-09','2026-10'],
   monthLabels: ['Ene 25','Feb 25','Mar 25','Abr 25','May 25','Jun 25','Jul 25','Ago 25','Sep 25','Oct 25','Nov 25','Dic 25','Ene 26','Feb 26','Mar 26','Abr 26','May 26','Jun 26','Jul 26','Ago 26','Sep 26','Oct 26*'],
-  cuotas950:  [33,31,27,10,4,18,8,6,20,18,26,12,19,22,20,26,30,38,47,42,36,0],
-  cuotas1050: [23,11,9,12,5,7,5,0,9,10,11,8,11,8,11,9,12,17,20,26,19,1],
-  semestral:  [22,9,14,9,6,10,6,4,11,6,8,7,6,14,13,8,9,23,8,17,13,0],
-  anual:      [8,6,8,5,3,4,4,5,13,3,3,8,7,9,6,6,12,17,9,9,7,0],
+  cuotas950:  [37,26,27,10,4,21,8,3,20,18,26,12,18,22,20,26,30,38,45,42,44,0],
+  cuotas1050: [24,10,10,12,3,7,5,0,9,10,11,8,11,8,11,9,12,17,20,24,20,1],
+  semestral:  [26,10,14,9,6,10,5,3,12,6,8,7,4,13,13,8,10,23,8,17,13,0],
+  anual:      [13,6,8,5,3,7,6,8,13,3,3,8,7,9,6,6,13,14,8,6,10,0],
   // Reactivados vía cupón Winback (XKZUrVaW, 1q57QXHO) — clientes que YA habían pagado antes,
   // canceraron, y regresaron con 15% de descuento. No son "nuevos" (no es su primer pago nunca),
   // por eso van en categoría aparte, no restan de las demas series.
@@ -841,6 +851,12 @@ var PLAN_COLORS = {
   'Reactivados (Winback)': '#7B6EF6',
   'Semestral contado': '#378ADD',
   'Anual contado': '#1D9E75',
+};
+var DESCUENTOS_NUEVOS = [{"mes": "2025-01", "cupon_n": "sin cupón visible", "pct": 10.0, "plan": "Semestral contado", "n": 1}, {"mes": "2025-01", "cupon_n": "sin cupón visible", "pct": 50.1, "plan": "Anual contado", "n": 1}, {"mes": "2026-05", "cupon_n": "5PlPMSQk", "pct": 15.0, "plan": "Anual contado", "n": 1}, {"mes": "2026-05", "cupon_n": "5PlPMSQk", "pct": 15.0, "plan": "Semestral contado", "n": 1}, {"mes": "2026-09", "cupon_n": "XKZUrVaW", "pct": 15.0, "plan": "Anual contado", "n": 3}, {"mes": "2026-09", "cupon_n": "XKZUrVaW", "pct": 15.0, "plan": "Cuotas $950 (Anual)", "n": 8}];
+var DESC_NOMBRES = {'XKZUrVaW':'WINBACK15','5PlPMSQk':'nombre por confirmar en Stripe','sin cupón visible':'Sin cupón visible en la suscripción'};
+var NUEVOS_NOTAS = {
+  '2026-09': ['1 cliente pagó $529.64 en su primer cobro (≈50% menos que su plan Cuotas $1,050), sin cupón visible: no se clasificó como descuento hasta confirmar en Stripe.'],
+  '2026-04': ['1 cliente tiene el cupón Hnsx6kTy en su suscripción pero su primer cobro fue a precio completo ($5,940): no cuenta como descuento.']
 };
 (function() {
   var d = NUEVOS_POR_PLAN;
@@ -858,6 +874,55 @@ var PLAN_COLORS = {
     };
   }
 
+
+  function renderDescuentos(idx, totalNuevos) {
+    var key = d.months[idx];
+    var rows = DESCUENTOS_NUEVOS.filter(function(r){ return r.mes === key; });
+    var sub = document.getElementById('nuevos-desc-sub');
+    var tbl = document.getElementById('nuevos-desc-table');
+    var notas = document.getElementById('nuevos-desc-notas');
+    var tot = rows.reduce(function(s,r){return s+r.n;},0);
+    if (sub) sub.textContent = tot > 0
+      ? tot + ' de ' + totalNuevos + ' nuevos miembros (' + (tot/totalNuevos*100).toFixed(1) + '%) llegaron con descuento en ' + d.monthLabels[idx]
+      : 'Ningún nuevo miembro llegó con descuento en ' + d.monthLabels[idx];
+    if (tbl) {
+      if (tot === 0) { tbl.innerHTML = ''; }
+      else {
+        var g = {};
+        rows.forEach(function(r){
+          var k = r.cupon_n + '|' + r.pct;
+          if (!g[k]) g[k] = {cupon:r.cupon_n, pct:r.pct, n:0, planes:[]};
+          g[k].n += r.n; g[k].planes.push(r.n + ' ' + r.plan);
+        });
+        tbl.innerHTML = '<thead><tr><th class="l">Descuento</th><th class="l">Cupón</th><th class="l">Planes</th><th>Nuevos</th></tr></thead>';
+        var body = tbl.createTBody();
+        Object.keys(g).forEach(function(k){
+          var x = g[k];
+          var nom = DESC_NOMBRES[x.cupon] ? (x.cupon === 'sin cupón visible' ? DESC_NOMBRES[x.cupon] : DESC_NOMBRES[x.cupon] + ' (' + x.cupon + ')') : x.cupon;
+          body.innerHTML += '<tr><td class="l" style="font-weight:700">' + x.pct + '%</td><td class="l">' + nom + '</td><td class="l">' + x.planes.join(' · ') + '</td><td style="font-weight:600">' + x.n + '</td></tr>';
+        });
+      }
+    }
+    if (notas) notas.innerHTML = (NUEVOS_NOTAS[key] || []).map(function(t){ return '<div style="margin-top:.5rem">⚠️ ' + t + '</div>'; }).join('');
+  }
+
+  function renderHistorialDescuentos() {
+    var tbl = document.getElementById('nuevos-desc-hist');
+    if (!tbl) return;
+    tbl.innerHTML = '<thead><tr><th class="l">Mes</th><th>Nuevos</th><th>Con descuento</th><th>% del mes</th><th class="l">Descuento(s)</th></tr></thead>';
+    var body = tbl.createTBody();
+    d.months.forEach(function(m, i){
+      var rows = DESCUENTOS_NUEVOS.filter(function(r){ return r.mes === m; });
+      if (!rows.length) return;
+      var tot = rows.reduce(function(s,r){return s+r.n;},0);
+      var nuevos = d.cuotas950[i]+d.cuotas1050[i]+d.semestral[i]+d.anual[i];
+      var tipos = {};
+      rows.forEach(function(r){ var k = r.pct + '%'; tipos[k] = (tipos[k]||0) + r.n; });
+      var det = Object.keys(tipos).map(function(k){ return tipos[k] + ' × ' + k; }).join(', ');
+      body.innerHTML += '<tr><td class="l" style="font-weight:600">' + d.monthLabels[i] + '</td><td>' + nuevos + '</td><td style="font-weight:600">' + tot + '</td><td>' + (tot/nuevos*100).toFixed(1) + '%</td><td class="l">' + det + '</td></tr>';
+    });
+  }
+
   function renderMonth(idx) {
     var m = getMonthData(idx);
     var planesNuevos = ['Cuotas $950 (Anual)','Cuotas $1,050 (Semestral)','Semestral contado','Anual contado'];
@@ -866,6 +931,7 @@ var PLAN_COLORS = {
     var planes = totalReact > 0 ? planesNuevos.concat(['Reactivados (Winback)']) : planesNuevos;
     var valores = planes.map(function(p){ return m[p]; });
     var total = totalNuevos + totalReact;
+    renderDescuentos(idx, totalNuevos);
 
     var titleEl = document.getElementById('nuevos-pie-title');
     if (titleEl) titleEl.textContent = 'Desglose por tipo de membresía — ' + m.label;
@@ -951,6 +1017,7 @@ var PLAN_COLORS = {
     }
   });
 
+  renderHistorialDescuentos();
   // Render inicial: el mes mas reciente
   renderMonth(d.months.length - 1);
 })();
