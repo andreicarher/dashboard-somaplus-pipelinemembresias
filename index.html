@@ -74,6 +74,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <button class="nav-item" onclick="show('nuevos-por-plan',this)"><span class="dot"></span><span>Nuevos por Plan</span></button>
     <button class="nav-item" onclick="show('ciclovida',this)"><span class="dot"></span><span>Ciclo de vida</span></button>
     <button class="nav-item" onclick="show('semanal',this)"><span class="dot"></span><span>Comparativa semanal</span></button>
+    <button class="nav-item" onclick="show('calidad-datos',this)"><span class="dot"></span><span>Calidad de datos</span></button>
   </div>
 </nav>
 
@@ -85,7 +86,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="page-sub" id="resumen-page-sub">SOMA+ · Base 8 jul 2026 · Actualización semanal</div>
   <div class="kpi-grid">
     <div class="kpi"><div class="kpi-label">MRR actual</div><div class="kpi-val" id="mrr-actual-val">$673,420</div><div class="kpi-sub" id="mrr-actual-sub">Stripe · Jul parcial día 13 · Jun cierre $645,660</div><span class="kpi-badge badge-green">+51% vs. enero</span></div>
-    <div class="kpi"><div class="kpi-label">Customers acumulados</div><div class="kpi-val" id="cust-acum-val">507</div><div class="kpi-sub" id="cust-acum-sub">Ene–Jun: 386 · Jul: 121 en curso</div><span class="kpi-badge badge-green" id="cust-acum-badge">Jun: 140 · mejor mes</span></div>
+    <div class="kpi"><div class="kpi-label">Nuevos de pago acumulados</div><div class="kpi-val" id="cust-acum-val">507</div><div class="kpi-sub" id="cust-acum-sub">Ene–Jun: 386 · Jul: 121 en curso</div><span class="kpi-badge badge-green" id="cust-acum-badge">Jun: 140 · mejor mes</span></div>
     <div class="kpi"><div class="kpi-label" id="cac-mes-label">CAC junio</div><div class="kpi-val" id="cac-mes-val">$804</div><div class="kpi-sub" id="cac-mes-sub">$112,516 inversión / 140 customers</div><span class="kpi-badge badge-green">↓ mejor CAC del año</span></div>
     <div class="kpi"><div class="kpi-label">Backlog julio</div><div class="kpi-val">~70</div><div class="kpi-sub">29 may + 45 jun × 95.1%</div><span class="kpi-badge badge-blue">Spike julio activo</span></div>
     <div class="kpi"><div class="kpi-label">Ratio entrada / pérdida</div><div class="kpi-val" id="ratio-ep-val">1.36x</div><div class="kpi-sub" id="ratio-ep-sub">Por cada $100 que sale, entran $136</div><span class="kpi-badge badge-green">MRR en crecimiento</span></div>
@@ -108,7 +109,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="page-title">Pipeline de adquisición</div>
   <div class="page-sub" id="pipeline-page-sub">Ene–Jun 2026 (cerrados) + Jul* en curso (día 16) · Fuente: AC base 16 jul 2026 · Aplicación válida = MQL+SQL+Opportunity+Customer · Lead y Subscriber excluidos</div>
   <div style="background:#FFF4E5;border-left:4px solid #EF9F27;border-radius:6px;padding:10px 14px;margin:.75rem 0 1rem;font-size:12px;color:#5A4210">
-    ⚠️ <b>Nota (desde sept 2026):</b> se incorporó un nuevo CRM (HubSpot), que eventualmente será la base de aplicaciones/leads/miembros. Por ahora solo recibe una porción pequeña de tráfico de prueba (en sept: 11 aplicaciones, 1 en periodo de prueba) — <b>no está incluido</b> en los números de este pipeline, que siguen viniendo 100% de ActiveCampaign. Si el pipeline se ve más bajo de lo esperado en los próximos meses, puede ser por tráfico desviándose a HubSpot, no necesariamente una caída real. <b>Actualización 22 oct:</b> la entrada de aplicaciones en AC bajó en las últimas dos semanas (S42: 28 aplicantes; S43, con 4 días: 5) y los MQL pasaron de 67 a 2; falta confirmar cuánto tráfico pasó a HubSpot antes de leerlo como una caída real.
+    ⚠️ <b>Nota (28 oct 2026):</b> el pipeline mezcla fuentes. <b>Aplicantes y aprobados:</b> AC + HubSpot (deduplicado por correo) hasta que AC se apague el <b>4 de noviembre de 2026</b>; después, solo HubSpot. <b>Trials y nuevos miembros de pago:</b> Stripe. Un nuevo miembro es quien hace su primer cobro exitoso y no tiene un contrato pagado previo con el mismo correo, teléfono o ID de Stripe; los que regresan se cuentan como reactivados. El CAC se calcula sobre nuevos miembros de pago. Se usa la cohorte de contactos creados desde ene 2026. Los pagos del 22 al 28 de octubre aún no están en la base, así que octubre es parcial. Ene–mar: AC aún no registraba el embudo completo (aplicantes menores que trials).
   </div>
   <div class="card">
     <div class="card-title">Tabla mensual de conversión</div>
@@ -132,19 +133,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="card-title">Cohortes SQL → Trial</div>
     <div class="card-sub">% de aprobados que activaron trial · mes de creación × mes de activación</div>
     <div style="overflow-x:auto"><table class="tbl" id="cohort-table"></table></div>
-    <div class="insight">La cohorte de sep (26.1%) todavía está madurando. Ago (27.7%) sigue avanzando. Feb (50.5%) es el mejor CR entre cohortes maduras.</div>
+    <div class="insight">La cohorte de sep (24.4%) todavía está madurando. Ago (27.7%) sigue avanzando. Feb (50.5%) es el mejor CR entre cohortes maduras.</div>
   </div>
   <div class="card">
-    <div class="card-title">Cohortes Trial → Customer</div>
-    <div class="card-sub">% de trials que se convirtieron en customer · mes de activación × mes de conversión</div>
+    <div class="card-title">Cohortes Trial → primer pago (Stripe)</div>
+    <div class="card-sub">% de pruebas iniciadas que terminaron en un primer pago · mes de inicio de la prueba × mes del primer pago · fuente: Stripe</div>
     <div style="overflow-x:auto"><table class="tbl" id="cohort-tc-table"></table></div>
-    <div class="insight">La cohorte de sep sigue madurando (79.6%). Ago (86.0%) y Jul (81.4%) siguen madurando fuerte. Ene y Feb ya maduraron al 100%.</div>
+    <div class="insight">Las cohortes de ene a mar convierten entre 84% y 93% de sus pruebas a un primer pago; desde abril bajan a entre 54% y 65%. Sep (39.0%) y oct (12.9%) todavía maduran: faltan los pagos del 22 al 28 de octubre en la base.</div>
   </div>
   <div class="card">
     <div class="card-title">Tiempos de conversión — últimas 9 semanas</div>
     <div class="card-sub">Media de días · SQL→Trial (azul) y Trial→Customer (verde)</div>
     <div class="chart-wrap" style="height:200px"><canvas id="tiemposChart"></canvas></div>
-    <div class="insight">SQL→Trial: media 4.5d · mediana 4.4d. Trial→Customer: media 19.9d · mediana 17.6d.</div>
+    <div class="insight">SQL→Trial: media 4.1d · mediana 3.8d. Trial→Customer: media 19.7d · mediana 17.1d.</div>
   </div>
 </section>
 
@@ -156,7 +157,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="kpi"><div class="kpi-label">MRR neto promedio / mes</div><div class="kpi-val" id="mrr-neto-val">+$38,915</div><div class="kpi-sub" id="mrr-neto-sub">Promedio real Ene–Jun cierre</div><span class="kpi-badge badge-green">MRR creciendo</span></div>
     <div class="kpi"><div class="kpi-label">Reactivación promedio</div><div class="kpi-val" id="reac-prom-val">$57,545</div><div class="kpi-sub">Componente crítico del crecimiento</div><span class="kpi-badge badge-yellow">Load-bearing</span></div>
     <div class="kpi"><div class="kpi-label">Churn MRR promedio</div><div class="kpi-val" id="churn-prom-val">21.1%</div><div class="kpi-sub" id="churn-prom-sub">Prom Ene–Jun · Jun: 31.0% (spike)</div><span class="kpi-badge badge-red">Jun: alerta ↑</span></div>
-    <div class="kpi"><div class="kpi-label">MRR acumulado 2026</div><div class="kpi-val">$6,050,121</div><div class="kpi-sub">Suma de cierres mensuales Ene–Oct*</div><span class="kpi-badge badge-blue">YTD</span></div>
+    <div class="kpi"><div class="kpi-label">MRR acumulado 2026</div><div class="kpi-val">$6,048,691</div><div class="kpi-sub">Suma de cierres mensuales Ene–Oct*</div><span class="kpi-badge badge-blue">YTD</span></div>
   </div>
   <div class="card">
     <div class="card-title">MRR Movement mensual</div>
@@ -200,15 +201,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="page-title">SQL pendientes de activación</div>
   <div class="page-sub" id="sql-page-sub">Personas aprobadas que aún no han iniciado su periodo de prueba · al 16 jul 2026 · Lead y Subscriber excluidos</div>
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-label">Total SQL en pipeline</div><div class="kpi-val">1,506</div><div class="kpi-sub">Sin trial activado</div><span class="kpi-badge badge-yellow">Oportunidad inmediata</span></div>
-    <div class="kpi"><div class="kpi-label">Conversión esperada</div><div class="kpi-val">~411</div><div class="kpi-sub">1,506 × 41% CR trial histórico × 70% × 95%</div><span class="kpi-badge badge-blue">Si se activan</span></div>
+    <div class="kpi"><div class="kpi-label">Total SQL en pipeline</div><div class="kpi-val">1,642</div><div class="kpi-sub">Sin trial activado</div><span class="kpi-badge badge-yellow">Oportunidad inmediata</span></div>
+    <div class="kpi"><div class="kpi-label">Conversión esperada</div><div class="kpi-val">~448</div><div class="kpi-sub">1,642 × 41% CR trial histórico × 70% × 95%</div><span class="kpi-badge badge-blue">Si se activan</span></div>
     <div class="kpi"><div class="kpi-label">Ventana crítica</div><div class="kpi-val">2 días</div><div class="kpi-sub">Mediana SQL→Trial post-aprobación</div><span class="kpi-badge badge-red">Actuar en 48h</span></div>
   </div>
   <div class="card">
     <div class="card-title">SQL sin activar por mes de creación</div>
     <div class="card-sub">Días promedio en pipeline · customers esperados al ritmo histórico</div>
     <div style="overflow-x:auto"><table class="tbl" id="sql-backlog-table"></table></div>
-    <div class="insight">Feb (217d), Mar (206d) y Abr (180d) son los candidatos prioritarios de reactivación. Oct (12d) está en proceso normal.</div>
+    <div class="insight">Feb (222d), Mar (211d) y Abr (185d) son los candidatos prioritarios de reactivación. Oct (14d) está en proceso normal.</div>
   </div>
   <div class="card">
     <div class="card-title">Distribución por antigüedad en pipeline</div>
@@ -302,10 +303,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 
   <p style="font-size:12px;font-weight:500;color:var(--soma-gray);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem">¿Por qué cancelan? — motivo real (Stripe)</p>
-  <p style="font-size:11px;color:var(--soma-gray);margin:-.5rem 0 .75rem">Actualizado 1 oct 2026 — deduplicado (37 filas repetidas) y excluyendo 3 casos con tarjeta pendiente de actualizar por más de 15 días.</p>
+  <p style="font-size:11px;color:var(--soma-gray);margin:-.5rem 0 .75rem">Actualizado 28 oct 2026 — deduplicado (37 filas repetidas) y excluyendo 3 casos con tarjeta pendiente de actualizar por más de 15 días.</p>
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-label">Cancelación pedida</div><div class="kpi-val" id="motivo-req-val">774</div><div class="kpi-sub" id="motivo-req-sub">59% · $762,110 MRR equiv. (Ene–Oct* 2026)</div><span class="kpi-badge badge-blue">Cliente o Concierge</span></div>
-    <div class="kpi"><div class="kpi-label">Tarjeta rechazada</div><div class="kpi-val" id="motivo-fail-val">549</div><div class="kpi-sub" id="motivo-fail-sub">41% · $538,950 MRR equiv. (Ene–Oct* 2026)</div><span class="kpi-badge badge-yellow">Stripe la dio de baja sola</span></div>
+    <div class="kpi"><div class="kpi-label">Cancelación pedida</div><div class="kpi-val" id="motivo-req-val">872</div><div class="kpi-sub" id="motivo-req-sub">59% · $858,170 MRR equiv. (Ene–Oct* 2026)</div><span class="kpi-badge badge-blue">Cliente o Concierge</span></div>
+    <div class="kpi"><div class="kpi-label">Tarjeta rechazada</div><div class="kpi-val" id="motivo-fail-val">611</div><div class="kpi-sub" id="motivo-fail-sub">41% · $599,630 MRR equiv. (Ene–Oct* 2026)</div><span class="kpi-badge badge-yellow">Stripe la dio de baja sola</span></div>
   </div>
   <div class="card">
     <div class="card-title">Motivo de cancelación por mes</div>
@@ -322,7 +323,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     tanto de cobro como de
     intención. En Contado, casi todo es cancelación pedida (esperable, no hay cobro recurrente que falle a medio plazo).
   </div>
-  <div style="background:#FFF4E5;border-left:4px solid #EF9F27;border-radius:6px;padding:10px 14px;margin:.75rem 0;font-size:12px;color:#5A4210">⚠️ <b>Nota (5 oct 2026):</b> estos conteos incluyen contratos que nunca llegaron a cobrar (casi todos, pruebas gratuitas canceladas). En 2026 son 699 de 1,323 cancelados (53%). En septiembre, de las 168 "cancelaciones pedidas", 107 eran pruebas sin ningún pago y 61 eran miembros que ya habían pagado; entre tarjeta rechazada, 42 de 56 ya habían pagado.</div>
+  <div style="background:#FFF4E5;border-left:4px solid #EF9F27;border-radius:6px;padding:10px 14px;margin:.75rem 0;font-size:12px;color:#5A4210">⚠️ <b>Nota (5 oct 2026):</b> estos conteos incluyen contratos que nunca llegaron a cobrar (casi todos, pruebas gratuitas canceladas). En 2026 son 796 de 1,483 cancelados (54%). En septiembre, de las 168 "cancelaciones pedidas", 107 eran pruebas sin ningún pago y 61 eran miembros que ya habían pagado; entre tarjeta rechazada, 42 de 56 ya habían pagado.</div>
 
   <p style="font-size:12px;font-weight:500;color:var(--soma-gray);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem">Cuotas — cancelación temprana vs. completó su plazo (dato real)</p>
   <div class="kpi-grid">
@@ -355,7 +356,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div style="overflow-x:auto"><table class="tbl" id="contado10800-table"></table></div>
   </div>
   <div class="insight" id="contado-insight">
-    Renovación acumulada de las cohortes ya vencidas (un registro por cliente): 48% en Semestral ($5,940) y 39% en Anual ($10,800). Cuenta como renovación volver a pagar el mismo plan; quien cambió a otro plan figura aquí como no renovado. Antes se mostraba 64% y 56% porque los clientes con varios contratos se contaban varias veces.
+    Renovación acumulada de las cohortes ya vencidas (un registro por cliente): 48% en Semestral ($5,940) y 41% en Anual ($10,800). Cuenta como renovación volver a pagar el mismo plan; quien cambió a otro plan figura aquí como no renovado.
   </div>
 
   <p style="font-size:12px;font-weight:500;color:var(--soma-gray);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem">¿De dónde viene el MRR perdido? (dato real)</p>
@@ -364,8 +365,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     usando <code>Ended At</code> real en vez de inferencia por hueco de pago.
   </div>
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-label">MRR perdido · veteranos (pre-2026)</div><div class="kpi-val" id="origen-vet-val">$468,290</div><div class="kpi-sub" id="origen-vet-sub">79% del MRR perdido por miembros que ya habían pagado (Ene–Oct*)</div><span class="kpi-badge badge-red">Erosión de base antigua</span></div>
-    <div class="kpi"><div class="kpi-label">MRR perdido · nuevos (2026)</div><div class="kpi-val" id="origen-new-val">$125,050</div><div class="kpi-sub" id="origen-new-sub">21% del MRR perdido por miembros que ya habían pagado (Ene–Oct*)</div><span class="kpi-badge badge-yellow">Crece con la base 2026</span></div>
+    <div class="kpi"><div class="kpi-label">MRR perdido · veteranos (pre-2026)</div><div class="kpi-val" id="origen-vet-val">$512,580</div><div class="kpi-sub" id="origen-vet-sub">76% del MRR perdido por miembros que ya habían pagado (Ene–Oct*)</div><span class="kpi-badge badge-red">Erosión de base antigua</span></div>
+    <div class="kpi"><div class="kpi-label">MRR perdido · nuevos (2026)</div><div class="kpi-val" id="origen-new-val">$158,810</div><div class="kpi-sub" id="origen-new-sub">24% del MRR perdido por miembros que ya habían pagado (Ene–Oct*)</div><span class="kpi-badge badge-yellow">Crece con la base 2026</span></div>
   </div>
   <div class="card">
     <div class="card-title">MRR perdido por mes, origen del cliente</div>
@@ -373,11 +374,48 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="chart-wrap" style="height:260px"><canvas id="origenMrrChart"></canvas></div>
   </div>
   <div class="insight" id="origen-insight">
-    Entre los miembros que ya habían pagado, los veteranos (primer pago antes de 2026) son el 79% del MRR perdido y los nuevos (2026) el 21%, con los nuevos creciendo mes a mes ($0K en enero → $47K en septiembre, el pico hasta ahora).
+    Entre los miembros que ya habían pagado, los veteranos (primer pago antes de 2026) son el 76% del MRR perdido y los nuevos (2026) el 24%, con los nuevos creciendo mes a mes ($0K en enero → $47K en septiembre, el pico hasta ahora).
   </div>
-  <div style="font-size:11px;color:var(--soma-gray);margin-top:.5rem">Nota: este split cubre solo los contratos que llegaron a cobrar al menos un pago. 716 de los 1,323 contratos cancelados en 2026 (54%) nunca cobraron — en su gran mayoría pruebas gratuitas canceladas antes de pagar — y no cuentan aquí porque no eran MRR de miembros. Por eso este total es menor que la "Pérdida" que reporta Stripe. Datos deduplicados y sin los 3 casos con tarjeta pendiente de actualizar por más de 15 días.</div>
+  <div style="font-size:11px;color:var(--soma-gray);margin-top:.5rem">Nota: este split cubre solo los contratos que llegaron a cobrar al menos un pago. 796 de los 1,483 contratos cancelados en 2026 (54%) nunca cobraron — en su gran mayoría pruebas gratuitas canceladas antes de pagar — y no cuentan aquí porque no eran MRR de miembros. Por eso este total es menor que la "Pérdida" que reporta Stripe. Datos deduplicados y sin los 3 casos con tarjeta pendiente de actualizar por más de 15 días.</div>
 </section>
 
+
+<!-- CALIDAD DE DATOS -->
+<section class="section" id="calidad-datos">
+  <div class="page-title">Calidad de datos</div>
+  <div class="page-sub">Semáforo de fuentes, conciliaciones con Stripe y revisiones internas del dashboard · corte 28 oct 2026</div>
+  <div class="kpi-grid" id="cd-kpis"></div>
+  <div class="card">
+    <div class="card-title">1. Frescura de las fuentes</div>
+    <div class="card-sub">Bien: hasta 7 días · Revisar: 8 a 14 · Atención: más de 14, medidos al 28 oct</div>
+    <div style="overflow-x:auto"><table class="tbl" id="cd-fuentes"></table></div>
+  </div>
+  <div class="card">
+    <div class="card-title">2. Customers por semana: CRM contra Stripe</div>
+    <div class="card-sub">CRM = entradas a la etapa Customer en AC · Stripe = clientes que pagaron por primera vez · Atención si el CRM registra menos de la mitad que Stripe</div>
+    <div class="chart-wrap" style="height:240px"><canvas id="calidadCustChart"></canvas></div>
+    <div style="overflow-x:auto;margin-top:.75rem"><table class="tbl" id="cd-customers"></table></div>
+  </div>
+  <div class="card">
+    <div class="card-title">2b. Inicios de prueba: AC contra Stripe</div>
+    <div class="card-sub">Stripe es la fuente de los inicios de prueba · Bien: AC / Stripe de 0.85 o más · Revisar: 0.6 a 0.85 · Atención: menos de 0.6</div>
+    <div style="overflow-x:auto"><table class="tbl" id="cd-trials"></table></div>
+  </div>
+  <div class="card">
+    <div class="card-title">3. MRR: Stripe contra reconstrucción contrato por contrato</div>
+    <div class="card-sub">Altas = MRR nuevo + reactivación · Se cuenta un contrato como activo al terminar su prueba · Bien: 85% a 115% · Revisar: 70% a 85% o 115% a 130%</div>
+    <div style="overflow-x:auto"><table class="tbl" id="cd-mrr"></table></div>
+  </div>
+  <div class="card">
+    <div class="card-title">4. Revisiones internas del dashboard (se recalculan en vivo)</div>
+    <div class="card-sub">Comprueban que las cifras no se contradigan entre sí</div>
+    <div style="overflow-x:auto"><table class="tbl" id="cd-integridad"></table></div>
+  </div>
+  <div class="card">
+    <div class="card-title">5. Alertas y limitaciones conocidas</div>
+    <div id="cd-alertas" style="display:flex;flex-direction:column;gap:10px;margin-top:.5rem"></div>
+  </div>
+</section>
 
 <!-- NUEVOS POR PLAN -->
 <section class="section" id="nuevos-por-plan">
@@ -423,10 +461,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- CICLO DE VIDA -->
 <section class="section" id="ciclovida">
   <div class="page-title">Ciclo de vida del miembro</div>
-  <div class="page-sub" id="ciclo-page-sub">Desde la aplicación hasta el pago · Fuente: AC base 22 oct 2026</div>
+  <div class="page-sub" id="ciclo-page-sub">Desde la aplicación hasta el pago · Fuente: AC base 28 oct 2026</div>
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-label">Ciclo total promedio</div><div class="kpi-val">34.0d</div><div class="kpi-sub">Aplicación → primer pago · mediana 18.0d</div><span class="kpi-badge badge-blue">~5 semanas</span></div>
-    <div class="kpi"><div class="kpi-label">Etapa más larga</div><div class="kpi-val">Trial → Cust</div><div class="kpi-sub">Media 21.3d · mediana 15.0d</div><span class="kpi-badge badge-yellow">Determina el ciclo</span></div>
+    <div class="kpi"><div class="kpi-label">Ciclo total promedio</div><div class="kpi-val">33.1d</div><div class="kpi-sub">Aplicación → primer pago · mediana 17.0d</div><span class="kpi-badge badge-blue">~5 semanas</span></div>
+    <div class="kpi"><div class="kpi-label">Etapa más larga</div><div class="kpi-val">Trial → Cust</div><div class="kpi-sub">Media 21.2d · mediana 15.0d</div><span class="kpi-badge badge-yellow">Determina el ciclo</span></div>
     <div class="kpi"><div class="kpi-label">Ventana crítica</div><div class="kpi-val">1 día</div><div class="kpi-sub">Mediana SQL→Trial post-aprobación</div><span class="kpi-badge badge-red">Actuar rápido</span></div>
   </div>
   <div class="card">
@@ -461,20 +499,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- COMPARATIVA SEMANAL -->
 <section class="section" id="semanal">
   <div class="page-title">Comparativa semanal</div>
-  <div class="page-sub" id="semanal-page-sub">Últimas 9 semanas · Semana actual: S43 · Fuente: AC base 14 jul 2026</div>
+  <div class="page-sub" id="semanal-page-sub">Últimas 9 semanas · Semana actual: S44 · Fuente: AC base 14 jul 2026</div>
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-label">Semana actual (S43)</div><div class="kpi-val">5</div><div class="kpi-sub">19–25 oct · en curso (4 días)</div><span class="kpi-badge badge-yellow">En curso</span></div>
-    <div class="kpi"><div class="kpi-label">Mejor semana — Aplic.</div><div class="kpi-val">S35</div><div class="kpi-sub">103 aplicantes · 24 ago</div><span class="kpi-badge badge-blue">Pico reciente</span></div>
-    <div class="kpi"><div class="kpi-label">Prom. aplic/sem</div><div class="kpi-val">64</div><div class="kpi-sub">Promedio S35–S42 (cerradas)</div><span class="kpi-badge badge-gray">Sems cerradas</span></div>
+    <div class="kpi"><div class="kpi-label">Semana actual (S44)</div><div class="kpi-val">16</div><div class="kpi-sub">26 oct–1 nov · en curso (3 días)</div><span class="kpi-badge badge-yellow">En curso</span></div>
+    <div class="kpi"><div class="kpi-label">Mejor semana — Aplic.</div><div class="kpi-val">S38</div><div class="kpi-sub">89 aplicantes · 14 sep</div><span class="kpi-badge badge-blue">Pico reciente</span></div>
+    <div class="kpi"><div class="kpi-label">Prom. aplic/sem</div><div class="kpi-val">71</div><div class="kpi-sub">Promedio S36–S43 (cerradas)</div><span class="kpi-badge badge-gray">Sems cerradas</span></div>
   </div>
   <div class="card">
-    <div class="card-title">Aplicantes, Trials y Customers por semana</div>
-    <div class="card-sub" id="semanal-chart-sub">S35–S43 · últimas 9 semanas · S43 en curso</div>
+    <div class="card-title">Aplicantes, trials y nuevos de pago por semana</div>
+    <div class="card-sub" id="semanal-chart-sub">S36–S44 · últimas 9 semanas · S44 en curso</div>
     <div style="position:relative;height:240px"><canvas id="weeklyChart"></canvas></div>
   </div>
   <div class="card">
     <div class="card-title">Tabla detallada por semana</div>
-    <div class="card-sub">CR aprobación · Media días SQL→Trial · S43 en curso</div>
+    <div class="card-sub">CR aprobación · Media días SQL→Trial · S44 en curso</div>
     <div style="overflow-x:auto"><table class="tbl" id="weekly-table"></table></div>
   </div>
 </section>
@@ -499,12 +537,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </script>
 <script>
 
-const EXTRA = {"lifecycle": {"cs": {"media": 5.9, "mediana": 2.0, "dist": [{"label": "Mismo día", "n": 84, "pct": 3.6}, {"label": "1–2 días", "n": 1218, "pct": 52.3}, {"label": "3–7 días", "n": 683, "pct": 29.3}, {"label": "8+ días", "n": 346, "pct": 14.8}]}, "st": {"media": 6.8, "mediana": 1.0, "dist": [{"label": "0–1 días", "n": 377, "pct": 53.2}, {"label": "2–7 días", "n": 144, "pct": 20.3}, {"label": "8–15 días", "n": 109, "pct": 15.4}, {"label": "16+ días", "n": 78, "pct": 11.0}]}, "tc": {"media": 21.3, "mediana": 15.0, "dist": [{"label": "0–7 días", "n": 33, "pct": 5.1}, {"label": "8–15 días", "n": 359, "pct": 55.7}, {"label": "16–30 días", "n": 222, "pct": 34.5}, {"label": "31+ días", "n": 30, "pct": 4.7}]}, "total_media": 34.0, "total_mediana": 18.0}, "weekly": [{"sem": 35, "fecha": "2026-08-24", "label": "24 Ago", "aplic": 103, "apro": 103, "cr_apro": 100.0, "trial": 22, "cust": 21, "media_st": 5.9, "en_curso": false}, {"sem": 36, "fecha": "2026-08-31", "label": "31 Ago", "aplic": 60, "apro": 57, "cr_apro": 95.0, "trial": 31, "cust": 35, "media_st": 3.9, "en_curso": false}, {"sem": 37, "fecha": "2026-09-07", "label": "07 Sep", "aplic": 75, "apro": 28, "cr_apro": 37.3, "trial": 21, "cust": 21, "media_st": 5.7, "en_curso": false}, {"sem": 38, "fecha": "2026-09-14", "label": "14 Sep", "aplic": 74, "apro": 74, "cr_apro": 100.0, "trial": 22, "cust": 36, "media_st": 4.8, "en_curso": false}, {"sem": 39, "fecha": "2026-09-21", "label": "21 Sep", "aplic": 53, "apro": 52, "cr_apro": 98.1, "trial": 22, "cust": 25, "media_st": 2.4, "en_curso": false}, {"sem": 40, "fecha": "2026-09-28", "label": "28 Sep", "aplic": 63, "apro": 63, "cr_apro": 100.0, "trial": 14, "cust": 32, "media_st": 2.9, "en_curso": false}, {"sem": 41, "fecha": "2026-10-05", "label": "05 Oct", "aplic": 55, "apro": 53, "cr_apro": 96.4, "trial": 12, "cust": 24, "media_st": 6.8, "en_curso": false}, {"sem": 42, "fecha": "2026-10-12", "label": "12 Oct", "aplic": 28, "apro": 28, "cr_apro": 100.0, "trial": 15, "cust": 4, "media_st": 4.0, "en_curso": false}, {"sem": 43, "fecha": "2026-10-19", "label": "19 Oct", "aplic": 5, "apro": 5, "cr_apro": 100.0, "trial": 8, "cust": 0, "media_st": 4.0, "en_curso": true}]};
-const DATA  = {"updated": "22 oct 2026", "pipeline": [{"mes": "Ene", "aplic": 35, "apro": 35, "cr_apro": 100.0, "trial": 2, "cr_trial": 5.7, "cust": 0, "cr_conv": 0.0, "cac": 0, "inv": 20430}, {"mes": "Feb", "aplic": 97, "apro": 97, "cr_apro": 100.0, "trial": 21, "cr_trial": 21.6, "cust": 9, "cr_conv": 42.9, "cac": 11323, "inv": 101907}, {"mes": "Mar", "aplic": 279, "apro": 253, "cr_apro": 90.7, "trial": 60, "cr_trial": 23.7, "cust": 19, "cr_conv": 31.7, "cac": 6203, "inv": 117863}, {"mes": "Abr", "aplic": 249, "apro": 248, "cr_apro": 99.6, "trial": 100, "cr_trial": 40.3, "cust": 84, "cr_conv": 84.0, "cac": 1347, "inv": 113139}, {"mes": "May", "aplic": 296, "apro": 292, "cr_apro": 98.6, "trial": 164, "cr_trial": 56.2, "cust": 134, "cr_conv": 81.7, "cac": 818, "inv": 109596}, {"mes": "Jun", "aplic": 399, "apro": 392, "cr_apro": 98.2, "trial": 99, "cr_trial": 25.3, "cust": 140, "cr_conv": 141.4, "cac": 804, "inv": 112516}, {"mes": "Jul", "aplic": 349, "apro": 342, "cr_apro": 98.0, "trial": 113, "cr_trial": 33.0, "cust": 125, "cr_conv": 110.6, "cac": 829, "inv": 103683}, {"mes": "Ago", "aplic": 364, "apro": 363, "cr_apro": 99.7, "trial": 93, "cr_trial": 25.6, "cust": 124, "cr_conv": 133.3, "cac": 825, "inv": 102243}, {"mes": "Sep", "aplic": 283, "apro": 283, "cr_apro": 100.0, "trial": 93, "cr_trial": 32.9, "cust": 132, "cr_conv": 141.9, "cac": 750, "inv": 98985}, {"mes": "Oct*", "aplic": 127, "apro": 125, "cr_apro": 98.4, "trial": 43, "cr_trial": 34.4, "cust": 42, "cr_conv": 97.7, "cac": 0, "inv": 0, "parcial": true}], "cohort": [{"cohort": "Ene", "total_apro": 35, "t1": 1, "p1": 2.9, "t2": 4, "p2": 11.4, "t3": 3, "p3": 8.6, "t4": 2, "p4": 5.7, "t5": 1, "p5": 2.9, "t6": 1, "p6": 2.9, "t7": 0, "p7": 0.0, "t8": 1, "p8": 2.9, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 37.1}, {"cohort": "Feb", "total_apro": 97, "t1": 0, "p1": 0.0, "t2": 17, "p2": 17.5, "t3": 22, "p3": 22.7, "t4": 1, "p4": 1.0, "t5": 7, "p5": 7.2, "t6": 0, "p6": 0.0, "t7": 2, "p7": 2.1, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 50.5}, {"cohort": "Mar", "total_apro": 253, "t1": 1, "p1": 0.4, "t2": 0, "p2": 0.0, "t3": 35, "p3": 13.8, "t4": 38, "p4": 15.0, "t5": 16, "p5": 6.3, "t6": 1, "p6": 0.4, "t7": 2, "p7": 0.8, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 36.8}, {"cohort": "Abr", "total_apro": 248, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 59, "p4": 23.8, "t5": 41, "p5": 16.5, "t6": 1, "p6": 0.4, "t7": 6, "p7": 2.4, "t8": 1, "p8": 0.4, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 43.5}, {"cohort": "May", "total_apro": 292, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 99, "p5": 33.9, "t6": 25, "p6": 8.6, "t7": 2, "p7": 0.7, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 43.2}, {"cohort": "Jun", "total_apro": 392, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 71, "p6": 18.1, "t7": 17, "p7": 4.3, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 22.4}, {"cohort": "Jul", "total_apro": 345, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 0, "p6": 0.0, "t7": 84, "p7": 24.3, "t8": 9, "p8": 2.6, "t9": 3, "p9": 0.9, "t10": 0, "p10": 0.0, "cr_acum": 27.8}, {"cohort": "Ago", "total_apro": 365, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 0, "p6": 0.0, "t7": 0, "p7": 0.0, "t8": 82, "p8": 22.5, "t9": 18, "p9": 4.9, "t10": 1, "p10": 0.3, "cr_acum": 27.7},
-{"cohort": "Sep", "total_apro": 283, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 0, "p6": 0.0, "t7": 0, "p7": 0.0, "t8": 0, "p8": 0.0, "t9": 69, "p9": 24.4, "t10": 5, "p10": 1.8, "cr_acum": 26.1},
-{"cohort": "Oct", "total_apro": 125, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 0, "p6": 0.0, "t7": 0, "p7": 0.0, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 37, "p10": 29.6, "cr_acum": 29.6}], "weekly": [{"sem": 35, "fecha": "2026-08-24", "lunes_label": "24 Ago", "n_apro": 103, "n_conv": 22, "pct_act": 21.4, "media_cs": 4.6, "media_st": 5.9, "med_st": null, "media_tc": 20.4, "en_curso": false}, {"sem": 36, "fecha": "2026-08-31", "lunes_label": "31 Ago", "n_apro": 57, "n_conv": 31, "pct_act": 54.4, "media_cs": 5.7, "media_st": 3.9, "med_st": null, "media_tc": 18.0, "en_curso": false}, {"sem": 37, "fecha": "2026-09-07", "lunes_label": "07 Sep", "n_apro": 28, "n_conv": 21, "pct_act": 75.0, "media_cs": 7.3, "media_st": 5.7, "med_st": null, "media_tc": 15.2, "en_curso": false}, {"sem": 38, "fecha": "2026-09-14", "lunes_label": "14 Sep", "n_apro": 74, "n_conv": 22, "pct_act": 29.7, "media_cs": 2.1, "media_st": 4.8, "med_st": null, "media_tc": 17.1, "en_curso": false}, {"sem": 39, "fecha": "2026-09-21", "lunes_label": "21 Sep", "n_apro": 52, "n_conv": 22, "pct_act": 42.3, "media_cs": 4.8, "media_st": 2.4, "med_st": null, "media_tc": 16.8, "en_curso": false}, {"sem": 40, "fecha": "2026-09-28", "lunes_label": "28 Sep", "n_apro": 63, "n_conv": 14, "pct_act": 22.2, "media_cs": 4.1, "media_st": 2.9, "med_st": null, "media_tc": 35.4, "en_curso": false}, {"sem": 41, "fecha": "2026-10-05", "lunes_label": "05 Oct", "n_apro": 53, "n_conv": 12, "pct_act": 22.6, "media_cs": 1.2, "media_st": 6.8, "med_st": null, "media_tc": 17.2, "en_curso": false}, {"sem": 42, "fecha": "2026-10-12", "lunes_label": "12 Oct", "n_apro": 28, "n_conv": 15, "pct_act": 53.6, "media_cs": 12.9, "media_st": 4.0, "med_st": null, "media_tc": 18.8, "en_curso": false}, {"sem": 43, "fecha": "2026-10-19", "lunes_label": "19 Oct", "n_apro": 5, "n_conv": 8, "pct_act": 160.0, "media_cs": 2.9, "media_st": 4.0, "med_st": null, "media_tc": null, "en_curso": true}], "sql_backlog": [{"mes": "Feb", "aplic": 102, "sql": 35, "pct_aplic": 34.3, "avg_dias": 217, "esperados": 10}, {"mes": "Mar", "aplic": 255, "sql": 155, "pct_aplic": 60.8, "avg_dias": 206, "esperados": 42}, {"mes": "Abr", "aplic": 250, "sql": 130, "pct_aplic": 52.0, "avg_dias": 180, "esperados": 36}, {"mes": "May", "aplic": 299, "sql": 149, "pct_aplic": 49.8, "avg_dias": 151, "esperados": 41}, {"mes": "Jun", "aplic": 393, "sql": 288, "pct_aplic": 73.3, "avg_dias": 123, "esperados": 79}, {"mes": "Jul", "aplic": 345, "sql": 221, "pct_aplic": 64.1, "avg_dias": 97, "esperados": 60}, {"mes": "Ago", "aplic": 365, "sql": 236, "pct_aplic": 64.7, "avg_dias": 63, "esperados": 65}, {"mes": "Sep", "aplic": 283, "sql": 204, "pct_aplic": 72.1, "avg_dias": 33, "esperados": 56}, {"mes": "Oct", "aplic": 127, "sql": 88, "pct_aplic": 69.3, "avg_dias": 12, "esperados": 24}], "cohort_tc": [{"cohort": "Ene", "total_trial": 2, "t1": 0, "p1": 0.0, "t2": 2, "p2": 100.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 0, "p6": 0.0, "t7": 0, "p7": 0.0, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 100.0}, {"cohort": "Feb", "total_trial": 21, "t1": 0, "p1": 0.0, "t2": 7, "p2": 33.3, "t3": 13, "p3": 61.9, "t4": 0, "p4": 0.0, "t5": 1, "p5": 4.8, "t6": 0, "p6": 0.0, "t7": 0, "p7": 0.0, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 100.0}, {"cohort": "Mar", "total_trial": 60, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 6, "p3": 10.0, "t4": 45, "p4": 75.0, "t5": 5, "p5": 8.3, "t6": 1, "p6": 1.7, "t7": 0, "p7": 0.0, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 95.0}, {"cohort": "Abr", "total_trial": 100, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 24, "p4": 24.0, "t5": 70, "p5": 70.0, "t6": 0, "p6": 0.0, "t7": 1, "p7": 1.0, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 95.0}, {"cohort": "May", "total_trial": 164, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 38, "p5": 23.2, "t6": 95, "p6": 57.9, "t7": 9, "p7": 5.5, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 86.6}, {"cohort": "Jun", "total_trial": 99, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 19, "p6": 19.2, "t7": 62, "p7": 62.6, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 81.8}, {"cohort": "Jul", "total_trial": 113, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 0, "p6": 0.0, "t7": 28, "p7": 24.8, "t8": 63, "p8": 55.8, "t9": 1, "p9": 0.9, "t10": 0, "p10": 0.0, "cr_acum": 81.4}, {"cohort": "Ago", "total_trial": 93, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 0, "p6": 0.0, "t7": 0, "p7": 0.0, "t8": 27, "p8": 29.0, "t9": 53, "p9": 57.0, "t10": 0, "p10": 0.0, "cr_acum": 86.0},
-{"cohort": "Sep", "total_trial": 93, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 0, "p6": 0.0, "t7": 0, "p7": 0.0, "t8": 0, "p8": 0.0, "t9": 43, "p9": 46.2, "t10": 31, "p10": 33.3, "cr_acum": 79.6},
-{"cohort": "Oct", "total_trial": 43, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 0, "p6": 0.0, "t7": 0, "p7": 0.0, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 0.0}], "utms_source": [{"source": "ig", "aplic": 572, "trial": 149, "cust": 120, "cr_trial": 26.0, "cr": 21.0}, {"source": "fb", "aplic": 171, "trial": 49, "cust": 35, "cr_trial": 28.7, "cr": 20.5}, {"source": "tiktok", "aplic": 66, "trial": 22, "cust": 20, "cr_trial": 33.3, "cr": 30.3}, {"source": "influencer", "aplic": 6, "trial": 3, "cust": 3, "cr_trial": 50.0, "cr": 50.0}, {"source": "activecampaign", "aplic": 4, "trial": 4, "cust": 3, "cr_trial": 100.0, "cr": 75.0}], "utms_medium": [{"medium": "paid", "aplic": 787, "trial": 205, "cust": 162, "cr_trial": 26.0, "cr": 20.6}, {"medium": "social", "aplic": 37, "trial": 17, "cust": 14, "cr_trial": 45.9, "cr": 37.8}, {"medium": "organic", "aplic": 6, "trial": 3, "cust": 3, "cr_trial": 50.0, "cr": 50.0}, {"medium": "email", "aplic": 4, "trial": 4, "cust": 3, "cr_trial": 100.0, "cr": 75.0}], "utms_campaign": [{"name": "RO_MX_LEA_PRO_MembresíaSOMA+", "aplic": 23, "trial": 9, "cust": 9, "cr_trial": 39.1, "cr": 39.1}, {"name": "RO_MX_VID_BRA_VideoViews", "aplic": 15, "trial": 5, "cust": 5, "cr_trial": 33.3, "cr": 33.3}, {"name": "RO_MX_LEA_PRO_AplicaciónWebMembresía", "aplic": 176, "trial": 61, "cust": 53, "cr_trial": 34.7, "cr": 30.1}, {"name": "MX_MF_35-65_FBIG_INT_lujos", "aplic": 18, "trial": 5, "cust": 5, "cr_trial": 27.8, "cr": 27.8}, {"name": "RO_MX_LEA_PRO_MembresíaSOMA+ INFLUENCER", "aplic": 102, "trial": 25, "cust": 24, "cr_trial": 24.5, "cr": 23.5}, {"name": "MX_MF_28-65_FBIG_INT_ocio_FormPreRegistroCompleto", "aplic": 16, "trial": 5, "cust": 3, "cr_trial": 31.2, "cr": 18.8}, {"name": "RO_MX_LEA_PRO_AplicaciónWebMembresía · LAL_BaseSoma", "aplic": 36, "trial": 6, "cust": 4, "cr_trial": 16.7, "cr": 11.1}, {"name": "RO_MX_LEA_PRO_AplicaciónWebMembresía · INT_BRANDING", "aplic": 47, "trial": 13, "cust": 5, "cr_trial": 27.7, "cr": 10.6}, {"name": "RO_MX_LEA_PRO_MembresíaSOMA+ INFLUENCER · Open Advantage", "aplic": 172, "trial": 23, "cust": 13, "cr_trial": 13.4, "cr": 7.6}, {"name": "RO_MX_LEA_PRO_AplicaciónWebMembresía · INT_ocio", "aplic": 44, "trial": 7, "cust": 3, "cr_trial": 15.9, "cr": 6.8}], "utms_content": [{"name": "PRO_IMG_WEB_estatica 27ENE", "aplic": 6, "trial": 6, "cust": 6, "cr_trial": 100.0, "cr": 100.0}, {"name": "PRO_VID_WEB_Coche llegando", "aplic": 9, "trial": 6, "cust": 5, "cr_trial": 66.7, "cr": 55.6}, {"name": "MX_MF_25-55_TIKTOK_INT_Creadores", "aplic": 5, "trial": 3, "cust": 3, "cr_trial": 60.0, "cr": 60.0}, {"name": "PRO_CAR_WEB_2x1Boliche", "aplic": 6, "trial": 3, "cust": 3, "cr_trial": 50.0, "cr": 50.0}, {"name": "BRA_IMG_WEB_CINE", "aplic": 6, "trial": 3, "cust": 3, "cr_trial": 50.0, "cr": 50.0}, {"name": "{{ad name}}", "aplic": 18, "trial": 8, "cust": 8, "cr_trial": 44.4, "cr": 44.4}, {"name": "PRO_VID_WEB_Eduardo Olvera", "aplic": 30, "trial": 13, "cust": 13, "cr_trial": 43.3, "cr": 43.3}, {"name": "link_in_bio", "aplic": 37, "trial": 17, "cust": 14, "cr_trial": 45.9, "cr": 37.8}, {"name": "PRO_VID_WEB_MonicaCervantes", "aplic": 11, "trial": 4, "cust": 4, "cr_trial": 36.4, "cr": 36.4}, {"name": "PRO_VID_WEB_LuisCarlos", "aplic": 14, "trial": 5, "cust": 5, "cr_trial": 35.7, "cr": 35.7}, {"name": "romantizando_soma", "aplic": 15, "trial": 5, "cust": 5, "cr_trial": 33.3, "cr": 33.3}, {"name": "PRO_VID_WEB_YAEL_v2", "aplic": 12, "trial": 3, "cust": 3, "cr_trial": 25.0, "cr": 25.0}, {"name": "PRO_CAR_WEB_Valet", "aplic": 20, "trial": 5, "cust": 5, "cr_trial": 25.0, "cr": 25.0}], "mrr_real": [443330, 458550, 507380, 531540, 589760, 645660], "mrr_movement": [{"mes": "Ene", "nuevo": 37940, "reac": 62420, "expan": 5690, "perdida": -70010, "contrac": -4880, "neto": 31160, "cierre": 443330}, {"mes": "Feb", "nuevo": 54290, "reac": 43250, "expan": 2850, "perdida": -81070, "contrac": -4100, "neto": 15220, "cierre": 458550}, {"mes": "Mar", "nuevo": 59190, "reac": 60740, "expan": 950, "perdida": -71060, "contrac": -990, "neto": 48830, "cierre": 507380}, {"mes": "Abr", "nuevo": 80930, "reac": 55300, "expan": 2990, "perdida": -112010, "contrac": -3050, "neto": 24160, "cierre": 531540}, {"mes": "May", "nuevo": 126718, "reac": 52460, "expan": 950, "perdida": -120918, "contrac": -990, "neto": 58220, "cierre": 589760}, {"mes": "Jun", "nuevo": 167440, "reac": 71100, "expan": 3800, "perdida": -182540, "contrac": -3900, "neto": 55900, "cierre": 645660}], "trial_types": [{"tipo": "30 días", "n": 74, "cr": 86.5}, {"tipo": "15 días", "n": 167, "cr": 64.1}, {"tipo": "15 días ext.", "n": 54, "cr": 44.4}], "kpis": {"mrr": 645660, "customers_activos": 352, "cac_jun": 804, "backlog": 70, "ratio_entrada": 1.37, "cr_apro": 96.7, "total_aplic": 1226, "total_cust": 430}, "pend_may": 29, "pend_jun": 45};
+const EXTRA = {"lifecycle": {"cs": {"media": 5.5, "mediana": 2.0, "dist": [{"label": "Mismo día", "n": 334, "pct": 14.1}, {"label": "1–2 días", "n": 1120, "pct": 47.2}, {"label": "3–7 días", "n": 592, "pct": 25.0}, {"label": "8+ días", "n": 326, "pct": 13.7}]}, "st": {"media": 6.4, "mediana": 0.0, "dist": [{"label": "0–1 días", "n": 396, "pct": 55.8}, {"label": "2–7 días", "n": 138, "pct": 19.4}, {"label": "8–15 días", "n": 103, "pct": 14.5}, {"label": "16+ días", "n": 73, "pct": 10.3}]}, "tc": {"media": 21.2, "mediana": 15.0, "dist": [{"label": "0–7 días", "n": 35, "pct": 5.4}, {"label": "8–15 días", "n": 359, "pct": 55.8}, {"label": "16–30 días", "n": 223, "pct": 34.7}, {"label": "31+ días", "n": 26, "pct": 4.0}]}, "total_media": 33.1, "total_mediana": 17.0}, "weekly": [{"sem": 36, "fecha": "2026-08-31", "label": "31 Ago", "aplic": 59, "apro": 59, "cr_apro": 100.0, "trial": 58, "cust": 26, "media_st": 3.7, "en_curso": false}, {"sem": 37, "fecha": "2026-09-07", "label": "07 Sep", "aplic": 76, "apro": 76, "cr_apro": 100.0, "trial": 36, "cust": 8, "media_st": 5.5, "en_curso": false}, {"sem": 38, "fecha": "2026-09-14", "label": "14 Sep", "aplic": 89, "apro": 89, "cr_apro": 100.0, "trial": 36, "cust": 22, "media_st": 4.8, "en_curso": false}, {"sem": 39, "fecha": "2026-09-21", "label": "21 Sep", "aplic": 65, "apro": 65, "cr_apro": 100.0, "trial": 34, "cust": 14, "media_st": 2.3, "en_curso": false}, {"sem": 40, "fecha": "2026-09-28", "label": "28 Sep", "aplic": 76, "apro": 75, "cr_apro": 98.7, "trial": 33, "cust": 19, "media_st": 2.5, "en_curso": false}, {"sem": 41, "fecha": "2026-10-05", "label": "05 Oct", "aplic": 78, "apro": 76, "cr_apro": 97.4, "trial": 34, "cust": 15, "media_st": 6.6, "en_curso": false}, {"sem": 42, "fecha": "2026-10-12", "label": "12 Oct", "aplic": 75, "apro": 75, "cr_apro": 100.0, "trial": 28, "cust": 10, "media_st": 3.8, "en_curso": false}, {"sem": 43, "fecha": "2026-10-19", "label": "19 Oct", "aplic": 49, "apro": 49, "cr_apro": 100.0, "trial": 35, "cust": null, "media_st": 3.5, "en_curso": false}, {"sem": 44, "fecha": "2026-10-26", "label": "26 Oct", "aplic": 16, "apro": 8, "cr_apro": 50.0, "trial": 7, "cust": null, "media_st": 5.0, "en_curso": true}]};
+const DATA  = {"updated": "28 oct 2026", "pipeline": [{"mes": "Ene", "aplic": 35, "apro": 35, "cr_apro": 100.0, "trial": 81, "cr_trial": 231.4, "cust": 40, "cr_conv": 49.4, "cac": 511, "inv": 20430}, {"mes": "Feb", "aplic": 97, "apro": 97, "cr_apro": 100.0, "trial": 71, "cr_trial": 73.2, "cust": 52, "cr_conv": 73.2, "cac": 1960, "inv": 101907}, {"mes": "Mar", "aplic": 279, "apro": 253, "cr_apro": 90.7, "trial": 79, "cr_trial": 31.2, "cust": 50, "cr_conv": 63.3, "cac": 2357, "inv": 117863}, {"mes": "Abr", "aplic": 249, "apro": 248, "cr_apro": 99.6, "trial": 125, "cr_trial": 50.4, "cust": 49, "cr_conv": 39.2, "cac": 2309, "inv": 113139}, {"mes": "May", "aplic": 296, "apro": 292, "cr_apro": 98.6, "trial": 205, "cr_trial": 70.2, "cust": 64, "cr_conv": 31.2, "cac": 1712, "inv": 109596}, {"mes": "Jun", "aplic": 399, "apro": 392, "cr_apro": 98.2, "trial": 165, "cr_trial": 42.1, "cust": 92, "cr_conv": 55.8, "cac": 1223, "inv": 112516}, {"mes": "Jul", "aplic": 349, "apro": 342, "cr_apro": 98.0, "trial": 182, "cr_trial": 53.2, "cust": 81, "cr_conv": 44.5, "cac": 1280, "inv": 103683}, {"mes": "Ago", "aplic": 364, "apro": 363, "cr_apro": 99.7, "trial": 177, "cr_trial": 48.8, "cust": 89, "cr_conv": 50.3, "cac": 1149, "inv": 102243}, {"mes": "Sep", "aplic": 304, "apro": 303, "cr_apro": 99.7, "trial": 164, "cr_trial": 54.1, "cust": 76, "cr_conv": 46.3, "cac": 1302, "inv": 98985}, {"mes": "Oct*", "aplic": 268, "apro": 259, "cr_apro": 96.6, "trial": 124, "cr_trial": 47.9, "cust": 41, "cr_conv": 33.1, "cac": 0, "inv": 0, "parcial": true}], "cohort": [{"cohort": "Ene", "total_apro": 35, "t1": 1, "p1": 2.9, "t2": 4, "p2": 11.4, "t3": 3, "p3": 8.6, "t4": 2, "p4": 5.7, "t5": 1, "p5": 2.9, "t6": 1, "p6": 2.9, "t7": 0, "p7": 0.0, "t8": 1, "p8": 2.9, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 37.1}, {"cohort": "Feb", "total_apro": 97, "t1": 0, "p1": 0.0, "t2": 17, "p2": 17.5, "t3": 22, "p3": 22.7, "t4": 1, "p4": 1.0, "t5": 7, "p5": 7.2, "t6": 0, "p6": 0.0, "t7": 2, "p7": 2.1, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 50.5}, {"cohort": "Mar", "total_apro": 253, "t1": 1, "p1": 0.4, "t2": 0, "p2": 0.0, "t3": 35, "p3": 13.8, "t4": 38, "p4": 15.0, "t5": 16, "p5": 6.3, "t6": 1, "p6": 0.4, "t7": 2, "p7": 0.8, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 36.8}, {"cohort": "Abr", "total_apro": 248, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 59, "p4": 23.8, "t5": 41, "p5": 16.5, "t6": 1, "p6": 0.4, "t7": 6, "p7": 2.4, "t8": 1, "p8": 0.4, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 43.5}, {"cohort": "May", "total_apro": 292, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 99, "p5": 33.9, "t6": 25, "p6": 8.6, "t7": 2, "p7": 0.7, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 43.2}, {"cohort": "Jun", "total_apro": 392, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 71, "p6": 18.1, "t7": 17, "p7": 4.3, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 22.4}, {"cohort": "Jul", "total_apro": 345, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 0, "p6": 0.0, "t7": 84, "p7": 24.3, "t8": 9, "p8": 2.6, "t9": 3, "p9": 0.9, "t10": 0, "p10": 0.0, "cr_acum": 27.8}, {"cohort": "Ago", "total_apro": 365, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 0, "p6": 0.0, "t7": 0, "p7": 0.0, "t8": 82, "p8": 22.5, "t9": 18, "p9": 4.9, "t10": 1, "p10": 0.3, "cr_acum": 27.7},
+{"cohort": "Sep", "total_apro": 303, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 0, "p6": 0.0, "t7": 0, "p7": 0.0, "t8": 0, "p8": 0.0, "t9": 69, "p9": 22.8, "t10": 5, "p10": 1.7, "cr_acum": 24.4},
+{"cohort": "Oct", "total_apro": 259, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 0, "p6": 0.0, "t7": 0, "p7": 0.0, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 42, "p10": 16.2, "cr_acum": 16.2}], "weekly": [{"sem": 36, "fecha": "2026-08-31", "lunes_label": "31 Ago", "n_apro": 59, "n_conv": 58, "pct_act": 98.3, "media_cs": 4.2, "media_st": 3.7, "med_st": null, "media_tc": 17.9, "en_curso": false}, {"sem": 37, "fecha": "2026-09-07", "lunes_label": "07 Sep", "n_apro": 76, "n_conv": 36, "pct_act": 47.4, "media_cs": 7.2, "media_st": 5.5, "med_st": null, "media_tc": 15.2, "en_curso": false}, {"sem": 38, "fecha": "2026-09-14", "lunes_label": "14 Sep", "n_apro": 89, "n_conv": 36, "pct_act": 40.4, "media_cs": 1.8, "media_st": 4.8, "med_st": null, "media_tc": 17.1, "en_curso": false}, {"sem": 39, "fecha": "2026-09-21", "lunes_label": "21 Sep", "n_apro": 65, "n_conv": 34, "pct_act": 52.3, "media_cs": 4.4, "media_st": 2.3, "med_st": null, "media_tc": 16.8, "en_curso": false}, {"sem": 40, "fecha": "2026-09-28", "lunes_label": "28 Sep", "n_apro": 75, "n_conv": 33, "pct_act": 44.0, "media_cs": 3.8, "media_st": 2.5, "med_st": null, "media_tc": 35.5, "en_curso": false}, {"sem": 41, "fecha": "2026-10-05", "lunes_label": "05 Oct", "n_apro": 76, "n_conv": 34, "pct_act": 44.7, "media_cs": 0.9, "media_st": 6.6, "med_st": null, "media_tc": 17.1, "en_curso": false}, {"sem": 42, "fecha": "2026-10-12", "lunes_label": "12 Oct", "n_apro": 75, "n_conv": 28, "pct_act": 37.3, "media_cs": 12.6, "media_st": 3.8, "med_st": null, "media_tc": 18.5, "en_curso": false}, {"sem": 43, "fecha": "2026-10-19", "lunes_label": "19 Oct", "n_apro": 49, "n_conv": 35, "pct_act": 71.4, "media_cs": 1.9, "media_st": 3.5, "med_st": null, "media_tc": null, "en_curso": false}, {"sem": 44, "fecha": "2026-10-26", "lunes_label": "26 Oct", "n_apro": 8, "n_conv": 7, "pct_act": 87.5, "media_cs": 5.5, "media_st": 5.0, "med_st": null, "media_tc": null, "en_curso": true}], "sql_backlog": [{"mes": "Feb", "aplic": 102, "sql": 35, "pct_aplic": 34.3, "avg_dias": 222, "esperados": 10}, {"mes": "Mar", "aplic": 255, "sql": 155, "pct_aplic": 60.8, "avg_dias": 211, "esperados": 42}, {"mes": "Abr", "aplic": 250, "sql": 130, "pct_aplic": 52.0, "avg_dias": 185, "esperados": 36}, {"mes": "May", "aplic": 299, "sql": 149, "pct_aplic": 49.8, "avg_dias": 156, "esperados": 41}, {"mes": "Jun", "aplic": 393, "sql": 288, "pct_aplic": 73.3, "avg_dias": 128, "esperados": 79}, {"mes": "Jul", "aplic": 345, "sql": 221, "pct_aplic": 64.1, "avg_dias": 102, "esperados": 60}, {"mes": "Ago", "aplic": 365, "sql": 236, "pct_aplic": 64.7, "avg_dias": 68, "esperados": 65}, {"mes": "Sep", "aplic": 304, "sql": 215, "pct_aplic": 70.7, "avg_dias": 38, "esperados": 59}, {"mes": "Oct", "aplic": 268, "sql": 213, "pct_aplic": 79.5, "avg_dias": 14, "esperados": 58}], "cohort_tc": [{"cohort": "Ene", "total_trial": 81, "t1": 22, "p1": 27.2, "t2": 51, "p2": 63.0, "t3": 2, "p3": 2.5, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 0, "p6": 0.0, "t7": 0, "p7": 0.0, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 92.6}, {"cohort": "Feb", "total_trial": 71, "t1": 0, "p1": 0.0, "t2": 10, "p2": 14.1, "t3": 48, "p3": 67.6, "t4": 3, "p4": 4.2, "t5": 0, "p5": 0.0, "t6": 1, "p6": 1.4, "t7": 0, "p7": 0.0, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 87.3}, {"cohort": "Mar", "total_trial": 79, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 13, "p3": 16.5, "t4": 44, "p4": 55.7, "t5": 5, "p5": 6.3, "t6": 1, "p6": 1.3, "t7": 2, "p7": 2.5, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 1, "p10": 1.3, "cr_acum": 83.5}, {"cohort": "Abr", "total_trial": 125, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 13, "p4": 10.4, "t5": 59, "p5": 47.2, "t6": 7, "p6": 5.6, "t7": 1, "p7": 0.8, "t8": 0, "p8": 0.0, "t9": 1, "p9": 0.8, "t10": 0, "p10": 0.0, "cr_acum": 64.8}, {"cohort": "May", "total_trial": 205, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 8, "p5": 3.9, "t6": 89, "p6": 43.4, "t7": 21, "p7": 10.2, "t8": 5, "p8": 2.4, "t9": 0, "p9": 0.0, "t10": 0, "p10": 0.0, "cr_acum": 60.0}, {"cohort": "Jun", "total_trial": 165, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 7, "p6": 4.2, "t7": 71, "p7": 43.0, "t8": 9, "p8": 5.5, "t9": 1, "p9": 0.6, "t10": 1, "p10": 0.6, "cr_acum": 53.9}, {"cohort": "Jul", "total_trial": 182, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 0, "p6": 0.0, "t7": 10, "p7": 5.5, "t8": 85, "p8": 46.7, "t9": 11, "p9": 6.0, "t10": 1, "p10": 0.5, "cr_acum": 58.8}, {"cohort": "Ago", "total_trial": 177, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 0, "p6": 0.0, "t7": 0, "p7": 0.0, "t8": 28, "p8": 15.8, "t9": 69, "p9": 39.0, "t10": 3, "p10": 1.7, "cr_acum": 56.5}, {"cohort": "Sep", "total_trial": 164, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 0, "p6": 0.0, "t7": 0, "p7": 0.0, "t8": 0, "p8": 0.0, "t9": 26, "p9": 15.9, "t10": 38, "p10": 23.2, "cr_acum": 39.0}, {"cohort": "Oct", "total_trial": 124, "t1": 0, "p1": 0.0, "t2": 0, "p2": 0.0, "t3": 0, "p3": 0.0, "t4": 0, "p4": 0.0, "t5": 0, "p5": 0.0, "t6": 0, "p6": 0.0, "t7": 0, "p7": 0.0, "t8": 0, "p8": 0.0, "t9": 0, "p9": 0.0, "t10": 16, "p10": 12.9, "cr_acum": 12.9}], "utms_source": [{"source": "ig", "aplic": 572, "trial": 149, "cust": 120, "cr_trial": 26.0, "cr": 21.0}, {"source": "fb", "aplic": 171, "trial": 49, "cust": 35, "cr_trial": 28.7, "cr": 20.5}, {"source": "tiktok", "aplic": 66, "trial": 22, "cust": 20, "cr_trial": 33.3, "cr": 30.3}, {"source": "influencer", "aplic": 6, "trial": 3, "cust": 3, "cr_trial": 50.0, "cr": 50.0}, {"source": "activecampaign", "aplic": 4, "trial": 4, "cust": 3, "cr_trial": 100.0, "cr": 75.0}], "utms_medium": [{"medium": "paid", "aplic": 787, "trial": 205, "cust": 162, "cr_trial": 26.0, "cr": 20.6}, {"medium": "social", "aplic": 37, "trial": 17, "cust": 14, "cr_trial": 45.9, "cr": 37.8}, {"medium": "organic", "aplic": 6, "trial": 3, "cust": 3, "cr_trial": 50.0, "cr": 50.0}, {"medium": "email", "aplic": 4, "trial": 4, "cust": 3, "cr_trial": 100.0, "cr": 75.0}], "utms_campaign": [{"name": "RO_MX_LEA_PRO_MembresíaSOMA+", "aplic": 23, "trial": 9, "cust": 9, "cr_trial": 39.1, "cr": 39.1}, {"name": "RO_MX_VID_BRA_VideoViews", "aplic": 15, "trial": 5, "cust": 5, "cr_trial": 33.3, "cr": 33.3}, {"name": "RO_MX_LEA_PRO_AplicaciónWebMembresía", "aplic": 176, "trial": 61, "cust": 53, "cr_trial": 34.7, "cr": 30.1}, {"name": "MX_MF_35-65_FBIG_INT_lujos", "aplic": 18, "trial": 5, "cust": 5, "cr_trial": 27.8, "cr": 27.8}, {"name": "RO_MX_LEA_PRO_MembresíaSOMA+ INFLUENCER", "aplic": 102, "trial": 25, "cust": 24, "cr_trial": 24.5, "cr": 23.5}, {"name": "MX_MF_28-65_FBIG_INT_ocio_FormPreRegistroCompleto", "aplic": 16, "trial": 5, "cust": 3, "cr_trial": 31.2, "cr": 18.8}, {"name": "RO_MX_LEA_PRO_AplicaciónWebMembresía · LAL_BaseSoma", "aplic": 36, "trial": 6, "cust": 4, "cr_trial": 16.7, "cr": 11.1}, {"name": "RO_MX_LEA_PRO_AplicaciónWebMembresía · INT_BRANDING", "aplic": 47, "trial": 13, "cust": 5, "cr_trial": 27.7, "cr": 10.6}, {"name": "RO_MX_LEA_PRO_MembresíaSOMA+ INFLUENCER · Open Advantage", "aplic": 172, "trial": 23, "cust": 13, "cr_trial": 13.4, "cr": 7.6}, {"name": "RO_MX_LEA_PRO_AplicaciónWebMembresía · INT_ocio", "aplic": 44, "trial": 7, "cust": 3, "cr_trial": 15.9, "cr": 6.8}], "utms_content": [{"name": "PRO_IMG_WEB_estatica 27ENE", "aplic": 6, "trial": 6, "cust": 6, "cr_trial": 100.0, "cr": 100.0}, {"name": "PRO_VID_WEB_Coche llegando", "aplic": 9, "trial": 6, "cust": 5, "cr_trial": 66.7, "cr": 55.6}, {"name": "MX_MF_25-55_TIKTOK_INT_Creadores", "aplic": 5, "trial": 3, "cust": 3, "cr_trial": 60.0, "cr": 60.0}, {"name": "PRO_CAR_WEB_2x1Boliche", "aplic": 6, "trial": 3, "cust": 3, "cr_trial": 50.0, "cr": 50.0}, {"name": "BRA_IMG_WEB_CINE", "aplic": 6, "trial": 3, "cust": 3, "cr_trial": 50.0, "cr": 50.0}, {"name": "{{ad name}}", "aplic": 18, "trial": 8, "cust": 8, "cr_trial": 44.4, "cr": 44.4}, {"name": "PRO_VID_WEB_Eduardo Olvera", "aplic": 30, "trial": 13, "cust": 13, "cr_trial": 43.3, "cr": 43.3}, {"name": "link_in_bio", "aplic": 37, "trial": 17, "cust": 14, "cr_trial": 45.9, "cr": 37.8}, {"name": "PRO_VID_WEB_MonicaCervantes", "aplic": 11, "trial": 4, "cust": 4, "cr_trial": 36.4, "cr": 36.4}, {"name": "PRO_VID_WEB_LuisCarlos", "aplic": 14, "trial": 5, "cust": 5, "cr_trial": 35.7, "cr": 35.7}, {"name": "romantizando_soma", "aplic": 15, "trial": 5, "cust": 5, "cr_trial": 33.3, "cr": 33.3}, {"name": "PRO_VID_WEB_YAEL_v2", "aplic": 12, "trial": 3, "cust": 3, "cr_trial": 25.0, "cr": 25.0}, {"name": "PRO_CAR_WEB_Valet", "aplic": 20, "trial": 5, "cust": 5, "cr_trial": 25.0, "cr": 25.0}], "mrr_real": [443330, 458550, 507380, 531540, 589760, 645660], "mrr_movement": [{"mes": "Ene", "nuevo": 37940, "reac": 62420, "expan": 5690, "perdida": -70010, "contrac": -4880, "neto": 31160, "cierre": 443330}, {"mes": "Feb", "nuevo": 54290, "reac": 43250, "expan": 2850, "perdida": -81070, "contrac": -4100, "neto": 15220, "cierre": 458550}, {"mes": "Mar", "nuevo": 59190, "reac": 60740, "expan": 950, "perdida": -71060, "contrac": -990, "neto": 48830, "cierre": 507380}, {"mes": "Abr", "nuevo": 80930, "reac": 55300, "expan": 2990, "perdida": -112010, "contrac": -3050, "neto": 24160, "cierre": 531540}, {"mes": "May", "nuevo": 126718, "reac": 52460, "expan": 950, "perdida": -120918, "contrac": -990, "neto": 58220, "cierre": 589760}, {"mes": "Jun", "nuevo": 167440, "reac": 71100, "expan": 3800, "perdida": -182540, "contrac": -3900, "neto": 55900, "cierre": 645660}], "trial_types": [{"tipo": "30 días", "n": 74, "cr": 86.5}, {"tipo": "15 días", "n": 167, "cr": 64.1}, {"tipo": "15 días ext.", "n": 54, "cr": 44.4}], "kpis": {"mrr": 645660, "customers_activos": 352, "cac_jun": 804, "backlog": 70, "ratio_entrada": 1.37, "cr_apro": 96.7, "total_aplic": 1226, "total_cust": 430}, "pend_may": 29, "pend_jun": 45};
 
 // mkChart: destroy existing chart before creating new one
 function mkChart(id, config) {
@@ -546,7 +582,7 @@ var asofEls = {
   'sql-page-sub': 'Personas aprobadas que aún no han iniciado su periodo de prueba · al '+ASOF+' · Lead y Subscriber excluidos',
   'sql-aging-card-sub': 'SQL sin trial · días desde aprobación al '+ASOF,
   'ciclo-page-sub': 'Desde la aplicación hasta el pago · Fuente: AC base '+ASOF,
-  'semanal-page-sub': 'Últimas 9 semanas · Semana actual: S43 · Fuente: AC base '+ASOF
+  'semanal-page-sub': 'Últimas 9 semanas · Semana actual: S44 · Fuente: AC base '+ASOF+' + HubSpot (aplicantes, desde sep)'
 };
 Object.keys(asofEls).forEach(function(id) {
   var el = document.getElementById(id);
@@ -571,7 +607,7 @@ Object.keys(asofEls).forEach(function(id) {
   if (custBadgeEl && bestCustMonth) custBadgeEl.textContent = bestCustMonth.mes+': '+fmtN2(bestCustMonth.cust)+' · mejor mes';
 
   var pipePageSubEl = document.getElementById('pipeline-page-sub');
-  if (pipePageSubEl && parcialPipe) pipePageSubEl.textContent = pipeRangeLabel+' 2026 (cerrados) + '+parcialPipe.mes+' en curso (día '+ASOF_DAY+') · Fuente: AC base '+ASOF+' · Aplicación válida = MQL+SQL+Opportunity+Customer · Lead y Subscriber excluidos';
+  if (pipePageSubEl && parcialPipe) pipePageSubEl.textContent = pipeRangeLabel+' 2026 (cerrados) + '+parcialPipe.mes+' en curso (día '+ASOF_DAY+') · Fuente: aplicantes y aprobados AC base '+ASOF+' + HubSpot; trials y nuevos de pago Stripe · Aplicación válida = MQL+SQL+Opportunity+Customer · Lead y Subscriber excluidos';
 
   var mesesLargos = {'Ene':'enero','Feb':'febrero','Mar':'marzo','Abr':'abril','May':'mayo','Jun':'junio','Jul':'julio','Ago':'agosto','Sep':'septiembre','Oct':'octubre','Nov':'noviembre','Dic':'diciembre'};
   var cacLabelEl = document.getElementById('cac-mes-label');
@@ -582,7 +618,7 @@ Object.keys(asofEls).forEach(function(id) {
   if (bestCacMonth) {
     if (cacLabelEl) cacLabelEl.textContent = 'CAC '+(mesesLargos[bestCacMonth.mes] || bestCacMonth.mes);
     if (cacValEl) cacValEl.textContent = fmtP2(bestCacMonth.cac);
-    if (cacSubEl) cacSubEl.textContent = fmtP2(bestCacMonth.inv)+' inversión / '+fmtN2(bestCacMonth.cust)+' customers';
+    if (cacSubEl) cacSubEl.textContent = fmtP2(bestCacMonth.inv)+' inversión / '+fmtN2(bestCacMonth.cust)+' nuevos de pago';
     window.__cacSemaforoVal = '$'+Math.round(bestCacMonth.cac).toLocaleString('es-MX')+' — mejor CAC del año ('+bestCacMonth.mes+')';
   }
 })();
@@ -613,13 +649,13 @@ if (cancBars) {
 // ── MOTIVO DE CANCELACIÓN (dato real: Cancellation Reason de Stripe) ─
 var MOTIVO_CANCELACION = {
   months: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct*'],
-  cancellation_requested: [54,41,49,49,56,74,125,153,168,5],
-  payment_failed: [24,22,33,56,78,113,112,55,56,0],
+  cancellation_requested: [54, 41, 49, 49, 56, 74, 125, 153, 168, 103],
+  payment_failed: [24, 22, 33, 56, 78, 113, 112, 55, 56, 62],
   por_plan: [
-    {plan:'Cuotas $950 (Anual)', requested:172, failed:285},
-    {plan:'Cuotas $1,050 (Semestral)', requested:179, failed:153},
-    {plan:'Semestral contado', requested:334, failed:85},
-    {plan:'Anual contado', requested:89, failed:26},
+    {plan:"Cuotas $950 (Anual)", requested:196, failed:325},
+    {plan:"Cuotas $1,050 (Semestral)", requested:200, failed:171},
+    {plan:"Semestral contado", requested:373, failed:87},
+    {plan:"Anual contado", requested:103, failed:28}
   ]
 };
 (function() {
@@ -628,9 +664,9 @@ var MOTIVO_CANCELACION = {
   var totFail = d.payment_failed.reduce(function(a,b){return a+b;},0);
   var tot = totReq+totFail;
   var e1v = document.getElementById('motivo-req-val'); if(e1v) e1v.textContent = totReq;
-  var e1s = document.getElementById('motivo-req-sub'); if(e1s) e1s.textContent = Math.round(totReq/tot*100)+'% · $762,110 MRR equiv. (Ene–Oct* 2026)';
+  var e1s = document.getElementById('motivo-req-sub'); if(e1s) e1s.textContent = Math.round(totReq/tot*100)+'% · $858,170 MRR equiv. (Ene–Oct* 2026)';
   var e2v = document.getElementById('motivo-fail-val'); if(e2v) e2v.textContent = totFail;
-  var e2s = document.getElementById('motivo-fail-sub'); if(e2s) e2s.textContent = Math.round(totFail/tot*100)+'% · $538,950 MRR equiv. (Ene–Oct* 2026)';
+  var e2s = document.getElementById('motivo-fail-sub'); if(e2s) e2s.textContent = Math.round(totFail/tot*100)+'% · $599,630 MRR equiv. (Ene–Oct* 2026)';
 
   mkChart('motivoMesChart', {
     type: 'bar',
@@ -658,7 +694,7 @@ var MOTIVO_CANCELACION = {
 // número real de pagos hechos (unified_payments) al momento de Ended At.
 // $950 = Anual (12 cuotas) · $1,050 = Semestral (6 cuotas).
 var CUOTAS_950 = { // Anual, 12 pagos esperados
-  updated: '5 oct 2026 (ground truth: Ended At; cada contrato con sus propios pagos; solo contratos que cobraron)',
+  updated: '28 oct 2026 (ground truth: Ended At; cada contrato con sus propios pagos; solo contratos que cobraron)',
   cohorts: [
     {cohort:'2025-01', total:44, completo:18, cancelo:26, en_curso:0},
     {cohort:'2025-02', total:28, completo:15, cancelo:13, en_curso:0},
@@ -670,21 +706,22 @@ var CUOTAS_950 = { // Anual, 12 pagos esperados
     {cohort:'2025-08', total:17, completo:7, cancelo:10, en_curso:0},
     {cohort:'2025-09', total:43, completo:28, cancelo:15, en_curso:0},
     {cohort:'2025-10', total:36, completo:23, cancelo:13, en_curso:0},
-    {cohort:'2025-11', total:50, completo:0, cancelo:23, en_curso:27},
+    {cohort:'2025-11', total:50, completo:14, cancelo:24, en_curso:12},
     {cohort:'2025-12', total:36, completo:0, cancelo:15, en_curso:21},
     {cohort:'2026-01', total:37, completo:0, cancelo:14, en_curso:23},
-    {cohort:'2026-02', total:44, completo:0, cancelo:11, en_curso:33},
-    {cohort:'2026-03', total:49, completo:0, cancelo:18, en_curso:31},
-    {cohort:'2026-04', total:44, completo:0, cancelo:10, en_curso:34},
-    {cohort:'2026-05', total:49, completo:0, cancelo:15, en_curso:34},
-    {cohort:'2026-06', total:70, completo:0, cancelo:17, en_curso:53},
-    {cohort:'2026-07', total:88, completo:0, cancelo:23, en_curso:65},
-    {cohort:'2026-08', total:65, completo:0, cancelo:9, en_curso:56},
-    {cohort:'2026-09', total:77, completo:0, cancelo:0, en_curso:77},
+    {cohort:'2026-02', total:44, completo:0, cancelo:12, en_curso:32},
+    {cohort:'2026-03', total:49, completo:0, cancelo:22, en_curso:27},
+    {cohort:'2026-04', total:44, completo:0, cancelo:13, en_curso:31},
+    {cohort:'2026-05', total:49, completo:0, cancelo:17, en_curso:32},
+    {cohort:'2026-06', total:70, completo:0, cancelo:21, en_curso:49},
+    {cohort:'2026-07', total:88, completo:0, cancelo:28, en_curso:60},
+    {cohort:'2026-08', total:65, completo:0, cancelo:16, en_curso:49},
+    {cohort:'2026-09', total:77, completo:0, cancelo:3, en_curso:74},
+    {cohort:'2026-10', total:43, completo:0, cancelo:0, en_curso:43},
   ]
 };
 var CUOTAS_1050 = { // Semestral, 6 pagos esperados
-  updated: '5 oct 2026 (ground truth: Ended At; cada contrato con sus propios pagos; solo contratos que cobraron)',
+  updated: '28 oct 2026 (ground truth: Ended At; cada contrato con sus propios pagos; solo contratos que cobraron)',
   cohorts: [
     {cohort:'2025-01', total:29, completo:15, cancelo:14, en_curso:0},
     {cohort:'2025-02', total:10, completo:8, cancelo:2, en_curso:0},
@@ -702,12 +739,12 @@ var CUOTAS_1050 = { // Semestral, 6 pagos esperados
     {cohort:'2026-02', total:11, completo:9, cancelo:2, en_curso:0},
     {cohort:'2026-03', total:17, completo:13, cancelo:4, en_curso:0},
     {cohort:'2026-04', total:25, completo:15, cancelo:10, en_curso:0},
-    {cohort:'2026-05', total:20, completo:1, cancelo:3, en_curso:16},
-    {cohort:'2026-06', total:24, completo:0, cancelo:3, en_curso:21},
+    {cohort:'2026-05', total:20, completo:13, cancelo:4, en_curso:3},
+    {cohort:'2026-06', total:24, completo:0, cancelo:6, en_curso:18},
     {cohort:'2026-07', total:27, completo:0, cancelo:4, en_curso:23},
-    {cohort:'2026-08', total:37, completo:0, cancelo:8, en_curso:29},
-    {cohort:'2026-09', total:26, completo:0, cancelo:0, en_curso:26},
-    {cohort:'2026-10', total:1, completo:0, cancelo:0, en_curso:1},
+    {cohort:'2026-08', total:37, completo:0, cancelo:10, en_curso:27},
+    {cohort:'2026-09', total:26, completo:0, cancelo:2, en_curso:24},
+    {cohort:'2026-10', total:25, completo:0, cancelo:0, en_curso:25},
   ]
 };
 
@@ -761,10 +798,10 @@ var CONTADO_5940 = {
 var CONTADO_10800 = {
   cohorts: [
     {cohort:'2025-01', total:12, renovaron:7}, {cohort:'2025-02', total:6, renovaron:0},
-    {cohort:'2025-03', total:9, renovaron:4}, {cohort:'2025-04', total:5, renovaron:0},
+    {cohort:'2025-03', total:9, renovaron:4}, {cohort:'2025-04', total:5, renovaron:1},
     {cohort:'2025-05', total:5, renovaron:3}, {cohort:'2025-06', total:9, renovaron:5},
     {cohort:'2025-07', total:8, renovaron:5}, {cohort:'2025-08', total:10, renovaron:4},
-    {cohort:'2025-09', total:16, renovaron:3},
+    {cohort:'2025-09', total:16, renovaron:4},
   ]
 };
 
@@ -1019,8 +1056,8 @@ var NUEVOS_NOTAS = {
 // Fuente: Ended At real de Stripe Subscriptions, cruzado con cohorte de primer pago (año).
 var ORIGEN_MRR = {
   months: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct*'],
-  veteranos: [51730, 41930, 57760, 55560, 41070, 61240, 63820, 39600, 53480, 2100],
-  nuevos:    [0, 1900, 1050, 1900, 2940, 11800, 22970, 33900, 46610, 1980],
+  veteranos: [51730, 41930, 57760, 55560, 41070, 61240, 63820, 39600, 53480, 46390],
+  nuevos:    [0, 1900, 1050, 1900, 2940, 11800, 22970, 33900, 46610, 35740],
 };
 (function() {
   var d = ORIGEN_MRR;
@@ -1049,20 +1086,20 @@ var ORIGEN_MRR = {
 // ── TRIALS & MEMBRESÍAS ─────────────────────────────────────
 // Única fuente a actualizar con cada base nueva de Stripe Subscriptions.
 var SUBS_SNAPSHOT = {
-  updated: '1 oct 2026',
-  trials_total: 97,
-  trials_mrr_potencial: 338000,
+  updated: '28 oct 2026',
+  trials_total: 89,
+  trials_mrr_potencial: 338920,
   trials_buckets: [
-    {label:'0–10 días', n:61, color:'#DC2626'},
-    {label:'11–20 días', n:23, color:'#EF9F27'},
-    {label:'21–30 días', n:13, color:'#1D9E75'}
+    {label:'0–10 días', n:53, color:'#DC2626'},
+    {label:'11–20 días', n:25, color:'#EF9F27'},
+    {label:'21–30 días', n:11, color:'#1D9E75'}
   ],
   membresias_por_tipo: [
-    {label:'Cuotas $950', n:502, color:'#A6BAC2'},
-    {label:'Anual', n:229, color:'#1D9E75'},
-    {label:'Semestral', n:178, color:'#378ADD'},
-    {label:'Trial', n:97, color:'#FF8D6B', esTrial:true},
-    {label:'Cuotas $1,050', n:139, color:'#EF9F27'}
+    {label:'Cuotas $950', n:514, color:'#A6BAC2'},
+    {label:'Anual', n:238, color:'#1D9E75'},
+    {label:'Semestral', n:182, color:'#378ADD'},
+    {label:'Trial', n:89, color:'#FF8D6B', esTrial:true},
+    {label:'Cuotas $1,050', n:149, color:'#EF9F27'}
   ],
   altas_por_mes: [
     {label:'Ene', n:143},
@@ -1074,39 +1111,42 @@ var SUBS_SNAPSHOT = {
     {label:'Jul', n:273},
     {label:'Ago', n:247},
     {label:'Sep', n:243},
-    {label:'Oct', n:3}
+    {label:'Oct', n:193}
   ],
-  past_due_mrr: 28250,
+  past_due_mrr: 41180,
   past_due: [
-    {nombre:'Paola Cardenas', email:'pao.car.mej@gmail.com', tel:'+525579215537', plan:'Cuotas $950'},
-    {nombre:'Daniel Sanchez Acosta', email:'sanchezacostadaniel@gmail.com', tel:null, plan:'Cuotas $1,050'},
-    {nombre:'Angie Daniela Arenas Dominguez', email:'angie_dani07@hotmail.com', tel:null, plan:'Cuotas $950'},
-    {nombre:'Emma Daniela de la Cerda Nicolás', email:'emmadaniela.nicolas@gmail.com', tel:'+525530369810', plan:'Cuotas $1,050'},
-    {nombre:'Karenna De la Mora', email:'karennadelam@gmail.com', tel:'+525518529322', plan:'Cuotas $950'},
-    {nombre:'Emir Palma', email:'emirpm.29@gmail.com', tel:null, plan:'Cuotas $1,050'},
-    {nombre:'Irving Reyes Cisneros', email:'irvingrc08@gmail.com', tel:null, plan:'Cuotas $950'},
-    {nombre:'Perla Almanza Aranda', email:'almanzap777@gmail.com', tel:'+525534934912', plan:'Cuotas $950'},
-    {nombre:'Daniela Peña Martínez Peña', email:'adanielamartz@gmail.com', tel:null, plan:'Cuotas $1,050'},
-    {nombre:'Felipe Celaya', email:'generalpipe@outlook.com', tel:'+525535006790', plan:'Cuotas $950'},
-    {nombre:'Isela Trevino', email:'iselatrevino@me.com', tel:'5525591145', plan:'Cuotas $950'},
-    {nombre:'Brooks Crittenton', email:'tlkpotry@gmail.com', tel:'6196322836', plan:'Cuotas $950'},
-    {nombre:'Katia Ramírez', email:'katzram@hotmail.com', tel:'+525527296498', plan:'Cuotas $950'},
-    {nombre:'Tamara Herrera', email:'t_herrera2@hotmail.com', tel:'+528180205823', plan:'Cuotas $950'},
-    {nombre:'José Roberto García Cuevas', email:'robgarciacuevas@hotmail.com', tel:'+525513533910', plan:'Cuotas $950'},
-    {nombre:'Jose Manuel Allende', email:'boloallende1@gmail.com', tel:'+525525617566', plan:'Cuotas $950'},
-    {nombre:'Rodolfo Bocanegra', email:'rboca92@gmail.com', tel:'+525535661942', plan:'Cuotas $950'},
-    {nombre:'Italia Peña', email:'italiaahtziri@gmail.com', tel:'+525525591509', plan:'Cuotas $1,050'},
-    {nombre:'Rodrigo Zamora', email:'zzamora78@gmail.com', tel:'+525620118400', plan:'Cuotas $950'},
-    {nombre:'Jimena Márquez Chávez', email:'jimena.marque798@gmail.com', tel:'+525538970905', plan:'Cuotas $1,050'},
-    {nombre:'Miguel Angel Garcia', email:'magarcia@amvission.com', tel:'+525551448695', plan:'Cuotas $1,050'},
-    {nombre:'Mario Sanchez Vela', email:'svmario92@gmail.com', tel:'+525522728744', plan:'Cuotas $950'},
-    {nombre:'Silvino Esquivel', email:'silvinoesquivel98@gmail.com', tel:'5614290014', plan:'Cuotas $950'},
-    {nombre:'Jesús Núñez Garibay', email:'jesus.nug@gmail.com', tel:'+524772646090', plan:'Cuotas $950'},
-    {nombre:'Yonatan Castañon', email:'castanonyonatan@gmail.com', tel:'+522228627002', plan:'Cuotas $950'},
-    {nombre:'Maria Fernanda Gomez', email:'fergs096@gmail.com', tel:'+522221396411', plan:'Cuotas $950'},
-    {nombre:'Gabriela Bowen Martínez', email:'gabowen1993@gmail.com', tel:'+525527043185', plan:'Cuotas $950'},
-    {nombre:'Fernanda Garibay', email:'fergc85@hotmail.com', tel:'+525516463716', plan:'Cuotas $950'},
-    {nombre:'Leonardo Romero', email:'leo.romerovv@gmail.com', tel:null, plan:'Cuotas $950'}
+    {nombre:"Pablo Arconada", email:"parconada@outlook.com", tel:"+525512947138", plan:"Cuotas $950"},
+    {nombre:"Marco Montiel", email:"marcomontielc@hotmail.com", tel:null, plan:"Semestral"},
+    {nombre:"María Renée García Rodríguez", email:"mariaren12@gmail.com", tel:"+525539016325", plan:"Cuotas $950"},
+    {nombre:"María José Cobian Paz", email:"majoocobian@gmail.com", tel:null, plan:"Cuotas $1,050"},
+    {nombre:"Jimena Márquez Chávez", email:"jimena.marque798@gmail.com", tel:"+525538970905", plan:"Cuotas $1,050"},
+    {nombre:"Paola Cardenas", email:"pao.car.mej@gmail.com", tel:"+525579215537", plan:"Cuotas $950"},
+    {nombre:"regina marquez marquez", email:"regina.marqueezm@gmail.com", tel:"+525580314093", plan:"Cuotas $950"},
+    {nombre:"Alberto Barron", email:"betoo.barron@gmail.com", tel:null, plan:"Semestral"},
+    {nombre:"Ximena Pineda", email:"ximpineda.18@gmail.com", tel:"+525630266270", plan:"Cuotas $950"},
+    {nombre:"Virginia del Carmen Rodríguez Malagón", email:"vicaroma04@yahoo.com.mx", tel:"+525548402246", plan:"Cuotas $950"},
+    {nombre:"Rodrigo Flores", email:"rodfft12@outlook.com", tel:null, plan:"Cuotas $950"},
+    {nombre:"Roberto Murillo", email:"beto_murray1991@hotmail.com", tel:null, plan:"Cuotas $950"},
+    {nombre:"Jaime Pedraza", email:"jaime_pedraza@icloud.com", tel:"+525578458285", plan:"Cuotas $1,050"},
+    {nombre:"Octavio Garcia Mora", email:"octaviogarcmora@gmail.com", tel:"+525576722668", plan:"Cuotas $1,050"},
+    {nombre:"Brenda Alejandra Buenrostro Abarca", email:"baba_t7@hotmail.com", tel:"+525523259465", plan:"Cuotas $1,050"},
+    {nombre:"LIZETH MARIANA HERNÁNDEZ", email:"lizetmnutricion@outlook.com", tel:"+525653942588", plan:"Cuotas $950"},
+    {nombre:"María de Lourdes Bernardette Garcia", email:"lougarcialara@gmail.com", tel:"+525543406017", plan:"Cuotas $950"},
+    {nombre:"Jose manuel Allende", email:"boloallende1@gmail.com", tel:"+525525617566", plan:"Cuotas $950"},
+    {nombre:"Rodolfo Bocanegra", email:"rboca92@gmail.com", tel:"+525535661942", plan:"Cuotas $950"},
+    {nombre:"Pedro Martin ALVIZAR MORENO", email:"p.alvizarmoreno@gmail.com", tel:"+525517317664", plan:"Cuotas $950"},
+    {nombre:"Gabriels Piña", email:"gabrielajaimes0808@gmail.com", tel:"+525513091036", plan:"Cuotas $950"},
+    {nombre:"Italia Peña", email:"italiaahtziri@gmail.com", tel:"+525525591509", plan:"Cuotas $1,050"},
+    {nombre:"Marianela Valdez", email:"marianela_valdez@mac.com", tel:"+525544943179", plan:"Cuotas $950"},
+    {nombre:"Jose Alberto Beltran", email:"j.a_beltran@consultant.com", tel:"+525530294951", plan:"Cuotas $950"},
+    {nombre:"Cesar Ivan Morales Flores", email:"jasar190815@icloud.com", tel:"+525545260372", plan:"Cuotas $950"},
+    {nombre:"Enrique Vargas González", email:"envago@me.com", tel:"+525628467976", plan:"Cuotas $950"},
+    {nombre:"Jose Cohen", email:"pcsmeke@gmail.com", tel:"+525552168043", plan:"Cuotas $950"},
+    {nombre:"JAVIER CERECEDO RODRIGUEZ", email:"cerejr@hotmail.com", tel:"+525512710423", plan:"Cuotas $950"},
+    {nombre:"JOSE FRANCISCO ÁVALOS NETTEL", email:"jf300099@gmail.com", tel:"+525579203996", plan:"Cuotas $1,050"},
+    {nombre:"Regina Becerra", email:"rbh.becerrah@gmail.com", tel:"+525620172877", plan:"Cuotas $950"},
+    {nombre:"AlejandrA Gomez", email:"alejandragomez4@icloud.com", tel:"5527712157", plan:"Cuotas $1,050"},
+    {nombre:"Irma Flores", email:"irma.flores.ruiz.ifr@gmail.com", tel:"+525554101755", plan:"Cuotas $950"}
   ]
 };
 
@@ -1202,15 +1242,15 @@ renderDist('dist-tc', EXTRA.lifecycle.tc.dist);
 
 // ── COMPARATIVA SEMANAL ─────────────────────────────────────
 var semData = [
-  {sem:'S35',fecha:'24 Ago',aplic:103,trial:22,cust:21},
-  {sem:'S36',fecha:'31 Ago',aplic:60,trial:31,cust:35},
-  {sem:'S37',fecha:'7 Sep', aplic:75,trial:21,cust:21},
-  {sem:'S38',fecha:'14 Sep',aplic:74,trial:22,cust:36},
-  {sem:'S39',fecha:'21 Sep',aplic:53,trial:22,cust:25},
-  {sem:'S40',fecha:'28 Sep',aplic:63,trial:14,cust:32},
-  {sem:'S41',fecha:'5 Oct', aplic:55,trial:12,cust:24},
-  {sem:'S42',fecha:'12 Oct',aplic:28,trial:15,cust:4},
-  {sem:'S43',fecha:'19 Oct',aplic:5,trial:8,cust:0},
+  {sem:'S36',fecha:'31 Ago',aplic:59,trial:58,cust:26},
+  {sem:'S37',fecha:'7 Sep',aplic:76,trial:36,cust:8},
+  {sem:'S38',fecha:'14 Sep',aplic:89,trial:36,cust:22},
+  {sem:'S39',fecha:'21 Sep',aplic:65,trial:34,cust:14},
+  {sem:'S40',fecha:'28 Sep',aplic:76,trial:33,cust:19},
+  {sem:'S41',fecha:'5 Oct',aplic:78,trial:34,cust:15},
+  {sem:'S42',fecha:'12 Oct',aplic:75,trial:28,cust:10},
+  {sem:'S43',fecha:'19 Oct',aplic:49,trial:35,cust:null},
+  {sem:'S44',fecha:'26 Oct',aplic:16,trial:7,cust:null},
 ];
 
 mkChart('weeklyChart', {
@@ -1218,9 +1258,9 @@ mkChart('weeklyChart', {
   data:{
     labels: semData.map(function(w){ return w.sem+'\n'+w.fecha; }),
     datasets:[
-      {label:'Aplicantes',data:semData.map(function(w){return w.aplic;}),backgroundColor:semData.map(function(w){return w.sem==='S43'?'#A6BAC266':'#A6BAC2';}),borderRadius:4},
-      {label:'Trials',data:semData.map(function(w){return w.trial;}),backgroundColor:semData.map(function(w){return w.sem==='S43'?'#1D9E7566':'#1D9E75';}),borderRadius:4},
-      {label:'Customers',data:semData.map(function(w){return w.cust;}),backgroundColor:semData.map(function(w){return w.sem==='S43'?'#FF8D6B66':'#FF8D6B';}),borderRadius:4},
+      {label:'Aplicantes',data:semData.map(function(w){return w.aplic;}),backgroundColor:semData.map(function(w){return w.sem==='S44'?'#A6BAC266':'#A6BAC2';}),borderRadius:4},
+      {label:'Trials',data:semData.map(function(w){return w.trial;}),backgroundColor:semData.map(function(w){return w.sem==='S44'?'#1D9E7566':'#1D9E75';}),borderRadius:4},
+      {label:'Nuevos de pago',data:semData.map(function(w){return w.cust;}),backgroundColor:semData.map(function(w){return w.sem==='S44'?'#FF8D6B66':'#FF8D6B';}),borderRadius:4},
     ]
   },
   options:{
@@ -1235,13 +1275,13 @@ mkChart('weeklyChart', {
 
 var wtbl = document.getElementById('weekly-table');
 if (wtbl) {
-  wtbl.innerHTML = '<thead><tr><th class="l">Semana</th><th>Fecha</th><th>Aplic.</th><th>Trials</th><th>Customers</th><th>Estado</th></tr></thead>';
+  wtbl.innerHTML = '<thead><tr><th class="l">Semana</th><th>Fecha</th><th>Aplic.</th><th>Trials</th><th>Nuevos de pago</th><th>Estado</th></tr></thead>';
   var wb = wtbl.createTBody();
   EXTRA.weekly.forEach(function(w) {
     var badge = w.en_curso
       ? '<span class="kpi-badge badge-yellow" style="font-size:10px">En curso</span>'
       : '<span class="kpi-badge badge-gray" style="font-size:10px">Cerrada</span>';
-    wb.innerHTML += '<tr><td class="l" style="font-weight:600">S'+w.sem+'</td><td style="color:#7E7E87">'+w.label+'</td><td>'+w.aplic+'</td><td>'+w.trial+'</td><td style="font-weight:600">'+w.cust+'</td><td>'+badge+'</td></tr>';
+    wb.innerHTML += '<tr><td class="l" style="font-weight:600">S'+w.sem+'</td><td style="color:#7E7E87">'+w.label+'</td><td>'+w.aplic+'</td><td>'+w.trial+'</td><td style="font-weight:600">'+(w.cust===null?'—':w.cust)+'</td><td>'+badge+'</td></tr>';
   });
 }
 
@@ -1250,7 +1290,7 @@ if (wtbl) {
   if (!semData || !semData.length) return;
   var s0 = semData[0].sem, sN = semData[semData.length-1].sem;
   var subEl = document.getElementById('semanal-chart-sub');
-  if (subEl) subEl.textContent = s0+'–'+sN+' · últimas 9 semanas · S43 en curso';
+  if (subEl) subEl.textContent = s0+'–'+sN+' · últimas 9 semanas · S44 en curso';
 })();
 
 // ── RESUMEN ────────────────────────────────────────────────
@@ -1259,7 +1299,7 @@ mkChart('mrrResumenChart', {
   data:{
     labels:['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct*'],
     datasets:[{
-      data:[443330,458550,507380,531540,589760,645660,701640,759510,703343,709408],
+      data:[443330,458550,507380,531540,589760,645660,701640,759510,703343,707978],
       backgroundColor:['#A6BAC2','#A6BAC2','#A6BAC2','#A6BAC2','#A6BAC2','#A6BAC2','#A6BAC2','#A6BAC2','#A6BAC2','rgba(255,141,107,0.75)'],
       borderRadius:6, borderSkipped:false
     }]
@@ -1281,7 +1321,7 @@ var MRR_MOV = [
   {mes:'Abr',inicio:507380,nuevo:80930, reac:55300,expan:2990, perdida:112010,contrac:3050,neto:24160, cierre:531540},
   {mes:'May',inicio:531540,nuevo:126718,reac:52460,expan:950,  perdida:120918,contrac:990, neto:58220, cierre:589760},
   {mes:'Jun',inicio:589760,nuevo:167440,reac:71100,expan:3800, perdida:182540,contrac:3900,neto:55900, cierre:645660},
-  {mes:'Jul',inicio:645660,nuevo:147280,reac:103460,expan:3900,   perdida:194670, contrac:3990,neto:55980, cierre:701640}, {mes:'Ago',inicio:701640,nuevo:144430,reac:110070,expan:4980,   perdida:196770, contrac:4840,neto:57870, cierre:759510}, {mes:'Sep',inicio:759510,nuevo:157585,reac:122885,expan:2665,   perdida:335975, contrac:3328,neto:-56168, cierre:703343}, {mes:'Oct*',inicio:703343,nuevo:74335,reac:80425,expan:1580,   perdida:147285, contrac:2990,neto:6065, cierre:709408,parcial:true},
+  {mes:'Jul',inicio:645660,nuevo:147280,reac:103460,expan:3900,   perdida:194670, contrac:3990,neto:55980, cierre:701640}, {mes:'Ago',inicio:701640,nuevo:144430,reac:110070,expan:4980,   perdida:196770, contrac:4840,neto:57870, cierre:759510}, {mes:'Sep',inicio:759510,nuevo:157585,reac:122885,expan:2665,   perdida:335975, contrac:3328,neto:-56168, cierre:703343}, {mes:'Oct*',inicio:703343,nuevo:90135,reac:102383,expan:1580,   perdida:186195, contrac:3268,neto:4635, cierre:707978,parcial:true},
 ];
 
 // Wiring dinámico: KPI, chart-sub y semáforo de MRR se derivan de MRR_MOV + ASOF_DAY
@@ -1449,7 +1489,7 @@ if (semEl) {
 // ── PIPELINE ───────────────────────────────────────────────
 var ptbl = document.getElementById('pipeline-table');
 if (ptbl) {
-  ptbl.innerHTML = '<thead><tr><th class="l">Mes</th><th>Aplic.</th><th>Aprobados</th><th>CR Apro</th><th>Trials</th><th title="Trials activados en el mes ÷ aprobados del mes (numerador y denominador pueden ser de cohortes distintas)">Activación mensual <span style="font-size:9px;color:#C07A00">(trials÷apro)</span></th><th>Customers</th><th>CAC</th></tr></thead>';
+  ptbl.innerHTML = '<thead><tr><th class="l">Mes</th><th>Aplic.</th><th>Aprobados</th><th>CR Apro</th><th>Trials</th><th title="Trials activados en el mes ÷ aprobados del mes (numerador y denominador pueden ser de cohortes distintas)">Activación mensual <span style="font-size:9px;color:#C07A00">(trials÷apro)</span></th><th>Nuevos de pago</th><th>CAC</th></tr></thead>';
   var pb = ptbl.createTBody();
   DATA.pipeline.forEach(function(r) {
     var c = r.cr_apro>=95?'#1D9E75':r.cr_apro>=80?'#C07A00':'#DC2626';
@@ -1477,7 +1517,7 @@ if (funnelEl) {
     {label:'Aplicantes',val:avgA,pct:100,color:'#A6BAC2'},
     {label:'Aprobados', val:avgAp,pct:Math.round(avgAp/avgA*100),color:'#7B6EF6'},
     {label:'Trials',    val:avgT,pct:Math.round(avgT/avgAp*100),color:'#1D9E75'},
-    {label:'Customers mismo mes',val:avgC,pct:Math.round(avgC/avgT*100),color:'#FF8D6B'},
+    {label:'Nuevos de pago mismo mes',val:avgC,pct:Math.round(avgC/avgT*100),color:'#FF8D6B'},
   ];
   funnelEl.innerHTML = fd.map(function(f) {
     return '<div class="funnel-step"><div class="funnel-label">'+f.label+'</div><div class="funnel-bar-bg"><div class="funnel-bar" style="width:'+f.pct+'%;background:'+f.color+'"><span class="funnel-val">'+f.val+'</span></div></div><div class="funnel-pct">'+f.pct+'%</div></div>';
@@ -1599,13 +1639,13 @@ if (mmtbl) {
 var pL=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 var avgNetoCerrado = MRR_MOV.filter(function(r){return !r.parcial;}).reduce(function(s,r){return s+r.neto;},0) / MRR_MOV.filter(function(r){return !r.parcial;}).length;
 var CONSERVADOR_MENSUAL = 35000; // escenario fijo conservador, $35,000 MXN/mes
-var cs=[null,null,null,null,null,null,null,null,null,709408],bs=[null,null,null,null,null,null,null,null,null,709408];
-var cv=709408,bv=709408;
+var cs=[null,null,null,null,null,null,null,null,null,707978],bs=[null,null,null,null,null,null,null,null,null,707978];
+var cv=707978,bv=707978;
 for(var i=0;i<2;i++){cv+=CONSERVADOR_MENSUAL;bv+=avgNetoCerrado;cs.push(Math.round(cv));bs.push(Math.round(bv));}
 mkChart('mrrProy',{
   type:'line',
   data:{labels:pL,datasets:[
-    {label:'Real',data:[443330,458550,507380,531540,589760,645660,701640,759510,703343,709408,null,null],borderColor:'#FF8D6B',backgroundColor:'rgba(255,141,107,0.1)',tension:.3,pointRadius:4,fill:true,borderWidth:2.5},
+    {label:'Real',data:[443330,458550,507380,531540,589760,645660,701640,759510,703343,707978,null,null],borderColor:'#FF8D6B',backgroundColor:'rgba(255,141,107,0.1)',tension:.3,pointRadius:4,fill:true,borderWidth:2.5},
     {label:'Conservador ($35K/mes)',data:cs,borderColor:'#EF9F27',backgroundColor:'transparent',tension:.3,pointRadius:3,borderDash:[5,4],borderWidth:1.5},
     {label:'Base (prom. crecimiento 2026)',data:bs,borderColor:'#378ADD',backgroundColor:'transparent',tension:.3,pointRadius:3,borderWidth:2}
   ]},
@@ -1663,11 +1703,11 @@ if (bltbl) {
   blb.innerHTML += '<tr class="tr-tot"><td class="l">Total</td><td>'+blt.s+'</td><td>—</td><td>—</td><td>—</td><td style="color:#378ADD">'+blt.e+'</td></tr>';
 }
 
-var aging=[{label:'< 7 días',n:16,color:'#1D9E75'},{label:'7–30 días',n:144,color:'#A6BAC2'},{label:'31–60 días',n:245,color:'#EF9F27'},{label:'61–90 días',n:191,color:'#DC2626'},{label:'> 90 días',n:911,color:'#7B1F1F'}];
+var aging=[{label:'< 7 días',n:49,color:'#1D9E75'},{label:'7–30 días',n:213,color:'#A6BAC2'},{label:'31–60 días',n:236,color:'#EF9F27'},{label:'61–90 días',n:206,color:'#DC2626'},{label:'> 90 días',n:938,color:'#7B1F1F'}];
 var agingEl = document.getElementById('sql-aging-bars');
 if (agingEl) {
   agingEl.innerHTML = aging.map(function(a){
-    return '<div class="bar-wrap"><div class="bar-label">'+a.label+'</div><div class="bar-bg"><div class="bar-fill" style="width:'+Math.round(a.n/911*100)+'%;background:'+a.color+'"></div></div><div class="bar-val">'+a.n+'</div></div>';
+    return '<div class="bar-wrap"><div class="bar-label">'+a.label+'</div><div class="bar-bg"><div class="bar-fill" style="width:'+Math.round(a.n/938*100)+'%;background:'+a.color+'"></div></div><div class="bar-val">'+a.n+'</div></div>';
   }).join('');
 }
 
@@ -1675,6 +1715,145 @@ if (agingEl) {
 
 }); // end window.addEventListener('load')
 
+
+// ── CALIDAD DE DATOS ─────────────────────────────────────────
+// Partes estaticas (se refrescan en cada actualizacion): fuentes, customers por semana y reconstruccion de MRR.
+(function() {
+  var QCUST = [{"sem": "S36", "crm": 35, "stripe": 26, "parcial": false}, {"sem": "S37", "crm": 21, "stripe": 8, "parcial": false}, {"sem": "S38", "crm": 36, "stripe": 22, "parcial": false}, {"sem": "S39", "crm": 25, "stripe": 14, "parcial": false}, {"sem": "S40", "crm": 32, "stripe": 19, "parcial": false}, {"sem": "S41", "crm": 24, "stripe": 15, "parcial": false}, {"sem": "S42", "crm": 4, "stripe": 10, "parcial": false}, {"sem": "S43", "crm": 0, "stripe": 6, "parcial": true}];
+  var QMRR = [{"mes": "Ene", "alt_of": 100360, "alt_rec": 98380, "per_of": 70010, "per_rec": 61560}, {"mes": "Feb", "alt_of": 97540, "alt_rec": 85190, "per_of": 81070, "per_rec": 49710}, {"mes": "Mar", "alt_of": 119930, "alt_rec": 110220, "per_of": 71060, "per_rec": 70460}, {"mes": "Abr", "alt_of": 136230, "alt_rec": 132290, "per_of": 112010, "per_rec": 95860}, {"mes": "May", "alt_of": 179178, "alt_rec": 175830, "per_of": 120918, "per_rec": 103080}, {"mes": "Jun", "alt_of": 238540, "alt_rec": 239750, "per_of": 182540, "per_rec": 174130}, {"mes": "Jul", "alt_of": 250740, "alt_rec": 249760, "per_of": 194670, "per_rec": 206210}, {"mes": "Ago", "alt_of": 254500, "alt_rec": 249930, "per_of": 196770, "per_rec": 186440}, {"mes": "Sep", "alt_of": 280470, "alt_rec": 260680, "per_of": 335975, "per_rec": 204440}, {"mes": "Oct", "alt_of": 192518, "alt_rec": 208220, "per_of": 186195, "per_rec": 153160}];
+  var FUENTES = [
+    {n:'ActiveCampaign · contactos creados desde ene 2026', c:'28 oct', d:0, o:'y', nota:'se apaga el 4 de noviembre', a:'Aplicantes y aprobados (hasta el 4 nov)'},
+    {n:'HubSpot · aplicaciones', c:'28 oct', d:0, o:'y', nota:'fecha de entrada a etapa en pausa', a:'Aplicantes y aprobados (única fuente desde el 4 nov)'},
+    {n:'Stripe · MRR mensual', c:'28 oct', d:0, a:'Movimiento de MRR y proyección'},
+    {n:'Stripe · pagos exitosos', c:'22 oct', d:6, o:'y', nota:'faltan pagos del 22 al 28 oct', a:'Ingresos, nuevos de pago, descuentos, snapshot'},
+    {n:'Stripe · reembolsos', c:'sin nuevos desde 4 sept (confirmado 22 oct)', d:6, a:'Ingresos netos'},
+    {n:'Stripe · Subscriptions', c:'28 oct', d:0, a:'Trials, inicios de prueba, motivo de cancelación, origen del MRR, cuotas y contado'},
+    {n:'Stripe · MRR semanal', c:'10 sept', d:48, a:'Gráfica de cancelaciones y reactivaciones'},
+    {n:'Inversión del mes', c:'sep cerrado; oct sin dato', d:0, o:'y', nota:'falta octubre', a:'CAC'}
+  ];
+  var DOT = {g:'#1D9E75', y:'#EF9F27', r:'#DC2626'};
+  var LBL = {g:'Bien', y:'Revisar', r:'Atención'};
+  var counts = {g:0, y:0, r:0};
+  function dot(s) { return '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:'+DOT[s]+';vertical-align:middle"></span>'; }
+  function badge(s) { return dot(s)+' <span style="font-size:12px;margin-left:4px">'+LBL[s]+'</span>'; }
+  function tally(s) { counts[s]++; }
+  function fm(n) { return '$' + Math.round(n).toLocaleString('es-MX'); }
+  function setHTML(id, h) { var el = document.getElementById(id); if (el) el.innerHTML = h; }
+
+  // 1) Fuentes
+  var h = '<thead><tr><th class="l">Fuente</th><th>Último corte</th><th>Días</th><th>Estado</th><th class="l">Alimenta</th></tr></thead><tbody>';
+  FUENTES.forEach(function(f) {
+    var s = f.o || (f.d <= 7 ? 'g' : (f.d <= 14 ? 'y' : 'r')); tally(s);
+    h += '<tr><td class="l" style="font-weight:600">'+f.n+'</td><td>'+f.c+'</td><td>'+f.d+'</td><td>'+badge(s)+(f.nota?'<div style="font-size:11px;color:var(--soma-gray)">'+f.nota+'</div>':'')+'</td><td class="l" style="font-size:12px">'+f.a+'</td></tr>';
+  });
+  setHTML('cd-fuentes', h + '</tbody>');
+
+  // 2) Customers CRM vs Stripe
+  function sCust(r) { if (r.parcial) return null; var q = r.stripe ? r.crm / r.stripe : 1; return q >= 0.8 ? 'g' : (q >= 0.5 ? 'y' : 'r'); }
+  var hc = '<thead><tr><th class="l">Semana</th><th>CRM (AC)</th><th>Stripe</th><th>CRM / Stripe</th><th>Estado</th></tr></thead><tbody>', lastS = null;
+  QCUST.forEach(function(r) {
+    var s = sCust(r); if (s) lastS = s;
+    hc += '<tr><td class="l" style="font-weight:600">'+r.sem+(r.parcial?' (parcial)':'')+'</td><td>'+r.crm+'</td><td>'+r.stripe+'</td><td>'+(r.stripe?(r.crm/r.stripe).toFixed(2):'—')+'</td><td>'+(s?badge(s):'<span style="font-size:12px;color:var(--soma-gray)">no se evalúa</span>')+'</td></tr>';
+  });
+  setHTML('cd-customers', hc + '</tbody>'); if (lastS) tally(lastS);
+  try {
+    mkChart('calidadCustChart', {
+      type:'bar',
+      data:{labels:QCUST.map(function(r){return r.sem;}), datasets:[
+        {label:'CRM (AC)', data:QCUST.map(function(r){return r.crm;}), backgroundColor:'#A6BAC2', borderRadius:4},
+        {label:'Stripe (primer pago)', data:QCUST.map(function(r){return r.stripe;}), backgroundColor:'#FF8D6B', borderRadius:4}]},
+      options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top', labels:{font:{size:11}, boxWidth:12}}}, scales:{x:{grid:{display:false}}, y:{grid:{color:'rgba(0,0,0,0.05)'}}}}
+    });
+  } catch (e) {}
+
+  // 2b) Inicios de prueba: AC contra Stripe
+  var QTRIAL = [{"mes": "Ene", "ac": 2, "stripe": 81}, {"mes": "Feb", "ac": 21, "stripe": 71}, {"mes": "Mar", "ac": 60, "stripe": 79}, {"mes": "Abr", "ac": 100, "stripe": 125}, {"mes": "May", "ac": 164, "stripe": 205}, {"mes": "Jun", "ac": 99, "stripe": 165}, {"mes": "Jul", "ac": 113, "stripe": 182}, {"mes": "Ago", "ac": 93, "stripe": 177}, {"mes": "Sep", "ac": 93, "stripe": 164}, {"mes": "Oct", "ac": 48, "stripe": 124}];
+  var ht = '<thead><tr><th class="l">Mes</th><th>AC (trials)</th><th>Stripe (inicios de prueba)</th><th>AC / Stripe</th><th>Estado</th></tr></thead><tbody>', lastT = null;
+  QTRIAL.forEach(function(r) {
+    var qq = r.stripe ? r.ac / r.stripe : 1, s = qq >= 0.85 ? 'g' : (qq >= 0.6 ? 'y' : 'r'); lastT = s;
+    ht += '<tr><td class="l" style="font-weight:600">'+r.mes+'</td><td>'+r.ac+'</td><td>'+r.stripe+'</td><td>'+qq.toFixed(2)+'</td><td>'+badge(s)+'</td></tr>';
+  });
+  setHTML('cd-trials', ht + '</tbody>'); if (lastT) tally(lastT);
+
+  // 3) MRR oficial vs reconstruccion
+  function sMrr(p) { return (p >= 85 && p <= 115) ? 'g' : ((p >= 70 && p < 85) || (p > 115 && p <= 130) ? 'y' : 'r'); }
+  var hm = '<thead><tr><th class="l">Mes</th><th>Altas Stripe</th><th>Altas reconstruidas</th><th>Altas %</th><th>Pérdida Stripe</th><th>Pérdida reconstruida</th><th>Pérdida %</th></tr></thead><tbody>', lastA = null, lastP = null;
+  QMRR.forEach(function(r) {
+    var pa = Math.round(r.alt_rec / r.alt_of * 100), pp = Math.round(r.per_rec / r.per_of * 100); lastA = sMrr(pa); lastP = sMrr(pp);
+    hm += '<tr><td class="l" style="font-weight:600">'+r.mes+'</td><td>'+fm(r.alt_of)+'</td><td>'+fm(r.alt_rec)+'</td><td>'+dot(lastA)+' '+pa+'%</td><td>'+fm(r.per_of)+'</td><td>'+fm(r.per_rec)+'</td><td>'+dot(lastP)+' '+pp+'%</td></tr>';
+  });
+  setHTML('cd-mrr', hm + '</tbody>'); tally(lastA); tally(lastP);
+
+  // 4) Revisiones internas en vivo
+  var checks = [];
+  function add(nombre, fn) { var r; try { r = fn(); } catch (e) { r = {s:'y', d:'No se pudo leer: ' + e.message}; } checks.push({n:nombre, s:r.s, d:r.d}); }
+  add('Aprobados nunca mayores a aplicantes', function() {
+    var bad = []; DATA.pipeline.forEach(function(p){ if (p.apro > p.aplic) bad.push(p.mes); }); EXTRA.weekly.forEach(function(w){ if (w.apro > w.aplic) bad.push('S'+w.sem); });
+    return bad.length ? {s:'r', d:'Revisar: '+bad.join(', ')} : {s:'g', d:'Pipeline y semanas: '+DATA.pipeline.length+' meses y '+EXTRA.weekly.length+' semanas sin excepciones'};
+  });
+  add('Embudo mensual coherente (conversión aprobada = aprobados / aplicantes)', function() {
+    var bad = []; DATA.pipeline.forEach(function(p){ if (p.aplic && Math.abs(p.apro / p.aplic * 100 - p.cr_apro) > 0.3) bad.push(p.mes); });
+    return bad.length ? {s:'y', d:'Difiere en: '+bad.join(', ')} : {s:'g', d:'Las conversiones coinciden con sus conteos'};
+  });
+  add('Nuevos por plan suman el total de nuevos (Ingresos)', function() {
+    var n = NUEVOS_POR_PLAN, bad = []; REV_MENSUAL.nuevos.forEach(function(v, i){ if (v !== n.cuotas950[i]+n.cuotas1050[i]+n.semestral[i]+n.anual[i]) bad.push(n.months[i]); });
+    return bad.length ? {s:'r', d:'No cuadra en: '+bad.join(', ')} : {s:'g', d:n.months.length+' meses cuadran entre las dos vistas'};
+  });
+  add('Ingresos netos nunca mayores a los brutos', function() {
+    var bad = []; REV_MENSUAL.bruto.forEach(function(b, i){ if (REV_MENSUAL.neto[i] > b) bad.push(REV_MENSUAL.months[i]); });
+    return bad.length ? {s:'r', d:'Revisar: '+bad.join(', ')} : {s:'g', d:'Brutos y netos consistentes'};
+  });
+  add('Cuotas y Contado: las partes suman el total', function() {
+    var bad = 0; [CUOTAS_950, CUOTAS_1050].forEach(function(t){ t.cohorts.forEach(function(r){ if (r.total !== r.completo + r.cancelo + r.en_curso) bad++; }); });
+    [CONTADO_5940, CONTADO_10800].forEach(function(t){ t.cohorts.forEach(function(r){ if (r.renovaron > r.total) bad++; }); });
+    return bad ? {s:'r', d:bad+' cohortes no cuadran'} : {s:'g', d:'Las 4 tablas son consistentes'};
+  });
+  add('Movimiento de MRR: componentes y continuidad', function() {
+    var bad = []; MRR_MOV.forEach(function(r, i) {
+      var net = r.nuevo + r.reac + r.expan - r.perdida - r.contrac;
+      if (Math.abs(net - r.neto) > 3 || Math.abs(r.inicio + r.neto - r.cierre) > 3) bad.push(r.mes);
+      if (i > 0 && Math.abs(r.inicio - MRR_MOV[i-1].cierre) > 3) bad.push(r.mes+' (arranque)');
+    });
+    return bad.length ? {s:'r', d:'No cuadra en: '+bad.join(', ')} : {s:'g', d:MRR_MOV.length+' meses: neto = suma de componentes y cada mes arranca donde cerró el anterior'};
+  });
+  add('Cohortes: los trials acumulados no superan al total', function() {
+    var bad = 0; function chk(arr, key) { arr.forEach(function(r){ var s = 0; for (var i = 1; i <= 10; i++) s += r['t'+i]; if (s > r[key] || Math.abs((r[key] ? s / r[key] * 100 : 0) - r.cr_acum) > 0.3) bad++; }); }
+    chk(DATA.cohort, 'total_apro'); chk(DATA.cohort_tc, 'total_trial');
+    return bad ? {s:'y', d:bad+' cohortes con diferencias'} : {s:'g', d:'Las 20 cohortes son consistentes'};
+  });
+  add('Ventana semanal: 9 semanas seguidas en las dos fuentes', function() {
+    var a = EXTRA.weekly.map(function(w){return w.sem;}), b = DATA.weekly.map(function(w){return w.sem;}), ok = a.length === 9 && b.length === 9;
+    for (var i = 1; i < a.length; i++) if (a[i] !== a[i-1] + 1) ok = false;
+    return ok && a.join() === b.join() ? {s:'g', d:'S'+a[0]+' a S'+a[a.length-1]} : {s:'r', d:'Semanas: '+a.join(',')+' / '+b.join(',')};
+  });
+  add('SQL pendientes por mes no superan a los aplicantes del mes', function() {
+    var bad = []; DATA.sql_backlog.forEach(function(b){ if (b.sql > b.aplic) bad.push(b.mes); });
+    return bad.length ? {s:'r', d:'Revisar: '+bad.join(', ')} : {s:'g', d:DATA.sql_backlog.length+' meses sin excepciones'};
+  });
+  var hi = '<thead><tr><th class="l">Revisión</th><th>Estado</th><th class="l">Detalle</th></tr></thead><tbody>';
+  checks.forEach(function(r){ tally(r.s); hi += '<tr><td class="l" style="font-weight:600">'+r.n+'</td><td>'+badge(r.s)+'</td><td class="l" style="font-size:12px">'+r.d+'</td></tr>'; });
+  setHTML('cd-integridad', hi + '</tbody>');
+
+  // 5) Alertas conocidas
+  var ALERTAS = [
+    {s:'y', t:'AC se apaga el 4 de noviembre de 2026', d:'Hasta esa fecha aplicantes y aprobados suman AC + HubSpot; después, solo HubSpot. HubSpot aún no trae la fecha de entrada a cada etapa (en pausa).'},
+    {s:'r', t:'La pérdida de MRR de septiembre no se explica por completo', d:'Stripe reporta $336K y la reconstrucción cubre 61%. Falta el detalle por cliente de Stripe.'},
+    {s:'r', t:'Stripe MRR semanal está desactualizado', d:'Último corte 10 de septiembre: la gráfica de cancelaciones y reactivaciones por semana no refleja las últimas siete semanas.'},
+    {s:'y', t:'Faltan los pagos del 22 al 28 de octubre', d:'Los nuevos miembros de pago, ingresos, cohortes y customers semanales de octubre quedan parciales hasta recibir ese archivo.'},
+    {s:'y', t:'AC subcuenta los inicios de prueba frente a Stripe', d:'Septiembre: 93 en AC contra 164 en Stripe. El pipeline usa Stripe para trials y nuevos de pago.'},
+    {s:'y', t:'AC dejó de registrar Customers cerca del 12 de octubre', d:'S42: 4 en AC contra 10 nuevos pagadores en Stripe. Por eso los clientes nuevos se miden con Stripe.'},
+    {s:'y', t:'Regla de is_pending_payment_method pendiente de validar', d:'Si se aplica por antigüedad del contrato, afectaría a unos 417 contratos, casi todos pruebas sin tarjeta.'},
+    {s:'y', t:'CAC de octubre sin calcular', d:'Falta la inversión de octubre.'}
+  ];
+  var ha = ''; ALERTAS.forEach(function(a){ ha += '<div style="display:flex;gap:10px;align-items:flex-start">'+dot(a.s)+'<div><div style="font-weight:600;font-size:13px">'+a.t+'</div><div style="font-size:12px;color:var(--soma-gray)">'+a.d+'</div></div></div>'; });
+  setHTML('cd-alertas', ha);
+
+  // Resumen
+  setHTML('cd-kpis',
+    '<div class="kpi"><div class="kpi-label">Revisiones en orden</div><div class="kpi-val">'+counts.g+'</div><div class="kpi-sub">de '+(counts.g+counts.y+counts.r)+' controles</div><span class="kpi-badge badge-green">Bien</span></div>'+
+    '<div class="kpi"><div class="kpi-label">Por revisar</div><div class="kpi-val">'+counts.y+'</div><div class="kpi-sub">Limitaciones conocidas</div><span class="kpi-badge badge-yellow">Revisar</span></div>'+
+    '<div class="kpi"><div class="kpi-label">Requieren atención</div><div class="kpi-val">'+counts.r+'</div><div class="kpi-sub">Fuentes atrasadas o cifras que no cuadran</div><span class="kpi-badge badge-red">Atención</span></div>');
+})();
 </script>
 </body>
 </html>
