@@ -1477,7 +1477,7 @@ if (ttEl) {
   var sub = document.getElementById('trial-type-sub');
   if (sub) sub.textContent = 'Stripe al ' + DATA.trial_types_corte + ' · pruebas iniciadas de abril a octubre y ya terminadas (n=' + tot.toLocaleString('es-MX') + ')';
   var ins = document.getElementById('trial-type-insight');
-  if (ins && a && b) ins.textContent = 'El plan de 30 días convierte ' + Math.round(a.cr - b.cr) + ' pp más que el de 15 días. El ' + b.sin_tarjeta + '% de las pruebas de 15 días se inició sin método de pago; en las de 30 días, ' + a.sin_tarjeta + '%. «Otra duración» terminó antes de tiempo porque el cliente empezó a pagar, por eso no es comparable.';
+  if (ins && a && b) ins.textContent = 'El plan de 30 días convierte ' + Math.round(a.cr - b.cr) + ' pp más que el de 15 días. El ' + b.sin_tarjeta + '% de las pruebas de 15 días se inició sin método de pago; en las de 30 días, ' + a.sin_tarjeta + '%. «Otra duración» son pruebas con una extensión distinta a 15 o 30 días (sobre todo de 1 a 9 días) que se cobran al terminar; por eso no es comparable.';
 })();
 
 // Cohort table
@@ -1663,7 +1663,7 @@ if (agingEl) {
 
 
 // ── TRIALS POR TIPO DE PRUEBA (Stripe Subscriptions) ─────────
-// 15 días = prueba de 14 a 16 días · 30 días = prueba de 29 a 31 días · Otra duración = terminó antes de tiempo (el cliente empezó a pagar antes) o duración distinta.
+// 15 días = prueba de 14 a 16 días · 30 días = prueba de 29 a 31 días · Otra duración = extensión distinta a 15 o 30 días (sobre todo de 1 a 9 días, con duración exacta en días y cobro automático al terminar).
 var TRIALS_TIPO = {"months": ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov"], "d15": [0, 0, 7, 44, 89, 68, 95, 108, 106, 78, 35], "d30": [58, 58, 57, 64, 110, 89, 77, 52, 44, 31, 16], "otra": [23, 13, 15, 15, 6, 8, 10, 17, 14, 20, 12], "c15": [null, null, null, 23, 30, 15, 39, 44, 35, 34, null], "n15": [0, 0, 7, 44, 89, 68, 95, 108, 106, 59, 0], "c30": [90, 84, 86, 84, 83, 80, 83, 77, 77, null, null], "n30": [58, 58, 57, 64, 110, 89, 77, 52, 44, 6, 0]};
 (function() {
   var T = TRIALS_TIPO, n = T.months.length, last = n - 1;
@@ -1694,7 +1694,7 @@ var TRIALS_TIPO = {"months": ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "
   h += '<tr style="background:var(--color-background-secondary);font-weight:600"><td class="l">Total ' + T.months[0] + '–' + T.months[last - 1] + '</td><td>' + s15 + '</td><td>' + s30 + '</td><td>' + so + '</td><td>' + st + '</td><td>' + Math.round(s15 / st * 100) + '%</td><td>—</td><td>—</td></tr>';
   var tb = document.getElementById('trials-tipo-table'); if (tb) tb.innerHTML = h + '</tbody>';
   var ins = document.getElementById('trials-tipo-insight');
-  if (ins) ins.textContent = 'Los trials de 15 días pasaron de 0% en ' + T.months[0] + ' a ' + Math.round(T.d15[last - 1] / (T.d15[last - 1] + T.d30[last - 1] + T.otra[last - 1]) * 100) + '% en ' + T.months[last - 1] + '. «Otra duración» son pruebas que terminaron antes de tiempo porque el cliente empezó a pagar antes, o que tuvieron una duración distinta. La conversión cuenta solo pruebas ya terminadas (fin más 7 días) y mide el primer pago posterior a la creación del contrato; con menos de 10 pruebas no se muestra.';
+  if (ins) ins.textContent = 'Los trials de 15 días pasaron de 0% en ' + T.months[0] + ' a ' + Math.round(T.d15[last - 1] / (T.d15[last - 1] + T.d30[last - 1] + T.otra[last - 1]) * 100) + '% en ' + T.months[last - 1] + '. «Otra duración» son pruebas con una extensión distinta a 15 o 30 días (sobre todo de 1 a 9 días) que se cobran al terminar. La conversión cuenta solo pruebas ya terminadas (fin más 7 días) y mide el primer pago posterior a la creación del contrato; con menos de 10 pruebas no se muestra.';
 })();
 
 // ── CALIDAD DE DATOS ─────────────────────────────────────────
